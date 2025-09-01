@@ -102,6 +102,7 @@ public class KeyBoardManager : MonoBehaviour
         {
             EndDrag(); // 그냥 현재 위치에 고정
         }
+        Debug.Log(dragging);
     }
 
     void UpdateDoubleLabels()
@@ -210,30 +211,35 @@ public class KeyBoardManager : MonoBehaviour
     bool TryGetPointerScreenPos(int pointerId, out Vector2 pos)
     {
 #if UNITY_EDITOR || UNITY_STANDALONE
-        if (pointerId == -1) { pos = Input.mousePosition; return true; }
-#endif
-        // 터치
-        for (int i = 0; i < Input.touchCount; i++)
-        {
-            var t = Input.GetTouch(i);
-            if (t.fingerId == pointerId) { pos = t.position; return true; }
-        }
-        pos = default;
-        return false;
+        // 마우스면 pointerId가 -1이든 0이든 그냥 커서 좌표 반환
+        pos = Input.mousePosition;
+        return true;
+#else
+    for (int i = 0; i < Input.touchCount; i++)
+    {
+        var t = Input.GetTouch(i);
+        if (t.fingerId == pointerId) { pos = t.position; return true; }
     }
+    pos = default;
+    return false;
+#endif
+    }
+
 
     bool IsPointerReleased(int pointerId)
     {
 #if UNITY_EDITOR || UNITY_STANDALONE
-        if (pointerId == -1) return Input.GetMouseButtonUp(0);
-#endif
-        for (int i = 0; i < Input.touchCount; i++)
-        {
-            var t = Input.GetTouch(i);
-            if (t.fingerId == pointerId && (t.phase == TouchPhase.Ended || t.phase == TouchPhase.Canceled))
-                return true;
-        }
-        // 터치가 사라진 경우도 릴리즈 간주
-        return Input.touchCount == 0 && pointerId >= 0;
+        return Input.GetMouseButtonUp(0);        // ← 이 한 줄만으로 충분
+#else
+    for (int i = 0; i < Input.touchCount; i++)
+    {
+        var t = Input.GetTouch(i);
+        if (t.fingerId == pointerId &&
+            (t.phase == TouchPhase.Ended || t.phase == TouchPhase.Canceled))
+            return true;
     }
+    return false;                             // ← 절대 “터치 0개면 true” 하지 말 것
+#endif
+    }
+
 }
