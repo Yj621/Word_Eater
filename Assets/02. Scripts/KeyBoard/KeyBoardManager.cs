@@ -26,17 +26,17 @@ public class KeyBoardManager : MonoBehaviour
     public Camera uiCamera;           // Screen Space - Overlay면 null 가능
     public float worldDepth = 10f;    // 월드 드래그 시 카메라로부터의 Z
     public Vector3 spawnOffset;       // 초기 스폰 오프셋
-
-    // --- 드래그 상태 ---
     bool dragging;
     int activePointerId;
     bool dragIsUI;
     RectTransform dragUIRect; // UI 프리팹일 때
     Transform dragWorldTr; // 월드 프리팹일 때
 
-    // ================== 호출 API ==================
+    [Header("드롭/삭제 영역(UI)")]
+    public RectTransform allowedArea;   // 허용 구역(이 안에서만 살아남음)
+    public RectTransform trashArea;     // 쓰레기통(여기 놓으면 삭제)
 
-    // 기존 시그니처 유지(호환용)
+
     public void PressSingle(int index) => PressSingle(index, null);
     public void PressDouble(int index) => PressDouble(index, null);
 
@@ -66,18 +66,16 @@ public class KeyBoardManager : MonoBehaviour
         UpdateDoubleLabels();
     }
 
-    // ================== 내부 구현 ==================
-
+   
     void OnEnable() => UpdateDoubleLabels();
 
     void Update()
     {
         if (!dragging) return;
 
-        // 현재 포인터 스크린 좌표 가져오기
         if (!TryGetPointerScreenPos(activePointerId, out var screenPos))
         {
-            EndDrag(); // 포인터가 사라졌으면 드래그 종료
+            EndDrag();
             return;
         }
 
@@ -97,7 +95,6 @@ public class KeyBoardManager : MonoBehaviour
             dragWorldTr.position = worldPos;
         }
 
-        // 마우스/터치 뗐는지 감지
         if (IsPointerReleased(activePointerId))
         {
             EndDrag(); // 그냥 현재 위치에 고정
@@ -135,7 +132,7 @@ public class KeyBoardManager : MonoBehaviour
         return true;
     }
 
-    // ===== 스폰 & 드래그 시작 =====
+    
     void BeginDragSpawn(Button button, GameObject prefab, PointerEventData ev)
     {
         var buttonRT = button.GetComponent<RectTransform>();
@@ -162,7 +159,8 @@ public class KeyBoardManager : MonoBehaviour
             rt.pivot = new Vector2(0.5f, 0.5f);
             rt.anchoredPosition = local + (Vector2)spawnOffset;
             rt.localScale = Vector3.one;
-
+            var drag = go.GetComponent<DraggableWordUI>();
+            drag.Init(root, allowedArea, trashArea, uiCamera);
             // 드래그 상태 진입
             dragIsUI = true;
             dragUIRect = rt;
@@ -206,7 +204,6 @@ public class KeyBoardManager : MonoBehaviour
         dragWorldTr = null;
     }
 
-    // ===== 포인터 유틸 =====
 
     bool TryGetPointerScreenPos(int pointerId, out Vector2 pos)
     {
@@ -229,7 +226,7 @@ public class KeyBoardManager : MonoBehaviour
     bool IsPointerReleased(int pointerId)
     {
 #if UNITY_EDITOR || UNITY_STANDALONE
-        return Input.GetMouseButtonUp(0);        // ← 이 한 줄만으로 충분
+        return Input.GetMouseButtonUp(0);     
 #else
     for (int i = 0; i < Input.touchCount; i++)
     {
@@ -238,7 +235,7 @@ public class KeyBoardManager : MonoBehaviour
             (t.phase == TouchPhase.Ended || t.phase == TouchPhase.Canceled))
             return true;
     }
-    return false;                             // ← 절대 “터치 0개면 true” 하지 말 것
+    return false;                           
 #endif
     }
 
