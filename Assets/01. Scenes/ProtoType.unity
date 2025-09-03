@@ -8028,40 +8028,85 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rules:
-  - below: "\u3157"
-    side: "\u314F"
+  - first: 
+    second: 
     fusedPrefab: {fileID: 466616848980952943, guid: cfc07387548a8564d9f2f7d5abb2d806, type: 3}
     fusedGlyph: "\u3158"
     fusedOffset: {x: -50, y: -20}
-  - below: "\u3157"
-    side: "\u3163"
+  - first: 
+    second: 
     fusedPrefab: {fileID: 466616848980952943, guid: 51765aaf62603a34aaba6b8f3617e864, type: 3}
     fusedGlyph: "\u315A"
     fusedOffset: {x: -50, y: -20}
-  - below: "\u3157"
-    side: "\u3150"
+  - first: 
+    second: 
     fusedPrefab: {fileID: 466616848980952943, guid: 33e94d1b0ceb0194da1c6552621e706a, type: 3}
     fusedGlyph: "\u3159"
     fusedOffset: {x: -50, y: -20}
-  - below: "\u315C"
-    side: "\u3163"
+  - first: 
+    second: 
     fusedPrefab: {fileID: 466616848980952943, guid: 8a007e1c988edbc4aa305a5db73fb7aa, type: 3}
     fusedGlyph: "\u315F"
     fusedOffset: {x: -50, y: -20}
-  - below: "\u315C"
-    side: "\u3154"
+  - first: 
+    second: 
     fusedPrefab: {fileID: 466616848980952943, guid: 6be1d9aa179e81b4f82ee14e3d225e08, type: 3}
     fusedGlyph: "\u315E"
     fusedOffset: {x: -50, y: -20}
-  - below: "\u315C"
-    side: "\u3153"
+  - first: 
+    second: 
     fusedPrefab: {fileID: 466616848980952943, guid: 28f83c5209b177e42b25779448ee030a, type: 3}
     fusedGlyph: 
     fusedOffset: {x: -50, y: -20}
-  - below: "\u3161"
-    side: "\u3163"
-    fusedPrefab: {fileID: 466616848980952943, guid: cc4e101f04116fb4f8640b74392c6f7f, type: 3}
-    fusedGlyph: "\u3162"
+  - first: 
+    second: 
+    fusedPrefab: {fileID: 3570046269424364547, guid: ba54258decb2713419027af6b332544a, type: 3}
+    fusedGlyph: "\u3133"
+    fusedOffset: {x: -50, y: -20}
+  - first: 
+    second: 
+    fusedPrefab: {fileID: 3570046269424364547, guid: a2d7f4d42c773c441a7886887d80220d, type: 3}
+    fusedGlyph: "\u3135"
+    fusedOffset: {x: -50, y: -20}
+  - first: 
+    second: 
+    fusedPrefab: {fileID: 3570046269424364547, guid: 44b6a8ccfee96934da57672c83d5a042, type: 3}
+    fusedGlyph: "\u3136"
+    fusedOffset: {x: -50, y: -20}
+  - first: 
+    second: 
+    fusedPrefab: {fileID: 3570046269424364547, guid: 59c54bbad321eb241b6837f64b5b98ad, type: 3}
+    fusedGlyph: "\u313A"
+    fusedOffset: {x: -50, y: -20}
+  - first: 
+    second: 
+    fusedPrefab: {fileID: 3570046269424364547, guid: 80b69693cee246a4c9524eb0856d8a51, type: 3}
+    fusedGlyph: "\u313B"
+    fusedOffset: {x: -50, y: -20}
+  - first: 
+    second: 
+    fusedPrefab: {fileID: 3570046269424364547, guid: 2551a970ac3f01242bceb1d35c41df97, type: 3}
+    fusedGlyph: "\u313C"
+    fusedOffset: {x: -50, y: -20}
+  - first: 
+    second: 
+    fusedPrefab: {fileID: 3570046269424364547, guid: 21b056da9b89d5c4a86ea5f5a9b85124, type: 3}
+    fusedGlyph: "\u313D"
+    fusedOffset: {x: -50, y: -20}
+  - first: 
+    second: 
+    fusedPrefab: {fileID: 3570046269424364547, guid: 2ca72bff16ae145418536c51e4f301a3, type: 3}
+    fusedGlyph: "\u313E"
+    fusedOffset: {x: -50, y: -20}
+  - first: 
+    second: 
+    fusedPrefab: {fileID: 3570046269424364547, guid: 2e83002332ba47247ae58347e2511b98, type: 3}
+    fusedGlyph: "\u313F"
+    fusedOffset: {x: -50, y: -20}
+  - first: 
+    second: 
+    fusedPrefab: {fileID: 3570046269424364547, guid: 756b230eb8a82d3449662327e6e03f10, type: 3}
+    fusedGlyph: "\u3140"
     fusedOffset: {x: -50, y: -20}
 --- !u!4 &1787915437
 Transform:
