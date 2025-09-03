@@ -7998,6 +7998,86 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1064.3184, y: 465.719}
   m_EdgeRadius: 0
+--- !u!1 &1787915435
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1787915437}
+  - component: {fileID: 1787915436}
+  m_Layer: 0
+  m_Name: Rule
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1787915436
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1787915435}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4aecce9357c644042b2cfa59cd1d9623, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rules:
+  - below: "\u3157"
+    side: "\u314F"
+    fusedPrefab: {fileID: 466616848980952943, guid: cfc07387548a8564d9f2f7d5abb2d806, type: 3}
+    fusedGlyph: "\u3158"
+    fusedOffset: {x: -50, y: -20}
+  - below: "\u3157"
+    side: "\u3163"
+    fusedPrefab: {fileID: 466616848980952943, guid: 51765aaf62603a34aaba6b8f3617e864, type: 3}
+    fusedGlyph: "\u315A"
+    fusedOffset: {x: -50, y: -20}
+  - below: "\u3157"
+    side: "\u3150"
+    fusedPrefab: {fileID: 466616848980952943, guid: 33e94d1b0ceb0194da1c6552621e706a, type: 3}
+    fusedGlyph: "\u3159"
+    fusedOffset: {x: -50, y: -20}
+  - below: "\u315C"
+    side: "\u3163"
+    fusedPrefab: {fileID: 466616848980952943, guid: 8a007e1c988edbc4aa305a5db73fb7aa, type: 3}
+    fusedGlyph: "\u315F"
+    fusedOffset: {x: -50, y: -20}
+  - below: "\u315C"
+    side: "\u3154"
+    fusedPrefab: {fileID: 466616848980952943, guid: 6be1d9aa179e81b4f82ee14e3d225e08, type: 3}
+    fusedGlyph: "\u315E"
+    fusedOffset: {x: -50, y: -20}
+  - below: "\u315C"
+    side: "\u3153"
+    fusedPrefab: {fileID: 466616848980952943, guid: 28f83c5209b177e42b25779448ee030a, type: 3}
+    fusedGlyph: 
+    fusedOffset: {x: -50, y: -20}
+  - below: "\u3161"
+    side: "\u3163"
+    fusedPrefab: {fileID: 466616848980952943, guid: cc4e101f04116fb4f8640b74392c6f7f, type: 3}
+    fusedGlyph: "\u3162"
+    fusedOffset: {x: -50, y: -20}
+--- !u!4 &1787915437
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1787915435}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 178.96458, y: 592.4408, z: 13.014858}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1806896198
 GameObject:
   m_ObjectHideFlags: 0
@@ -9101,3 +9181,4 @@ SceneRoots:
   - {fileID: 802409969}
   - {fileID: 321487234}
   - {fileID: 1369076554}
+  - {fileID: 1787915437}

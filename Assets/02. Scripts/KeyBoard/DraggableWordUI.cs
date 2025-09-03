@@ -63,6 +63,13 @@ public class DraggableWordUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
             return;
         }
 
+        var magnet = GetComponent<JamoMagnet>();
+        if (magnet)
+        {
+            var dragRoot = this.dragRoot;
+            magnet.TrySnap(dragRoot, uiCamera);
+        }
+
         // 정상 드롭 → 그대로 고정
         cg.blocksRaycasts = true;
     }

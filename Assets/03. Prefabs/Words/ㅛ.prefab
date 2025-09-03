@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 7981263635966017867}
   - component: {fileID: 4793081348861830655}
   - component: {fileID: -4136635991449488859}
+  - component: {fileID: -106108796330432059}
   m_Layer: 5
   m_Name: "\u315B"
   m_TagString: Untagged
@@ -162,3 +163,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d15c02b5dc98644c9f9bf16d5d7d358, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &-106108796330432059
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3897083350701237188}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a89c64c00646a7044b52681aee1f8890, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  role: 1
+  glyph: "\u315B"
+  rightAnchor: {fileID: 0}
+  bottomAnchor: {fileID: 0}
+  bottomFinalAnchor: {fileID: 0}
+  vowelAttach: 1
+  snapRadius: 80
+  attachOffset: {x: 0, y: 0}
+  attachedVowel: {fileID: 0}
+  attachedFinal: {fileID: 0}
+  attachedVowelSide: {fileID: 0}
+  attachedVowelBelow: {fileID: 0}
