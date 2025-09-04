@@ -147,7 +147,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Outlook_0: 7149647980257655695
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

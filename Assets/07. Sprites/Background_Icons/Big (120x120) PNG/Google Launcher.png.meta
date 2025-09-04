@@ -147,7 +147,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Google Launcher_0: -607462415238173420
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

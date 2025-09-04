@@ -147,7 +147,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Terraria_0: 6402241711690651594
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

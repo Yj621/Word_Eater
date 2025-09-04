@@ -147,7 +147,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Microsoft Authentificator_0: -4594943370865526131
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

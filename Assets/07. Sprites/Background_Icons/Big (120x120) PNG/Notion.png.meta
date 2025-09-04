@@ -147,7 +147,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Notion_0: 4842252055901820516
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

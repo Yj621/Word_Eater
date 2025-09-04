@@ -147,7 +147,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      SoundCloud_0: -9043438865348890195
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

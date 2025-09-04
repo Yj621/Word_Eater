@@ -147,7 +147,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Mercadopago_0: 8216321303192683319
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -147,7 +147,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Netflix_0: -3881264308995347419
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

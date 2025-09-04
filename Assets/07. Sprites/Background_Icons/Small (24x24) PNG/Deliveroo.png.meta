@@ -147,7 +147,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Deliveroo_0: 6878871501479049707
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

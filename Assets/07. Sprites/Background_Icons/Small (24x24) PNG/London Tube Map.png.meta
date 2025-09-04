@@ -147,7 +147,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      London Tube Map_0: 930516051442591166
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

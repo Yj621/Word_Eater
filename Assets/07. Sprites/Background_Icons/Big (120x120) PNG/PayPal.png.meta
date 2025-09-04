@@ -147,7 +147,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      PayPal_0: -864757202714616415
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -147,7 +147,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Vodafone_0: -7711096064192926836
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

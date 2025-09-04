@@ -147,7 +147,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Evernote_0: 5195517833197723053
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

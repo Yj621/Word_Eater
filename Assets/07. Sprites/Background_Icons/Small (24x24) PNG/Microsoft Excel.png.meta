@@ -147,7 +147,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Microsoft Excel_0: 471466512243944721
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

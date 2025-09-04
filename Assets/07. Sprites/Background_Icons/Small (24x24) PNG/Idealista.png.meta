@@ -147,7 +147,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Idealista_0: 1588780129881529760
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

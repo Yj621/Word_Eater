@@ -147,7 +147,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Duolingo_0: -3144020813466289495
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

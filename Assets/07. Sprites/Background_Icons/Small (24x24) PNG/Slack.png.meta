@@ -147,7 +147,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Slack_0: -6948278515209189315
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

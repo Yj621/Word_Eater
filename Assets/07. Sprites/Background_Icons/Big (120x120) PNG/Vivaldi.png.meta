@@ -147,7 +147,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Vivaldi_0: -5282762380515541432
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

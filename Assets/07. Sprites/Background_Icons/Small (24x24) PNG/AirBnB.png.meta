@@ -147,7 +147,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      AirBnB_0: 2267289771195813276
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

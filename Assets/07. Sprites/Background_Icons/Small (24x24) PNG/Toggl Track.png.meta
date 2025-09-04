@@ -147,7 +147,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Toggl Track_0: 8824567337162687853
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

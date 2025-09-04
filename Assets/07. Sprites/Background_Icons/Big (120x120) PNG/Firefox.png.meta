@@ -147,7 +147,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Firefox_0: 2267521691344690859
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

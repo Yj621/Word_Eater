@@ -147,7 +147,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Uber Eats_0: -4118569274148815246
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

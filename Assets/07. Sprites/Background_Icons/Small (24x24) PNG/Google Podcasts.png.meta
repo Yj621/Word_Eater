@@ -247,7 +247,12 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Google Podcasts_0: -6509291458547401861
+      Google Podcasts_1: 2937331740783570661
+      Google Podcasts_2: 3868897348508104875
+      Google Podcasts_3: 4248455468830745766
+      Google Podcasts_4: 5949443137170777643
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

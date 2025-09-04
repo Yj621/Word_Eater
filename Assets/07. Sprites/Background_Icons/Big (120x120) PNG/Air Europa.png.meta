@@ -147,7 +147,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Air Europa_0: -3100326168503756051
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

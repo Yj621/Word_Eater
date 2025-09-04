@@ -147,7 +147,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Rubiks Cube_0: -4463377035027984842
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

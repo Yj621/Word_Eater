@@ -147,7 +147,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Microsoft Access_0: 4038395638381952907
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

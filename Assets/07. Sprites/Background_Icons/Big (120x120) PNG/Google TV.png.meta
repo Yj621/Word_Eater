@@ -147,7 +147,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Google TV_0: 7714920334170899692
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
