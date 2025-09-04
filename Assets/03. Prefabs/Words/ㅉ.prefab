@@ -1,5 +1,40 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &292075915123636591
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2953894074079729900}
+  m_Layer: 0
+  m_Name: DownMag
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &2953894074079729900
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 292075915123636591}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: -0.24778612}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4081349105429703924}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 3.0479126, y: -42.22986}
+  m_SizeDelta: {x: 93.964, y: 21.9102}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &768639102029172297
 GameObject:
   m_ObjectHideFlags: 0
@@ -13,6 +48,7 @@ GameObject:
   - component: {fileID: 8343422466740617542}
   - component: {fileID: -2614806474431897980}
   - component: {fileID: 6322293710912289181}
+  - component: {fileID: -2834121804134922138}
   m_Layer: 5
   m_Name: "\u3149"
   m_TagString: Untagged
@@ -31,7 +67,10 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 5986891296486819915}
+  - {fileID: 6131016370362306055}
+  - {fileID: 2953894074079729900}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -162,3 +201,97 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d15c02b5dc98644c9f9bf16d5d7d358, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &-2834121804134922138
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 768639102029172297}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a89c64c00646a7044b52681aee1f8890, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  role: 0
+  glyph: "\u3149"
+  rightAnchor: {fileID: 6131016370362306055}
+  bottomAnchor: {fileID: 2953894074079729900}
+  bottomFinalAnchor: {fileID: 5986891296486819915}
+  vowelAttach: 0
+  snapRadius: 80
+  attachOffset: {x: 0, y: 0}
+  attachedVowel: {fileID: 0}
+  attachedFinal: {fileID: 0}
+  attachedVowelSide: {fileID: 0}
+  attachedVowelBelow: {fileID: 0}
+--- !u!1 &2164887475406790060
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6131016370362306055}
+  m_Layer: 0
+  m_Name: RightMag
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &6131016370362306055
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2164887475406790060}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: -0.24778612}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4081349105429703924}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 77.8, y: 17.953857}
+  m_SizeDelta: {x: 28.7006, y: 80.3832}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1 &5301910567922103356
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5986891296486819915}
+  m_Layer: 0
+  m_Name: DownMag (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &5986891296486819915
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5301910567922103356}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: -0.24778612}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4081349105429703924}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 3.0479126, y: -132}
+  m_SizeDelta: {x: 93.964, y: 21.9102}
+  m_Pivot: {x: 0.5, y: 0.5}

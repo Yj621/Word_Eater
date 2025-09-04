@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 2839302630865084581}
   - component: {fileID: -2675876659188664581}
   - component: {fileID: 7037086574365063957}
+  - component: {fileID: -5742464523811182418}
   m_Layer: 5
   m_Name: "\u314F"
   m_TagString: Untagged
@@ -162,3 +163,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d15c02b5dc98644c9f9bf16d5d7d358, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &-5742464523811182418
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8963302753003378991}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a89c64c00646a7044b52681aee1f8890, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  role: 1
+  glyph: "\u314F"
+  rightAnchor: {fileID: 0}
+  bottomAnchor: {fileID: 0}
+  vowelAttach: 0
+  snapRadius: 80
+  attachOffset: {x: 0, y: 0}
+  attachedVowel: {fileID: 0}
+  attachedFinal: {fileID: 0}
