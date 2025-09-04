@@ -7,11 +7,11 @@ namespace WordEater.Data
     [CreateAssetMenu(fileName = "GrowthConfig", menuName = "WordEater/GrowthConfig")]
     public class GrowthConfig : ScriptableObject
     {
-        // BitÀÇ ÅÏ ¼ö, ¿À´äÈ½¼ö, Á¤´äÈ½¼ö
+        // Bitì˜ í„´ ìˆ˜, ì˜¤ë‹µíšŸìˆ˜, ì •ë‹µíšŸìˆ˜
         public StageConfig bit = new StageConfig { turnsPerStage = 4, maxMistakes = 2, requiredCorrectToAdvance = 2 };
-        // ByteÀÇ ÅÏ ¼ö, ¿À´äÈ½¼ö, Á¤´äÈ½¼ö
+        // Byteì˜ í„´ ìˆ˜, ì˜¤ë‹µíšŸìˆ˜, ì •ë‹µíšŸìˆ˜
         public StageConfig byt = new StageConfig { turnsPerStage = 8, maxMistakes = 4, requiredCorrectToAdvance = 4 };
-        // WordÀÇ ÅÏ ¼ö, ¿À´äÈ½¼ö, Á¤´äÈ½¼ö
+        // Wordì˜ í„´ ìˆ˜, ì˜¤ë‹µíšŸìˆ˜, ì •ë‹µíšŸìˆ˜
         public StageConfig wod = new StageConfig { turnsPerStage = 12, maxMistakes = 6, requiredCorrectToAdvance = 6 };
 
         public StageConfig Get(GrowthStage stage)

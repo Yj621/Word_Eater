@@ -6,21 +6,21 @@ using WordEater.Services;
 namespace WordEater.Core
 {
     /// <summary>
-    /// 'ÇÑ ¸¶¸®' ¿öµå ÀÌÅÍÀÇ »ı¾Ö ÁÖ±â¸¦ °ü¸®ÇÏ´Â »óÅÂ ¸Ó½Å
+    /// 'í•œ ë§ˆë¦¬' ì›Œë“œ ì´í„°ì˜ ìƒì•  ì£¼ê¸°ë¥¼ ê´€ë¦¬í•˜ëŠ” ìƒíƒœ ë¨¸ì‹ 
     /// </summary>
     public class WordEater : MonoBehaviour
     {
         [Header("Refs")]
-        [SerializeField] private GrowthConfig growthConfig;          // ´Ü°è ±ÔÄ¢ SO
-        [SerializeField] private WordAssignmentService wordService;  // ´Ü¾î ¹èÁ¤ ¼­ºñ½º
+        [SerializeField] private GrowthConfig growthConfig;          // ë‹¨ê³„ ê·œì¹™ SO
+        [SerializeField] private WordAssignmentService wordService;  // ë‹¨ì–´ ë°°ì • ì„œë¹„ìŠ¤
 
         [Header("Runtime (read-only)")]
-        [SerializeField] private GrowthStage stage = GrowthStage.Bit; // ÇöÀç ´Ü°è
-        [SerializeField] private string currentAnswer;                // ÇöÀç Á¤´ä(ÇÁ·ÎÅäÅ¸ÀÔ¿ë ³ëÃâ)
-        [SerializeField] private int correctThisStage;                // ÀÌ¹ø ´Ü°è¿¡¼­ ¸ÂÃá °³¼ö
+        [SerializeField] private GrowthStage stage = GrowthStage.Bit; // í˜„ì¬ ë‹¨ê³„
+        [SerializeField] private string currentAnswer;                // í˜„ì¬ ì •ë‹µ(í”„ë¡œí† íƒ€ì…ìš© ë…¸ì¶œ)
+        [SerializeField] private int correctThisStage;                // ì´ë²ˆ ë‹¨ê³„ì—ì„œ ë§ì¶˜ ê°œìˆ˜
 
-        private TurnController turn;   // ÅÏ/¿À´ä °ü¸®ÀÚ
-        private WordEntry currentEntry; // ÇöÀç ´Ü¾î µ¥ÀÌÅÍ(ÁÖÁ¦/¿¬°ü¾î Æ÷ÇÔ)
+        private TurnController turn;   // í„´/ì˜¤ë‹µ ê´€ë¦¬ì
+        private WordEntry currentEntry; // í˜„ì¬ ë‹¨ì–´ ë°ì´í„°(ì£¼ì œ/ì—°ê´€ì–´ í¬í•¨)
 
         private void Awake()
         {
@@ -33,7 +33,7 @@ namespace WordEater.Core
         }
 
         /// <summary>
-        /// ´Ü°è ½ÃÀÛ(ÅÏ/¿À´ä ÃÊ±âÈ­ + ´Ü¾î ¹èÁ¤)
+        /// ë‹¨ê³„ ì‹œì‘(í„´/ì˜¤ë‹µ ì´ˆê¸°í™” + ë‹¨ì–´ ë°°ì •)
         /// </summary>
         private void BeginStage(GrowthStage s, bool initial = false)
         {
@@ -45,35 +45,35 @@ namespace WordEater.Core
                 : wordService.PickNextLinkedWord(currentEntry, s);
 
             currentAnswer = currentEntry.word;
-            GameEvnets.OnNewWordAssigned?.Invoke(currentAnswer); // UI: "»õ ´Ü¾î µîÀå" (Á¤´ä Á÷Á¢ ³ëÃâ ´ë½Å µğ¹ö±×/ÇÁ·ÎÅäÅ¸ÀÔ¿ë)
+            GameEvnets.OnNewWordAssigned?.Invoke(currentAnswer); // UI: "ìƒˆ ë‹¨ì–´ ë“±ì¥" (ì •ë‹µ ì§ì ‘ ë…¸ì¶œ ëŒ€ì‹  ë””ë²„ê·¸/í”„ë¡œí† íƒ€ì…ìš©)
         }
 
 
         /// <summary>
-        /// µ¥ÀÌÅÍ ÁÖÀÔ(Á¤´ä/¿À´ä ÆÇÁ¤, ´ÙÀ½ ¹®Á¦ ¹èÁ¤, ÁøÈ­ Ã¼Å©)
+        /// ë°ì´í„° ì£¼ì…(ì •ë‹µ/ì˜¤ë‹µ íŒì •, ë‹¤ìŒ ë¬¸ì œ ë°°ì •, ì§„í™” ì²´í¬)
         /// </summary>
         public void DoFeedData(string userInput)
         {
-            // ÅÏ ¼Ò¸ğ(FeedData´Â 1ÅÏ)
+            // í„´ ì†Œëª¨(FeedDataëŠ” 1í„´)
             if (!turn.ConsumeTurn(ActionType.FeedData))
             {
                 Die(); return;
             }
 
-            // Á¤´ä ÆÇÁ¤(v1 : ¿ÏÀü ÀÏÄ¡, v2 : ¿ÀÅ¸/ÀÇ¹Ì À¯»çµµ È®Á¤ ¿¹Á¤)
+            // ì •ë‹µ íŒì •(v1 : ì™„ì „ ì¼ì¹˜, v2 : ì˜¤íƒ€/ì˜ë¯¸ ìœ ì‚¬ë„ í™•ì • ì˜ˆì •)
             bool ok = IsCorrect(userInput, currentAnswer);
             GameEvnets.OnFeedResult?.Invoke(userInput, ok);
 
             if (ok)
             {
-                // Á¤´ä ´©Àû ¹× ´ÙÀ½ ¹®Á¦ ¹èÁ¤
+                // ì •ë‹µ ëˆ„ì  ë° ë‹¤ìŒ ë¬¸ì œ ë°°ì •
                 correctThisStage++;
 
                 currentEntry = wordService.PickNextLinkedWord(currentEntry, stage);
                 currentAnswer = currentEntry.word;
                 GameEvnets.OnNewWordAssigned?.Invoke(currentAnswer);
 
-                // ÁøÈ­ Á¶°Ç ´ç¼º ½Ã ÁøÈ­ Ã³¸®
+                // ì§„í™” ì¡°ê±´ ë‹¹ì„± ì‹œ ì§„í™” ì²˜ë¦¬
                 if (correctThisStage >= growthConfig.Get(stage).requiredCorrectToAdvance)
                 {
                     EvolveOrFinish();
@@ -81,72 +81,72 @@ namespace WordEater.Core
             }
             else
             {
-                // ¿À´ä 1È¸ µî·Ï, ÇÑ°è ÃÊ°ú½Ã »ç¸Á
+                // ì˜¤ë‹µ 1íšŒ ë“±ë¡, í•œê³„ ì´ˆê³¼ì‹œ ì‚¬ë§
                 if (!turn.RegisterMistake()) { Die(); return; }
             }
 
-            // ÅÏ ¹Ù´Ú³ª¸é »ç¸Á
+            // í„´ ë°”ë‹¥ë‚˜ë©´ ì‚¬ë§
             if (turn.TurnsLeft < 0) { Die(); return; }
         }
 
         /// <summary>
-        /// ¹Ì´Ï°ÔÀÓ/ÈùÆ®(ÅÏ 1 ¼Ò¸ğ)
+        /// ë¯¸ë‹ˆê²Œì„/íŒíŠ¸(í„´ 1 ì†Œëª¨)
         /// </summary>
-        public void DoOptimizeAlgo() // ¹Ì´Ï°ÔÀÓ ÀÚ¸®(ÈùÆ®/¹öÇÁ Áö±Ş)
+        public void DoOptimizeAlgo() // ë¯¸ë‹ˆê²Œì„ ìë¦¬(íŒíŠ¸/ë²„í”„ ì§€ê¸‰)
         {
             if (!turn.ConsumeTurn(ActionType.OptimizeAlgo))
             {
                 Die(); return;
             }
-            // TODO: ÈùÆ® ÅäÅ« +1, »ó¼º ¹öÇÁ ½ºÅÃ µî
+            // TODO: íŒíŠ¸ í† í° +1, ìƒì„± ë²„í”„ ìŠ¤íƒ ë“±
         }
 
         /// <summary>
-        /// ³ëÀÌÁî Á¦°Å(ÅÏ 2 ¼Ò¸ğ, ¹èÀ²/¹öÇÁ ¿¹Á¤)
+        /// ë…¸ì´ì¦ˆ ì œê±°(í„´ 2 ì†Œëª¨, ë°°ìœ¨/ë²„í”„ ì˜ˆì •)
         /// </summary>
-        public void DoCleanNoise() // 2ÅÏ ¼Ò¸ğ, ¹èÀ²/º¸»ó Áõ°¡ ¹öÇÁ
+        public void DoCleanNoise() // 2í„´ ì†Œëª¨, ë°°ìœ¨/ë³´ìƒ ì¦ê°€ ë²„í”„
         {
             if (!turn.ConsumeTurn(ActionType.CleanNoise))
             {
                 Die(); return;
             }
-            // TODO: ¹èÀ² ½ºÅÃ += 1
+            // TODO: ë°°ìœ¨ ìŠ¤íƒ += 1
         }
 
-        // === ³»ºÎ ·ÎÁ÷ =======================================================
+        // === ë‚´ë¶€ ë¡œì§ =======================================================
 
         private bool IsCorrect(string input, string answer)
         {
-            // v1: ¿ÏÀü ÀÏÄ¡. v2: À¯»çµµ(·¹º¥½´Å¸ÀÎ/ÀÓº£µù) µµÀÔ.
+            // v1: ì™„ì „ ì¼ì¹˜. v2: ìœ ì‚¬ë„(ë ˆë²¤ìŠˆíƒ€ì¸/ì„ë² ë”©) ë„ì….
             return string.Equals(input.Trim(), answer.Trim(), System.StringComparison.Ordinal);
         }
 
         /// <summary>
-        /// ´Ü°è Á¾·á Ã³¸®(´ÙÀ½ ´Ü°è or ¼ºÃ¼)
+        /// ë‹¨ê³„ ì¢…ë£Œ ì²˜ë¦¬(ë‹¤ìŒ ë‹¨ê³„ or ì„±ì²´)
         /// </summary>
         private void EvolveOrFinish()
         {
             if (stage == GrowthStage.Word)
             {
-                // ¼ºÃ¼ ´Ş¼º ¡æ µµ°¨ µî·Ï¡¤º¸»ó Áö±Ş(ÃßÈÄ ¿¬°á)
+                // ì„±ì²´ ë‹¬ì„± â†’ ë„ê° ë“±ë¡Â·ë³´ìƒ ì§€ê¸‰(ì¶”í›„ ì—°ê²°)
                 GameEvnets.OnEvolved?.Invoke(stage);
-                // ´ÙÀ½ °³Ã¼ »ı¼º ·çÆ¾À¸·Î ³Ñ¾î°¡°Å³ª ÈŞÁöÅë UI È£Ãâ
+                // ë‹¤ìŒ ê°œì²´ ìƒì„± ë£¨í‹´ìœ¼ë¡œ ë„˜ì–´ê°€ê±°ë‚˜ íœ´ì§€í†µ UI í˜¸ì¶œ
                 return;
             }
 
-            // ´ÙÀ½ ´Ü°è·Î
+            // ë‹¤ìŒ ë‹¨ê³„ë¡œ
             stage = (GrowthStage)((int)stage + 1);
             GameEvnets.OnEvolved?.Invoke(stage);
             BeginStage(stage);
         }
 
         /// <summary>
-        /// »ç¸Á Ã³¸®(ÈŞÁöÅë/±¤°í º¸»ó µî ÈÅ)
+        /// ì‚¬ë§ ì²˜ë¦¬(íœ´ì§€í†µ/ê´‘ê³  ë³´ìƒ ë“± í›…)
         /// </summary>
         private void Die()
         {
             GameEvnets.OnDied?.Invoke();
-            // TODO: ÈŞÁöÅë ¿¬Ãâ¡¤ºÎÈ° ¾ÆÀÌÅÛ¡¤±¤°íº¸»ó µî Æ®¸®°Å
+            // TODO: íœ´ì§€í†µ ì—°ì¶œÂ·ë¶€í™œ ì•„ì´í…œÂ·ê´‘ê³ ë³´ìƒ ë“± íŠ¸ë¦¬ê±°
             enabled = false;
         }
     }

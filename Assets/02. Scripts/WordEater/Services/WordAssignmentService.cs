@@ -6,20 +6,20 @@ using WordEater.Data;
 namespace WordEater.Services
 {    
      /// <summary>
-     /// WordBank(´Ü¾î Ç®)¿¡¼­ ÇöÀç ´Ü°è/¸Æ¶ô¿¡ ¸Â´Â ´Ü¾î¸¦ ¼±ÅÃÇØ ÁÖ´Â ¼­ºñ½º
+     /// WordBank(ë‹¨ì–´ í’€)ì—ì„œ í˜„ì¬ ë‹¨ê³„/ë§¥ë½ì— ë§ëŠ” ë‹¨ì–´ë¥¼ ì„ íƒí•´ ì£¼ëŠ” ì„œë¹„ìŠ¤
      /// </summary>
     public class WordAssignmentService : MonoBehaviour
     {
-        [SerializeField][Tooltip("´Ü¾î »ı¼º")] private WordBank wordBank;
+        [SerializeField][Tooltip("ë‹¨ì–´ ìƒì„±")] private WordBank wordBank;
 
-        // TODO: ÃßÈÄ GPT ¿¬µ¿ ½Ã ¿©±â¼­ ÇÁ·ÒÇÁÆ® »ı¼º/ÈÄÃ³¸®
+        // TODO: ì¶”í›„ GPT ì—°ë™ ì‹œ ì—¬ê¸°ì„œ í”„ë¡¬í”„íŠ¸ ìƒì„±/í›„ì²˜ë¦¬
 
         /// <summary>
-        /// ´Ü°è ³­ÀÌµµ¿¡ ¸Â´Â ÃÊ±â ´Ü¾î ¼±ÅÃ
+        /// ë‹¨ê³„ ë‚œì´ë„ì— ë§ëŠ” ì´ˆê¸° ë‹¨ì–´ ì„ íƒ
         /// </summary>
         public WordEntry PickInitialWord(GrowthStage stage)
         {
-            // °£´ÜÇÑ ±ÔÄ¢: Bit=½¬¿ò, Byte=Áß°£, Word=¾î·Á¿ò À§ÁÖ
+            // ê°„ë‹¨í•œ ê·œì¹™: Bit=ì‰¬ì›€, Byte=ì¤‘ê°„, Word=ì–´ë ¤ì›€ ìœ„ì£¼
             int targetDiff = stage == GrowthStage.Bit ? 0 : (stage == GrowthStage.Byte ? 1 : 2);
             var pool = wordBank.entries.Where(e => e.difficulty <= targetDiff + 1).ToList();
             if (pool.Count == 0) pool = wordBank.entries;
@@ -27,13 +27,13 @@ namespace WordEater.Services
         }
 
         /// <summary>
-        /// ÀÌÀü ´Ü¾î¿Í topic/related °¡ ÀÌ¾îÁö´Â ÈÄº¸¸¦ ¿ì¼± ¼±ÅÃ
+        /// ì´ì „ ë‹¨ì–´ì™€ topic/related ê°€ ì´ì–´ì§€ëŠ” í›„ë³´ë¥¼ ìš°ì„  ì„ íƒ
         /// </summary>
         /// 
         public WordEntry PickNextLinkedWord(WordEntry prev, GrowthStage stage)
         {
-            // "ÁÖ»çÀ§¡æÈ®·ü¡æÅë°èÇĞ", "°Å¿ï¡æ¹İ»ç¡æ±¤ÇĞ" °°Àº °è¿­À» ¿¬»ó
-            // µ¿ÀÏ topic/related°¡ °ãÄ¡´Â Ç×¸ñ ¿ì¼±
+            // "ì£¼ì‚¬ìœ„â†’í™•ë¥ â†’í†µê³„í•™", "ê±°ìš¸â†’ë°˜ì‚¬â†’ê´‘í•™" ê°™ì€ ê³„ì—´ì„ ì—°ìƒ
+            // ë™ì¼ topic/relatedê°€ ê²¹ì¹˜ëŠ” í•­ëª© ìš°ì„ 
             var pool = wordBank.entries
                 .Where(e => e.word != prev.word &&
                             (e.topic == prev.topic || e.related.Intersect(prev.related).Any()))

@@ -6,13 +6,13 @@ namespace WordEater.Core
 
     public enum ActionType
     {
-        FeedData,      // µ¥ÀÌÅÍ ÁÖÀÔ(Á¤´ä ½Ã Á¤´ä¼ö +1 / ¿À´ä ½Ã ¿À´ä¼ö +1)
-                       // ºñÆ® : 2¹ø / ¹ÙÀÌÆ® : 4¹ø / ¿öµå : 6¹ø
+        FeedData,      // ë°ì´í„° ì£¼ìž…(ì •ë‹µ ì‹œ ì •ë‹µìˆ˜ +1 / ì˜¤ë‹µ ì‹œ ì˜¤ë‹µìˆ˜ +1)
+                       // ë¹„íŠ¸ : 2ë²ˆ / ë°”ì´íŠ¸ : 4ë²ˆ / ì›Œë“œ : 6ë²ˆ
 
-        OptimizeAlgo,  // ÃÖÀû ¾Ë°í¸®Áò(¹Ì´Ï°ÔÀÓ ÀÚ¸®, ÈùÆ®/¹öÇÁ È¹µæ)
-                       // À¯»ç ´Ü¾î Áö±Þ(¸Þ¼¼Áö) / ´Ü¾î¿¡ ´ëÇÑ ÈùÆ®(ÀüÈ­)
+        OptimizeAlgo,  // ìµœì  ì•Œê³ ë¦¬ì¦˜(ë¯¸ë‹ˆê²Œìž„ ìžë¦¬, ížŒíŠ¸/ë²„í”„ íšë“)
+                       // ìœ ì‚¬ ë‹¨ì–´ ì§€ê¸‰(ë©”ì„¸ì§€) / ë‹¨ì–´ì— ëŒ€í•œ ížŒíŠ¸(ì „í™”)
 
-        CleanNoise     // ³ëÀÌÁî Á¦°Å(2ÅÏ ¼Ò¸ð, ¹èÀ²/º¸»ó ¹öÇÁ)
+        CleanNoise     // ë…¸ì´ì¦ˆ ì œê±°(2í„´ ì†Œëª¨, ë°°ìœ¨/ë³´ìƒ ë²„í”„)
     }
     
 }

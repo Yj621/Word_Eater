@@ -5,16 +5,16 @@ namespace WordEater.Data
     [System.Serializable]
     public class WordEntry
     {
-        [Tooltip("Á¤´ä ´Ü¾î")] 
+        [Tooltip("ì •ë‹µ ë‹¨ì–´")] 
         public string word;
 
-        [Tooltip("ÁÖÁ¦/¸Æ¶ô(»ö/»ó¼º ÈùÆ®¿¡ »ç¿ë)")] 
+        [Tooltip("ì£¼ì œ/ë§¥ë½(ìƒ‰/ìƒì„± íŒíŠ¸ì— ì‚¬ìš©)")] 
         public string topic;
 
-        [Tooltip("¿¬°ü Å°¿öµå(ÈùÆ®/AI ÇÁ·ÒÇÁÆ® ½Ãµå·Î È°¿ë)")]
+        [Tooltip("ì—°ê´€ í‚¤ì›Œë“œ(íŒíŠ¸/AI í”„ë¡¬í”„íŠ¸ ì‹œë“œë¡œ í™œìš©)")]
         public string[] related;
 
-        [Tooltip("³­ÀÌµµ(0=½¬¿ò ~ 3=¾î·Á¿ò)")]
+        [Tooltip("ë‚œì´ë„(0=ì‰¬ì›€ ~ 3=ì–´ë ¤ì›€)")]
         public int difficulty;
     }
 }

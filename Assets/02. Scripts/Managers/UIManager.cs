@@ -4,19 +4,19 @@ using UnityEngine;
 public class UIManager : MonoBehaviour
 {
     [Header("Keyborad UI")]
-    [SerializeField] private RectTransform keyboardRect; // Å°º¸µå UIÀÇ RectTransform
-    [SerializeField] private Vector2 showPosition; // Å°º¸µå°¡ ÆìÁ³À» ¶§ÀÇ ¸ñÇ¥ À§Ä¡ (¾ŞÄ¿ ±âÁØ)
-    [SerializeField] private Vector2 hidePosition; // Å°º¸µå°¡ Á¢ÇûÀ» ¶§ÀÇ ¸ñÇ¥ À§Ä¡ (¾ŞÄ¿ ±âÁØ)
-    public float animationDuration = 0.5f; // ¾Ö´Ï¸ŞÀÌ¼Ç Áö¼Ó ½Ã°£
+    [SerializeField] private RectTransform keyboardRect; // í‚¤ë³´ë“œ UIì˜ RectTransform
+    [SerializeField] private Vector2 showPosition; // í‚¤ë³´ë“œê°€ í´ì¡Œì„ ë•Œì˜ ëª©í‘œ ìœ„ì¹˜ (ì•µì»¤ ê¸°ì¤€)
+    [SerializeField] private Vector2 hidePosition; // í‚¤ë³´ë“œê°€ ì ‘í˜”ì„ ë•Œì˜ ëª©í‘œ ìœ„ì¹˜ (ì•µì»¤ ê¸°ì¤€)
+    public float animationDuration = 0.5f; // ì• ë‹ˆë©”ì´ì…˜ ì§€ì† ì‹œê°„
 
-    private bool isKeyboardOpen = false; // Å°º¸µå »óÅÂ ÃßÀû º¯¼ö
+    private bool isKeyboardOpen = false; // í‚¤ë³´ë“œ ìƒíƒœ ì¶”ì  ë³€ìˆ˜
 
     void Start()
     {
     }
 
     /// <summary>
-    /// Å°º¸µå »óÅÂ¸¦ Åä±ÛÇÏ´Â ÇÔ¼ö
+    /// í‚¤ë³´ë“œ ìƒíƒœë¥¼ í† ê¸€í•˜ëŠ” í•¨ìˆ˜
     /// </summary>
     public void ToggleKeyboard()
     {
@@ -31,37 +31,37 @@ public class UIManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Å°º¸µå¸¦ Æì´Â ÇÔ¼ö
+    /// í‚¤ë³´ë“œë¥¼ í´ëŠ” í•¨ìˆ˜
     /// </summary>
     public void OpenKeyboard()
     {
-        if (isKeyboardOpen) return; // ÀÌ¹Ì ¿­·ÁÀÖÀ¸¸é ½ÇÇà ¾È ÇÔ
+        if (isKeyboardOpen) return; // ì´ë¯¸ ì—´ë ¤ìˆìœ¼ë©´ ì‹¤í–‰ ì•ˆ í•¨
         isKeyboardOpen = true;
 
-        // DOTween ½ÃÄö½º¸¦ »ç¿ëÇÏ¿© À§Ä¡¿Í Å©±â ¾Ö´Ï¸ŞÀÌ¼ÇÀ» µ¿½Ã¿¡ ½ÇÇà
+        // DOTween ì‹œí€€ìŠ¤ë¥¼ ì‚¬ìš©í•˜ì—¬ ìœ„ì¹˜ì™€ í¬ê¸° ì• ë‹ˆë©”ì´ì…˜ì„ ë™ì‹œì— ì‹¤í–‰
         Sequence sequence = DOTween.Sequence();
 
-        // anchoredPositionÀ» showPositionÀ¸·Î ÀÌµ¿
+        // anchoredPositionì„ showPositionìœ¼ë¡œ ì´ë™
         sequence.Append(keyboardRect.DOAnchorPos(showPosition, animationDuration).SetEase(Ease.OutCirc));
 
-        // scaleÀ» (1, 1, 1)·Î º¯°æ (µ¿½Ã¿¡ ½ÇÇà)
+        // scaleì„ (1, 1, 1)ë¡œ ë³€ê²½ (ë™ì‹œì— ì‹¤í–‰)
         sequence.Join(keyboardRect.DOScale(1f, animationDuration).SetEase(Ease.OutCirc));
 
-        // ½ÃÄö½º ½ÇÇà
+        // ì‹œí€€ìŠ¤ ì‹¤í–‰
         sequence.Play();
     }
 
     /// <summary>
-    /// Å°º¸µå¸¦ Á¢´Â ÇÔ¼ö
+    /// í‚¤ë³´ë“œë¥¼ ì ‘ëŠ” í•¨ìˆ˜
     /// </summary>
     public void CloseKeyboard()
     {
-        if (!isKeyboardOpen) return; // ÀÌ¹Ì ´İÇôÀÖÀ¸¸é ½ÇÇà ¾È ÇÔ
+        if (!isKeyboardOpen) return; // ì´ë¯¸ ë‹«í˜€ìˆìœ¼ë©´ ì‹¤í–‰ ì•ˆ í•¨
         isKeyboardOpen = false;
 
         Sequence sequence = DOTween.Sequence();
 
-        // anchoredPositionÀ» hidePositionÀ¸·Î ÀÌµ¿
+        // anchoredPositionì„ hidePositionìœ¼ë¡œ ì´ë™
         sequence.Append(keyboardRect.DOAnchorPos(hidePosition, animationDuration).SetEase(Ease.InCirc));
 
 

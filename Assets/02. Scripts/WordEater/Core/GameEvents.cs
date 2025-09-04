@@ -5,11 +5,11 @@ namespace WordEater.Core
 {
     public static class GameEvnets
     {
-        public static Action<GrowthStage, int, int> OnStageStarted; // ´Ü°è, ÅÏ ¼ö, ³²Àº ¿À´ä ¼ö
-        public static Action<string> OnNewWordAssigned; // »õ ´Ü¾î
-        public static Action<string, bool> OnFeedResult; // ÀÔ·Â°ª, Á¤´ä ¿©ºÎ
-        public static Action<GrowthStage> OnEvolved; // ÁøÈ­µÈ ´Ü°è
-        public static Action OnDied; // »ç¸Á
-        public static Action<int> OnTurnsChanged; //³²Àº ÅÏ ¼ö
+        public static Action<GrowthStage, int, int> OnStageStarted; // ë‹¨ê³„, í„´ ìˆ˜, ë‚¨ì€ ì˜¤ë‹µ ìˆ˜
+        public static Action<string> OnNewWordAssigned; // ìƒˆ ë‹¨ì–´
+        public static Action<string, bool> OnFeedResult; // ì…ë ¥ê°’, ì •ë‹µ ì—¬ë¶€
+        public static Action<GrowthStage> OnEvolved; // ì§„í™”ëœ ë‹¨ê³„
+        public static Action OnDied; // ì‚¬ë§
+        public static Action<int> OnTurnsChanged; //ë‚¨ì€ í„´ ìˆ˜
     }
 }

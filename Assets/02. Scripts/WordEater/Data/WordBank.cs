@@ -8,15 +8,15 @@ namespace WordEater.Data
     {
         public List<WordEntry> entries = new List<WordEntry>()
         {
-            new WordEntry{ word="ÁÖ»çÀ§", topic="È®·ü", related=new[]{"´øÁö±â","¸é","°ÔÀÓ"}, difficulty=0 },
-            new WordEntry{ word="È®·ü",   topic="Åë°è", related=new[]{"±â´ñ°ª","Ç¥º»","ºĞÆ÷"}, difficulty=1 },
-            new WordEntry{ word="Åë°èÇĞ", topic="¼öÇĞ", related=new[]{"°ËÁ¤","ÃßÁ¤","È¸±Í"}, difficulty=2 },
+            new WordEntry{ word="ì£¼ì‚¬ìœ„", topic="í™•ë¥ ", related=new[]{"ë˜ì§€ê¸°","ë©´","ê²Œì„"}, difficulty=0 },
+            new WordEntry{ word="í™•ë¥ ",   topic="í†µê³„", related=new[]{"ê¸°ëŒ“ê°’","í‘œë³¸","ë¶„í¬"}, difficulty=1 },
+            new WordEntry{ word="í†µê³„í•™", topic="ìˆ˜í•™", related=new[]{"ê²€ì •","ì¶”ì •","íšŒê·€"}, difficulty=2 },
 
-            new WordEntry{ word="°Å¿ï",   topic="ºû",   related=new[]{"¹İ»ç","»ó","À¯¸®"}, difficulty=0 },
-            new WordEntry{ word="¹İ»ç",   topic="±¤ÇĞ", related=new[]{"°¢µµ","¹ı¼±","½ºÆå"}, difficulty=1 },
-            new WordEntry{ word="±¤ÇĞ",   topic="¹°¸®", related=new[]{"±¼Àı","°£¼·","ÆÄÀå"}, difficulty=2 },
+            new WordEntry{ word="ê±°ìš¸",   topic="ë¹›",   related=new[]{"ë°˜ì‚¬","ìƒ","ìœ ë¦¬"}, difficulty=0 },
+            new WordEntry{ word="ë°˜ì‚¬",   topic="ê´‘í•™", related=new[]{"ê°ë„","ë²•ì„ ","ìŠ¤í™"}, difficulty=1 },
+            new WordEntry{ word="ê´‘í•™",   topic="ë¬¼ë¦¬", related=new[]{"êµ´ì ˆ","ê°„ì„­","íŒŒì¥"}, difficulty=2 },
 
-            new WordEntry{ word="³ª¹«",   topic="ÀÚ¿¬", related=new[]{"ÀÙ","½£","»Ñ¸®"}, difficulty=0 },
+            new WordEntry{ word="ë‚˜ë¬´",   topic="ìì—°", related=new[]{"ì","ìˆ²","ë¿Œë¦¬"}, difficulty=0 },
         };
     }
 }

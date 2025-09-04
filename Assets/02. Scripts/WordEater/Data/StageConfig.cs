@@ -5,9 +5,9 @@ namespace WordEater.Data
     [System.Serializable]
     public class StageConfig
     {
-        public int turnsPerStage = 4; // ÇØ´ç ´Ü°è¿¡¼­ ÇÃ·¹ÀÌ¾î°¡ Çàµ¿ÇÒ ¼ö ÀÖ´Â ÃÑ ÅÏ ¼ö
-        public int maxMistakes = 2;   // Çã¿ë °¡´ÉÇÑ ¿À´ä È½¼ö
-        public int requiredCorrectToAdvance = 2; // ´ÙÀ½ ´Ü°è·Î ÁøÈ­ÇÏ±â À§ÇØ ÇÊ¿äÇÑ Á¤´ä È½¼ö
+        public int turnsPerStage = 4; // í•´ë‹¹ ë‹¨ê³„ì—ì„œ í”Œë ˆì´ì–´ê°€ í–‰ë™í•  ìˆ˜ ìˆëŠ” ì´ í„´ ìˆ˜
+        public int maxMistakes = 2;   // í—ˆìš© ê°€ëŠ¥í•œ ì˜¤ë‹µ íšŸìˆ˜
+        public int requiredCorrectToAdvance = 2; // ë‹¤ìŒ ë‹¨ê³„ë¡œ ì§„í™”í•˜ê¸° ìœ„í•´ í•„ìš”í•œ ì •ë‹µ íšŸìˆ˜
     }
 
 }

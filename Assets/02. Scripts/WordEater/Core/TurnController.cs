@@ -5,19 +5,19 @@ using WordEater.Data;
 namespace WordEater.Core
 {
     /// <summary>
-    /// ÇöÀç ´Ü°è(StageConfig)¿¡ µû¶ó 'ÅÏ/¿À´ä' ¼ö¸¦ °ü¸®ÇÏ´Â ÄÁÆ®·Ñ·¯
+    /// í˜„ì¬ ë‹¨ê³„(StageConfig)ì— ë”°ë¼ 'í„´/ì˜¤ë‹µ' ìˆ˜ë¥¼ ê´€ë¦¬í•˜ëŠ” ì»¨íŠ¸ë¡¤ëŸ¬
     /// </summary>
     
     public class TurnController
     {
-        private readonly GrowthConfig _growth; // ´Ü°èº° ·ê(GrowthConfig)
-        public int TurnsLeft { get; private set; }     // ³²Àº ÅÏ
-        public int MistakesLeft { get; private set; }  // ³²Àº Çã¿ë ¿À´ä ¼ö
+        private readonly GrowthConfig _growth; // ë‹¨ê³„ë³„ ë£°(GrowthConfig)
+        public int TurnsLeft { get; private set; }     // ë‚¨ì€ í„´
+        public int MistakesLeft { get; private set; }  // ë‚¨ì€ í—ˆìš© ì˜¤ë‹µ ìˆ˜
 
         public TurnController(GrowthConfig growth) => _growth = growth;
 
         /// <summary>
-        /// ´Ü°è ½ÃÀÛ ½Ã ±ÔÄ¢ ÃÊ±âÈ­
+        /// ë‹¨ê³„ ì‹œì‘ ì‹œ ê·œì¹™ ì´ˆê¸°í™”
         /// </summary>
         public void StartStage(GrowthStage stage)
         {
@@ -28,7 +28,7 @@ namespace WordEater.Core
         }
 
         /// <summary>
-        /// ¾×¼Ç ¼öÇà ½Ã ÅÏ Â÷°¨ (CleanÀº 2ÅÏ)
+        /// ì•¡ì…˜ ìˆ˜í–‰ ì‹œ í„´ ì°¨ê° (Cleanì€ 2í„´)
         /// </summary>
         public bool ConsumeTurn(ActionType action)
         {
@@ -39,7 +39,7 @@ namespace WordEater.Core
         }
 
         /// <summary>
-        /// ¿À´ä 1È¸ µî·Ï
+        /// ì˜¤ë‹µ 1íšŒ ë“±ë¡
         /// </summary>
         public bool RegisterMistake()
         {
