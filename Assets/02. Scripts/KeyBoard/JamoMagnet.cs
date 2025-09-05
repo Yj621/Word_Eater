@@ -9,54 +9,67 @@ public class JamoMagnet : MonoBehaviour
 {
     public JamoRole role = JamoRole.Choseong;
 
-    [Header("Ç¥½Ã ¹®ÀÚ")]
+    [Header("í‘œì‹œ ë¬¸ì")]
     public string glyph;
 
-    [Header("ÃÊ¼º(º£ÀÌ½º) ¼ÒÄÏ")]
-    public RectTransform rightAnchor;        // ¿·¸ğÀ½
-    public RectTransform bottomAnchor;       // ¾Æ·¡¸ğÀ½
-    public RectTransform bottomFinalAnchor;  // ¹ŞÄ§
+    [Header("ì´ˆì„±(ë² ì´ìŠ¤) ì†Œì¼“")]
+    public RectTransform rightAnchor;        // ì˜†ëª¨ìŒ
+    public RectTransform bottomAnchor;       // ì•„ë˜ëª¨ìŒ
+    public RectTransform bottomFinalAnchor;  // ë°›ì¹¨
 
-    [Header("¸ğÀ½ Àü¿ë")]
+    [Header("ëª¨ìŒ ì „ìš©")]
     public VowelAttach vowelAttach = VowelAttach.Side;
 
-    [Header("½º³À ¿É¼Ç")]
+    [Header("ìŠ¤ëƒ… ì˜µì…˜")]
     public float snapRadius = 80f;
     public Vector2 attachOffset;
 
-    // »óÅÂ
     [HideInInspector] public JamoMagnet attachedVowel, attachedFinal;
     [HideInInspector] public JamoMagnet attachedVowelSide, attachedVowelBelow;
 
     RectTransform rt;
     public static readonly HashSet<JamoMagnet> All = new();
 
-    // ¹ŞÄ§ ºÒ°¡ ÀÚÀ½
-    static readonly HashSet<string> InvalidFinal = new() { "¤¨", "¤¹", "¤³" };
+    static readonly HashSet<string> InvalidFinal = new() { "ã„¸", "ã…‰", "ã…ƒ" };
 
     void Awake()
     {
         rt = GetComponent<RectTransform>();
         All.Add(this);
+
         if (role == JamoRole.Jungseong && !string.IsNullOrEmpty(glyph))
             vowelAttach = GuessVowelAttach(glyph);
+
+        if (role == JamoRole.Choseong)
+        {
+            rightAnchor = EnsureChildSocket(rightAnchor, "RightMag");
+            bottomAnchor = EnsureChildSocket(bottomAnchor, "DownMag");
+            bottomFinalAnchor = EnsureChildSocket(bottomFinalAnchor, "FinalMag");
+        }
     }
+
     void OnDestroy() => All.Remove(this);
 
     public static VowelAttach GuessVowelAttach(string g)
-        => (g == "¤Ç" || g == "¤Ë" || g == "¤Ì" || g == "¤Ğ" || g == "¤Ñ") ? VowelAttach.Below : VowelAttach.Side;
+        => (g == "ã…—" || g == "ã…›" || g == "ã…œ" || g == "ã… " || g == "ã…¡") ? VowelAttach.Below : VowelAttach.Side;
 
-    // ---- À¯Æ¿: ÀÌ ¿ÀºêÁ§Æ®°¡ 'º£ÀÌ½º/¿Ï¼º ºí·Ï'ÀÎ°¡? (¼ÒÄÏ º¸À¯ ¿©ºÎ·Î ÆÇ´Ü) ----
-    bool HasAnySockets() => rightAnchor || bottomAnchor || bottomFinalAnchor;
+    bool HasAnySockets()
+        => (rightAnchor != null) || (bottomAnchor != null) || (bottomFinalAnchor != null);
 
     public bool TrySnap(RectTransform dragRoot, Camera uiCamera)
     {
-        // ¹ŞÄ§ ÈÄº¸ÀÎÁö ÆÇ´Ü
-        bool tryingFinal =
-            role == JamoRole.Jongseong ||
-            (role == JamoRole.Choseong && !HasAnySockets()); // ÃÊ¼º ÇÁ¸®ÆÕÀÌÁö¸¸ ¼ÒÄÏÀÌ ¾øÀ¸¸é '´ÜÀÏ ÀÚÀ½'À¸·Î °£ÁÖ
+        // ììŒì´ë©´ ë°›ì¹¨ í›„ë³´, ë‹¨ ì´ë¯¸ ë¶™ì€ íŒŒíŠ¸ê°€ ìˆìœ¼ë©´(ì™„ì„± ë¸”ë¡) ê¸ˆì§€
+        bool tryingFinal;
+        if (role == JamoRole.Jungseong)
+        {
+            tryingFinal = false;
+        }
+        else
+        {
+            if (attachedVowel != null || attachedFinal != null) return false;
+            tryingFinal = true;
+        }
 
-        // (1) ÈÄº¸ º£ÀÌ½º Ã£±â
         JamoMagnet best = null;
         RectTransform targetAnchor = null;
         float bestDist = float.MaxValue;
@@ -66,22 +79,18 @@ public class JamoMagnet : MonoBehaviour
             if (!m || m.role != JamoRole.Choseong) continue;
 
             RectTransform cand = null;
-            if (!tryingFinal) // ¸ğÀ½
+            if (!tryingFinal)
             {
                 if (m.attachedVowel) continue;
                 cand = (vowelAttach == VowelAttach.Side) ? m.rightAnchor : m.bottomAnchor;
             }
-            else // ¹ŞÄ§
+            else
             {
-                // ¿Ï¼º À½Àı(=¼ÒÄÏ °¡Áø º£ÀÌ½º/ºí·Ï)À» '¹ŞÄ§'À¸·Î ºÙÀÌ´Â °Í ±İÁö
-                if (HasAnySockets()) continue;
-
-                if (InvalidFinal.Contains(glyph)) continue; // ¤¨/¤¹/¤³ ±İÁö
-
-                // ¹ŞÄ§ ¼ÒÄÏ
+                if (InvalidFinal.Contains(glyph)) continue;
                 cand = m.bottomFinalAnchor;
             }
             if (!cand) continue;
+            if (!cand.transform.IsChildOf(m.transform)) continue;
 
             var a = RectTransformUtility.WorldToScreenPoint(uiCamera, cand.position);
             var me = RectTransformUtility.WorldToScreenPoint(uiCamera, rt.position);
@@ -91,31 +100,26 @@ public class JamoMagnet : MonoBehaviour
 
         if (!best || !targetAnchor || bestDist > snapRadius) return false;
 
-        // ---- (2) ºÙÀÌ±â / °ã¹ŞÄ§ ÇÕ¼º ----
         if (tryingFinal)
         {
-            // ±âÁ¸ ¹ŞÄ§ÀÌ ÀÖÀ¸¸é °ã¹ŞÄ§ Fuse ½Ãµµ
             if (best.attachedFinal)
             {
-                if (!TryFuseFinal(best, best.attachedFinal, this)) return false; // ·ê ¾øÀ¸¸é ºÎÂø ºÒ°¡
+                if (!TryFuseFinal(best, best.attachedFinal, this)) return false;
                 return true;
             }
 
-            // ¹ŞÄ§ ºÎÂø
             AttachTo(targetAnchor);
-            role = JamoRole.Jongseong;   // ÃÊ¼ºÀÌ´ø °Íµµ ¹ŞÄ§À¸·Î ÀüÈ¯
+            role = JamoRole.Jongseong;
             best.attachedFinal = this;
             return true;
         }
         else
         {
-            // ¸ğÀ½ ºÎÂø(¿·/¾Æ·¡)
             AttachTo(targetAnchor);
             if (vowelAttach == VowelAttach.Side) best.attachedVowelSide = this;
             else best.attachedVowelBelow = this;
 
-            if (!best.attachedVowel)
-                TryFuseVowel(best); // ¾Æ·¡+¿· ¸ğÀ½ ¸ğµÎ ÀÖÀ¸¸é ÇÕ¼º
+            if (!best.attachedVowel) TryFuseVowel(best);
             return true;
         }
     }
@@ -123,18 +127,20 @@ public class JamoMagnet : MonoBehaviour
     void AttachTo(RectTransform socket)
     {
         rt.SetParent(socket, false);
+        rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
+        rt.pivot = new Vector2(0.5f, 0.5f);
         rt.anchoredPosition = attachOffset;
+        rt.offsetMin = rt.offsetMax = Vector2.zero;
         rt.localScale = Vector3.one;
+        rt.localRotation = Quaternion.identity;
         rt.SetAsLastSibling();
 
-        // ºÙÀº Á¶°¢Àº ÀÔ·Â Àá±İ ¡æ º£ÀÌ½º¸¸ µå·¡±×
         var cg = GetComponent<CanvasGroup>() ?? gameObject.AddComponent<CanvasGroup>();
         cg.blocksRaycasts = false;
         var drag = GetComponent("DraggableWordUI") as Behaviour;
         if (drag) drag.enabled = false;
     }
 
-    // ==== ¸ğÀ½ ÇÕ¼º (±âÁ¸) ====
     void TryFuseVowel(JamoMagnet baseCho)
     {
         var below = baseCho.attachedVowelBelow;
@@ -160,14 +166,12 @@ public class JamoMagnet : MonoBehaviour
         baseCho.attachedVowelSide = null;
         baseCho.attachedVowel = fm;
 
-        // ÇÕ¼º °á°úµµ ÀÔ·Â Àá±İ
         var cg = fused.GetComponent<CanvasGroup>() ?? fused.AddComponent<CanvasGroup>();
         cg.blocksRaycasts = false;
         var drag = fused.GetComponent("DraggableWordUI") as Behaviour;
         if (drag) drag.enabled = false;
     }
 
-    // ==== °ã¹ŞÄ§ ÇÕ¼º (½Å±Ô) ====
     bool TryFuseFinal(JamoMagnet baseCho, JamoMagnet first, JamoMagnet second)
     {
         var db = JamoVowelFuseDB.Instance;
@@ -186,17 +190,25 @@ public class JamoMagnet : MonoBehaviour
         if (string.IsNullOrEmpty(fm.glyph))
             fm.glyph = string.IsNullOrEmpty(rule.fusedGlyph) ? (first.glyph + second.glyph) : rule.fusedGlyph;
 
-        // ±âÁ¸/½Å±Ô ¹ŞÄ§ Á¦°Å ÈÄ ±³Ã¼
         Object.Destroy(first.gameObject);
         Object.Destroy(second.gameObject);
         baseCho.attachedFinal = fm;
 
-        // ÇÕ¼º °á°úµµ ÀÔ·Â Àá±İ
         var cg = fused.GetComponent<CanvasGroup>() ?? fused.AddComponent<CanvasGroup>();
         cg.blocksRaycasts = false;
         var drag = fused.GetComponent("DraggableWordUI") as Behaviour;
         if (drag) drag.enabled = false;
 
         return true;
+    }
+
+    RectTransform EnsureChildSocket(RectTransform socket, string childName)
+    {
+        if (socket && socket.transform.IsChildOf(transform)) return socket;
+        var t = transform.Find(childName);
+        var rtChild = t ? t.GetComponent<RectTransform>() : null;
+        if (!rtChild)
+            Debug.LogWarning($"[JamoMagnet] '{name}' socket '{childName}' not found/invalid.");
+        return rtChild;
     }
 }

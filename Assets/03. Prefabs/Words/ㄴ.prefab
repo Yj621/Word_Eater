@@ -252,7 +252,7 @@ MonoBehaviour:
   glyph: "\u3134"
   rightAnchor: {fileID: 1863054079918019377}
   bottomAnchor: {fileID: 8211593337740306230}
-  bottomFinalAnchor: {fileID: 0}
+  bottomFinalAnchor: {fileID: 1575177232279740610}
   vowelAttach: 0
   snapRadius: 80
   attachOffset: {x: 0, y: 0}
