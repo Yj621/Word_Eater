@@ -18,9 +18,9 @@ public class MiniGame1_Manager : MonoBehaviour
     public int TimeLimit = 30;
 
     int RemainTime;
-    bool SignColor = true; //True << ÃÊ·Ï, False << »¡°­
+    bool SignColor = true; //True << ì´ˆë¡, False << ë¹¨ê°•
     bool Move_Possible = true;
-    bool GameEndCheck = true; //FALSE << °ÔÀÓ ¿À¹ö
+    bool GameEndCheck = true; //FALSE << ê²Œìž„ ì˜¤ë²„
 
     void Start()
     {
@@ -39,19 +39,19 @@ public class MiniGame1_Manager : MonoBehaviour
 
     void Update()
     {
-        // »¡°£ ½ÅÈ£ÀÏ¶§ °Ç³Ñ << °ÔÀÓ¿À¹ö
+        // ë¹¨ê°„ ì‹ í˜¸ì¼ë•Œ ê±´ë„˜ << ê²Œìž„ì˜¤ë²„
         if (GameEndCheck && !SignColor && touchPanel.isPressed) {
 
             GameOver();
         }
 
-        //¿òÁ÷ÀÌ±â
+        //ì›€ì§ì´ê¸°
         if (touchPanel.isPressed && Move_Possible)
         {
             player.anchoredPosition += Vector2.up * speed * Time.deltaTime;
         }
 
-        //°ÔÀÓ Å¬¸®¾î
+        //ê²Œìž„ í´ë¦¬ì–´
         if (GameEndCheck)
         {
             GameClear();
@@ -65,7 +65,7 @@ public class MiniGame1_Manager : MonoBehaviour
             Move_Possible = false;
             GameEndCheck = false;
 
-            //ÀÌÈÄ ¼º°ø ±â´É Ãß°¡
+            //ì´í›„ ì„±ê³µ ê¸°ëŠ¥ ì¶”ê°€
             Debug.Log("Success!");
         }
     }
@@ -74,12 +74,12 @@ public class MiniGame1_Manager : MonoBehaviour
         Move_Possible = false;
         GameEndCheck = false;
 
-        // ÀÌÈÄ ½ÇÆÐ ÇÔ¼ö Ãß°¡
+        // ì´í›„ ì‹¤íŒ¨ í•¨ìˆ˜ ì¶”ê°€
         Debug.Log("Fail!");
     }
 
 
-    //½ÅÈ£ ÄÚ·çÆ¾
+    //ì‹ í˜¸ ì½”ë£¨í‹´
     IEnumerator SignalCoroutine()
     {
         bool isGreen = true;
@@ -103,7 +103,7 @@ public class MiniGame1_Manager : MonoBehaviour
     }
 
 
-    //Å¸ÀÌ¸Ó ÄÚ·çÆ¾
+    //íƒ€ì´ë¨¸ ì½”ë£¨í‹´
     IEnumerator TimerCoroutine() {
         while (GameEndCheck) {
             yield return new WaitForSeconds(1f);
