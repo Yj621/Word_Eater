@@ -18,10 +18,10 @@ public class MiniGame1_Manager : MonoBehaviour
     public int TimeLimit = 30;
 
     int RemainTime;
-    bool SignColor = true; //True << Green, False << Red
+    bool SignColor = true; //True << 초록, False << 빨강
     bool Move_Possible = true;
-    bool GameEndCheck = true; //FALSE << Game End
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    bool GameEndCheck = true; //FALSE << 게임 오버
+
     void Start()
     {
         RemainTime = TimeLimit;
@@ -37,22 +37,21 @@ public class MiniGame1_Manager : MonoBehaviour
         StartCoroutine(TimerCoroutine());
     }
 
-    // Update is called once per frame
     void Update()
     {
-        // Move When Red Sign
+        // 빨간 신호일때 건넘 << 게임오버
         if (GameEndCheck && !SignColor && touchPanel.isPressed) {
 
             GameOver();
         }
 
-        //Move
+        //움직이기
         if (touchPanel.isPressed && Move_Possible)
         {
             player.anchoredPosition += Vector2.up * speed * Time.deltaTime;
         }
 
-        //Clear Game
+        //게임 클리어
         if (GameEndCheck)
         {
             GameClear();
@@ -66,7 +65,7 @@ public class MiniGame1_Manager : MonoBehaviour
             Move_Possible = false;
             GameEndCheck = false;
 
-            //Add Clear Logic Later
+            //이후 성공 기능 추가
             Debug.Log("Success!");
         }
     }
@@ -75,12 +74,12 @@ public class MiniGame1_Manager : MonoBehaviour
         Move_Possible = false;
         GameEndCheck = false;
 
-        //Add Fail Logic Later
+        // 이후 실패 함수 추가
         Debug.Log("Fail!");
     }
 
 
-    //Sign Change
+    //신호 코루틴
     IEnumerator SignalCoroutine()
     {
         bool isGreen = true;
@@ -104,7 +103,7 @@ public class MiniGame1_Manager : MonoBehaviour
     }
 
 
-    //Timer
+    //타이머 코루틴
     IEnumerator TimerCoroutine() {
         while (GameEndCheck) {
             yield return new WaitForSeconds(1f);
