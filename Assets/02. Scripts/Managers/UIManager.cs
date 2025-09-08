@@ -4,9 +4,9 @@ using UnityEngine;
 public class UIManager : MonoBehaviour
 {
     [Header("Keyborad UI")]
-    [SerializeField] private RectTransform keyboardRect; // 키보드 UI의 RectTransform
-    [SerializeField] private Vector2 showPosition; // 키보드가 펴졌을 때의 목표 위치 (앵커 기준)
-    [SerializeField] private Vector2 hidePosition; // 키보드가 접혔을 때의 목표 위치 (앵커 기준)
+    [SerializeField] private RectTransform _keyboardRect; // 키보드 UI의 RectTransform
+    [SerializeField] private Vector2 _showPosition; // 키보드가 펴졌을 때의 목표 위치 (앵커 기준)
+    [SerializeField] private Vector2 _hidePosition; // 키보드가 접혔을 때의 목표 위치 (앵커 기준)
     public float animationDuration = 0.5f; // 애니메이션 지속 시간
 
     private bool isKeyboardOpen = false; // 키보드 상태 추적 변수
@@ -42,10 +42,10 @@ public class UIManager : MonoBehaviour
         Sequence sequence = DOTween.Sequence();
 
         // anchoredPosition을 showPosition으로 이동
-        sequence.Append(keyboardRect.DOAnchorPos(showPosition, animationDuration).SetEase(Ease.OutCirc));
+        sequence.Append(_keyboardRect.DOAnchorPos(_showPosition, animationDuration).SetEase(Ease.OutCirc));
 
         // scale을 (1, 1, 1)로 변경 (동시에 실행)
-        sequence.Join(keyboardRect.DOScale(1f, animationDuration).SetEase(Ease.OutCirc));
+        sequence.Join(_keyboardRect.DOScale(1f, animationDuration).SetEase(Ease.OutCirc));
 
         // 시퀀스 실행
         sequence.Play();
@@ -62,7 +62,7 @@ public class UIManager : MonoBehaviour
         Sequence sequence = DOTween.Sequence();
 
         // anchoredPosition을 hidePosition으로 이동
-        sequence.Append(keyboardRect.DOAnchorPos(hidePosition, animationDuration).SetEase(Ease.InCirc));
+        sequence.Append(_keyboardRect.DOAnchorPos(_hidePosition, animationDuration).SetEase(Ease.InCirc));
 
 
         sequence.Play();
