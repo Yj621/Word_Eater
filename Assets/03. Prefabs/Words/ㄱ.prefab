@@ -250,6 +250,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   role: 0
   glyph: "\u3131"
+  label: {fileID: 673925333342647526}
   rightAnchor: {fileID: 7119288977906579060}
   bottomAnchor: {fileID: 178835505374400057}
   bottomFinalAnchor: {fileID: 4516814953808745604}

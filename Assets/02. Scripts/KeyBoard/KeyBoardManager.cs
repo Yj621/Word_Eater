@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -5,42 +7,43 @@ using UnityEngine.UI;
 
 public class KeyBoardManager : MonoBehaviour
 {
-    [Header("¹öÆ°")]
-    public Button[] SingleWordButtons; // ´ÜÀÏ ±ÛÀÚ Å°
-    public Button[] DoubleWordButtons; // ½ÖÀÚ/½Ö¸ğÀ½ Å°
+    [Header("ë²„íŠ¼")]
+    public Button[] SingleWordButtons; // ë‹¨ì¼ ê¸€ì í‚¤
+    public Button[] DoubleWordButtons; // ìŒì/ìŒëª¨ìŒ í‚¤
 
-    [Header("¼ÒÈ¯ ÇÁ¸®ÆÕ")]
+    [Header("ì†Œí™˜ í”„ë¦¬íŒ¹")]
     public GameObject[] SingleWords;
     public GameObject[] DSWords;
     public GameObject[] DDWords;
 
-    [Header("Ç¥½Ã ¶óº§(TMP)")]
+    [Header("í‘œì‹œ ë¼ë²¨(TMP)")]
     public TextMeshProUGUI[] DoubleText;
 
-    [Header("ÀÔ·Â »óÅÂ")]
+    [Header("ì…ë ¥ ìƒíƒœ")]
     public bool isShiftPressed = false;
 
-    [Header("UI/World ½ºÆù ¼³Á¤")]
-    public Canvas targetCanvas;       // UI µå·¡±×¿ë Canvas (¾øÀ¸¸é ¹öÆ°ÀÇ Canvas¸¦ ÀÚµ¿ Å½»ö)
-    public RectTransform uiSpawnRoot; // UI ÇÁ¸®ÆÕÀ» ºÙÀÏ ÃÖ»óÀ§(¾øÀ¸¸é Äµ¹ö½ºÀÇ root RectTransform)
-    public Camera uiCamera;           // Screen Space - Overlay¸é null °¡´É
-    public float worldDepth = 10f;    // ¿ùµå µå·¡±× ½Ã Ä«¸Ş¶ó·ÎºÎÅÍÀÇ Z
-    public Vector3 spawnOffset;       // ÃÊ±â ½ºÆù ¿ÀÇÁ¼Â
+    [Header("UI/World ìŠ¤í° ì„¤ì •")]
+    public Canvas targetCanvas;       // UI ë“œë˜ê·¸ìš© Canvas (ì—†ìœ¼ë©´ ë²„íŠ¼ì˜ Canvasë¥¼ ìë™ íƒìƒ‰)
+    public RectTransform uiSpawnRoot; // UI í”„ë¦¬íŒ¹ì„ ë¶™ì¼ ìµœìƒìœ„(ì—†ìœ¼ë©´ ìº”ë²„ìŠ¤ì˜ root RectTransform)
+    public Camera uiCamera;           // Screen Space - Overlayë©´ null ê°€ëŠ¥
+    public float worldDepth = 10f;    // ì›”ë“œ ë“œë˜ê·¸ ì‹œ ì¹´ë©”ë¼ë¡œë¶€í„°ì˜ Z
+    public Vector3 spawnOffset;       // ì´ˆê¸° ìŠ¤í° ì˜¤í”„ì…‹
     bool dragging;
     int activePointerId;
     bool dragIsUI;
-    RectTransform dragUIRect; // UI ÇÁ¸®ÆÕÀÏ ¶§
-    Transform dragWorldTr; // ¿ùµå ÇÁ¸®ÆÕÀÏ ¶§
+    RectTransform dragUIRect; // UI í”„ë¦¬íŒ¹ì¼ ë•Œ
+    Transform dragWorldTr; // ì›”ë“œ í”„ë¦¬íŒ¹ì¼ ë•Œ
 
-    [Header("µå·Ó/»èÁ¦ ¿µ¿ª(UI)")]
-    public RectTransform allowedArea;   // Çã¿ë ±¸¿ª(ÀÌ ¾È¿¡¼­¸¸ »ì¾Æ³²À½)
-    public RectTransform trashArea;     // ¾²·¹±âÅë(¿©±â ³õÀ¸¸é »èÁ¦)
+    [Header("ë“œë¡­/ì‚­ì œ ì˜ì—­(UI)")]
+    public RectTransform allowedArea;   // í—ˆìš© êµ¬ì—­(ì´ ì•ˆì—ì„œë§Œ ì‚´ì•„ë‚¨ìŒ)
+    public RectTransform trashArea;     // ì“°ë ˆê¸°í†µ(ì—¬ê¸° ë†“ìœ¼ë©´ ì‚­ì œ)
 
+    public TextMeshProUGUI resultText; // ê²°ê³¼ í‘œì‹œìš© ë¼ë²¨
 
     public void PressSingle(int index) => PressSingle(index, null);
     public void PressDouble(int index) => PressDouble(index, null);
 
-    // ·ÕÇÁ·¹½º + µå·¡±× ½ÃÀÛ (PointerEventData Æ÷ÇÔ)
+    // ë¡±í”„ë ˆìŠ¤ + ë“œë˜ê·¸ ì‹œì‘ (PointerEventData í¬í•¨)
     public void PressSingle(int index, PointerEventData ev)
     {
         if (!IsValidIndex(index, SingleWordButtons, SingleWords)) return;
@@ -66,7 +69,133 @@ public class KeyBoardManager : MonoBehaviour
         UpdateDoubleLabels();
     }
 
-   
+    public void onClickSubmit()
+    {
+        if (!TryBuildWord(out var word)) return;
+        if (resultText) resultText.text = word;
+        Debug.Log($"[Submit] {word}");
+    }
+
+    bool CanBuildWord()
+    {
+        return TryBuildWord(out _, validateOnly: true);
+    }
+
+    public bool TryBuildWord(out string word, bool validateOnly = false)
+    {
+        word = null;
+        if (!uiSpawnRoot || !allowedArea) return false;
+
+        // 1) ìœ íš¨ ì˜ì—­ ì•ˆì˜ ëª¨ë“  Jamo ìˆ˜ì§‘
+        var magnets = uiSpawnRoot.GetComponentsInChildren<JamoMagnet>(includeInactive: false);
+        var inArea = new List<JamoMagnet>();
+        foreach (var m in magnets)
+        {
+            if (!m) continue;
+            if (IsInside(allowedArea, m.GetComponent<RectTransform>())) inArea.Add(m);
+        }
+
+        // 2) ë² ì´ìŠ¤(ì´ˆì„±) ë¸”ë¡ ìˆ˜ì§‘
+        var bases = new List<JamoMagnet>();
+        foreach (var m in inArea)
+        {
+            if (IsBase(m)) bases.Add(m);
+        }
+        if (bases.Count == 0) return false;
+
+        // 3) ê³ ì•„(ì‹±ê¸€) ì¡°ê°ì´ ì¡´ì¬í•˜ë©´ ì‹¤íŒ¨ (ë² ì´ìŠ¤ì˜ ìì‹ì´ ì•„ë‹Œ Jamo)
+        foreach (var m in inArea)
+        {
+            if (IsBase(m)) continue;
+            if (!IsUnderAnyBase(m, bases)) return false;
+        }
+
+        // 4) ë² ì´ìŠ¤ ìœ íš¨ì„± + ì¢Œí‘œ ì¶”ì¶œ
+        var ordered = new List<(JamoMagnet b, float x)>();
+        foreach (var b in bases)
+        {
+            // ê° ìŒì ˆì€ ë°˜ë“œì‹œ ëª¨ìŒì´ í•˜ë‚˜ í•„ìš”
+            var V = GetMedialGlyph(b);
+            if (string.IsNullOrEmpty(V)) return false;
+
+            // ë°›ì¹¨ì€ ì—†ì–´ë„ ë¨
+            // ì¢Œí‘œ: validArea ê¸°ì¤€ ë¡œì»¬ x
+            var brt = b.GetComponent<RectTransform>();
+            Vector2 sp = RectTransformUtility.WorldToScreenPoint(uiCamera, brt.position);
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(allowedArea, sp, uiCamera, out var local);
+            ordered.Add((b, local.x));
+        }
+
+        // 5) x ê¸°ì¤€ ì •ë ¬
+        ordered.Sort((a, b) => a.x.CompareTo(b.x));
+
+        // 6) í•©ì„±í•˜ì—¬ ë¬¸ìì—´ ìƒì„±
+        var chars = new List<char>();
+        foreach (var (b, _) in ordered)
+        {
+            var L = (b.glyph ?? "").Trim();                           // ì´ˆì„±(í˜¸í™˜ìëª¨)
+            var V = (GetMedialGlyph(b) ?? "").Trim();                 // ì¤‘ì„±(í˜¸í™˜ìëª¨ ë˜ëŠ” ë³µí•©)
+            var T = b.attachedFinal ? (b.attachedFinal.glyph ?? "").Trim() : null; // ì¢…ì„±(ì—†ì„ ìˆ˜ ìˆìŒ)
+
+            try
+            {
+                char syllable = HangulCompose.ComposeCompat(L, V, T);
+                chars.Add(syllable);
+            }
+            catch (Exception e)
+            {
+                Debug.LogWarning($"[Submit] compose fail L='{L}' V='{V}' T='{T}': {e.Message}");
+                return false;
+            }
+        }
+
+        word = new string(chars.ToArray());
+        return true;
+    }
+
+    bool IsInside(RectTransform area, RectTransform rt)
+    {
+        var sp = RectTransformUtility.WorldToScreenPoint(uiCamera, rt.position);
+        return RectTransformUtility.RectangleContainsScreenPoint(area, sp, uiCamera);
+    }
+
+    bool IsBase(JamoMagnet m)
+    {
+        // ì†Œì¼“ì´ ìˆëŠ” ì´ˆì„± ì˜¤ë¸Œì íŠ¸ë¥¼ "ë² ì´ìŠ¤"ë¡œ ê°„ì£¼
+        return m.role == JamoRole.Choseong &&
+               (m.rightAnchor || m.bottomAnchor || m.bottomFinalAnchor);
+    }
+
+    bool IsUnderAnyBase(JamoMagnet child, List<JamoMagnet> bases)
+    {
+        var t = child.transform;
+        while (t != null)
+        {
+            foreach (var b in bases) if (t == b.transform) return true;
+            t = t.parent;
+        }
+        return false;
+    }
+
+    string GetMedialGlyph(JamoMagnet baseCho)
+    {
+        // ìµœì¢… ëª¨ìŒ(í•©ì„±)ì´ ìˆìœ¼ë©´ ê·¸ ê¸€ë¦½
+        if (baseCho.attachedVowel && !string.IsNullOrEmpty(baseCho.attachedVowel.glyph))
+            return baseCho.attachedVowel.glyph;
+
+        // ì•„ë‹ˆë©´ ë‹¨ì¼ ì˜†/ì•„ë˜ ëª¨ìŒ ì¤‘ í•˜ë‚˜
+        if (baseCho.attachedVowelSide && string.IsNullOrEmpty(baseCho.attachedVowelSide.glyph) == false
+            && baseCho.attachedVowelBelow == null)
+            return baseCho.attachedVowelSide.glyph;
+
+        if (baseCho.attachedVowelBelow && string.IsNullOrEmpty(baseCho.attachedVowelBelow.glyph) == false
+            && baseCho.attachedVowelSide == null)
+            return baseCho.attachedVowelBelow.glyph;
+
+        // ë‘˜ ë‹¤ ìˆìœ¼ë©´ í•©ì„±ì´ ë˜ì—ˆì–´ì•¼ í•œë‹¤(ë£° ë¯¸ìŠ¤/ì§€ì—°) â†’ ì‹¤íŒ¨ ì²˜ë¦¬
+        return null;
+    }
+
     void OnEnable() => UpdateDoubleLabels();
 
     void Update()
@@ -97,7 +226,7 @@ public class KeyBoardManager : MonoBehaviour
 
         if (IsPointerReleased(activePointerId))
         {
-            EndDrag(); // ±×³É ÇöÀç À§Ä¡¿¡ °íÁ¤
+            EndDrag(); // ê·¸ëƒ¥ í˜„ì¬ ìœ„ì¹˜ì— ê³ ì •
         }
         Debug.Log(dragging);
     }
@@ -137,11 +266,11 @@ public class KeyBoardManager : MonoBehaviour
     {
         var buttonRT = button.GetComponent<RectTransform>();
 
-        // UI ÇÁ¸®ÆÕ ÆÇÁ¤
+        // UI í”„ë¦¬íŒ¹ íŒì •
         bool isUIPrefab = prefab.GetComponent<RectTransform>() != null
                        && prefab.GetComponent<CanvasRenderer>() != null;
 
-        // ½ºÅ©¸° ÁÂÇ¥ °è»ê (¹öÆ° À§Ä¡ ±âÁØ)
+        // ìŠ¤í¬ë¦° ì¢Œí‘œ ê³„ì‚° (ë²„íŠ¼ ìœ„ì¹˜ ê¸°ì¤€)
         Vector2 buttonScreen = RectTransformUtility.WorldToScreenPoint(uiCamera, buttonRT.position);
         Vector2 startScreen = ev != null ? ev.position : buttonScreen;
 
@@ -149,19 +278,19 @@ public class KeyBoardManager : MonoBehaviour
         {
             var root = ResolveUISpawnRoot();
 
-            // ½ºÅ©¸° -> ·ÎÄÃ
+            // ìŠ¤í¬ë¦° -> ë¡œì»¬
             RectTransformUtility.ScreenPointToLocalPointInRectangle(root, startScreen, uiCamera, out var local);
 
             var go = Instantiate(prefab, root);
             var rt = go.GetComponent<RectTransform>();
-            // µå·¡±× Àü¿ë ±âº» ¼¼ÆÃ
+            // ë“œë˜ê·¸ ì „ìš© ê¸°ë³¸ ì„¸íŒ…
             rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
             rt.pivot = new Vector2(0.5f, 0.5f);
             rt.anchoredPosition = local + (Vector2)spawnOffset;
             rt.localScale = Vector3.one;
             var drag = go.GetComponent<DraggableWordUI>();
             drag.Init(root, allowedArea, trashArea, uiCamera);
-            // µå·¡±× »óÅÂ ÁøÀÔ
+            // ë“œë˜ê·¸ ìƒíƒœ ì§„ì…
             dragIsUI = true;
             dragUIRect = rt;
             dragWorldTr = null;
@@ -180,7 +309,7 @@ public class KeyBoardManager : MonoBehaviour
         }
 
         dragging = true;
-        activePointerId = ev != null ? ev.pointerId : -1; // ¸¶¿ì½º ±âº» -1
+        activePointerId = ev != null ? ev.pointerId : -1; // ë§ˆìš°ìŠ¤ ê¸°ë³¸ -1
     }
 
     RectTransform ResolveUISpawnRoot()
@@ -189,7 +318,7 @@ public class KeyBoardManager : MonoBehaviour
         var canvas = targetCanvas;
         if (!canvas)
         {
-            // ¹öÆ°ÀÇ Äµ¹ö½º ÀÚµ¿ Å½»ö
+            // ë²„íŠ¼ì˜ ìº”ë²„ìŠ¤ ìë™ íƒìƒ‰
             canvas = FindAnyObjectByType<Canvas>();
         }
         return canvas ? canvas.transform as RectTransform : null;
@@ -199,7 +328,7 @@ public class KeyBoardManager : MonoBehaviour
     {
         dragging = false;
         activePointerId = int.MinValue;
-        // ¿©±â¼­ ½º³À/°ËÁõ/Ãæµ¹Ã¼Å© µîÀ» Ãß°¡ÇÒ ¼ö ÀÖÀ½
+        // ì—¬ê¸°ì„œ ìŠ¤ëƒ…/ê²€ì¦/ì¶©ëŒì²´í¬ ë“±ì„ ì¶”ê°€í•  ìˆ˜ ìˆìŒ
         dragUIRect = null;
         dragWorldTr = null;
     }
@@ -208,7 +337,7 @@ public class KeyBoardManager : MonoBehaviour
     bool TryGetPointerScreenPos(int pointerId, out Vector2 pos)
     {
 #if UNITY_EDITOR || UNITY_STANDALONE
-        // ¸¶¿ì½º¸é pointerId°¡ -1ÀÌµç 0ÀÌµç ±×³É Ä¿¼­ ÁÂÇ¥ ¹İÈ¯
+        // ë§ˆìš°ìŠ¤ë©´ pointerIdê°€ -1ì´ë“  0ì´ë“  ê·¸ëƒ¥ ì»¤ì„œ ì¢Œí‘œ ë°˜í™˜
         pos = Input.mousePosition;
         return true;
 #else

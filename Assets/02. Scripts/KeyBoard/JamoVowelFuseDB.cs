@@ -9,11 +9,11 @@ public class JamoVowelFuseDB : MonoBehaviour
     [Serializable]
     public class Rule
     {
-        public string first;            // ±âÁ¸ ¹ŞÄ§(¿¹: "¤¡", "¤©", "¤²", "¤¤")
-        public string second;           // »õ·Î ºÙ´Â ¹ŞÄ§(¿¹: "¤µ", "¤¡", "¤µ", "¤¸", "¤¾" ...)
-        public GameObject fusedPrefab;  // °á°ú(¿¹: ¤£, ¤ª, ¤´, ¤¥, ¤¦, ¤­, ¤®, ¤¯, ¤°)
-        public string fusedGlyph;       // "¤£" µî (¼±ÅÃ)
-        public Vector2 fusedOffset;     // ¹Ì¼¼ º¸Á¤
+        public string first;            // ê¸°ì¡´ ë°›ì¹¨(ì˜ˆ: "ã„±", "ã„¹", "ã…‚", "ã„´")
+        public string second;           // ìƒˆë¡œ ë¶™ëŠ” ë°›ì¹¨(ì˜ˆ: "ã……", "ã„±", "ã……", "ã…ˆ", "ã…" ...)
+        public GameObject fusedPrefab;  // ê²°ê³¼(ì˜ˆ: ã„³, ã„º, ã…„, ã„µ, ã„¶, ã„½, ã„¾, ã„¿, ã…€)
+        public string fusedGlyph;       // "ã„³" ë“± (ì„ íƒ)
+        public Vector2 fusedOffset;     // ë¯¸ì„¸ ë³´ì •
     }
 
     public List<Rule> rules = new();
@@ -25,7 +25,7 @@ public class JamoVowelFuseDB : MonoBehaviour
         dict = new();
         foreach (var r in rules)
         {
-            if (string.IsNullOrWhiteSpace(r.first) || string.IsNullOrWhiteSpace(r.second) || !r.fusedPrefab) continue;
+            if (string.IsNullOrWhiteSpace(r.first) || string.IsNullOrWhiteSpace(r.second)) continue;
             dict[(r.first.Trim(), r.second.Trim())] = r;
         }
     }
@@ -35,7 +35,7 @@ public class JamoVowelFuseDB : MonoBehaviour
         if (dict == null) return null;
         first = (first ?? "").Trim();
         second = (second ?? "").Trim();
-        // ¼ø¼­ °íÁ¤ ±ÔÄ¢ÀÌÁö¸¸, ÆíÀÇ»ó ¿ª¼øµµ ½Ãµµ
+        // ìˆœì„œ ê³ ì • ê·œì¹™ì´ì§€ë§Œ, í¸ì˜ìƒ ì—­ìˆœë„ ì‹œë„
         return dict.TryGetValue((first, second), out var r)
              ? r
              : (dict.TryGetValue((second, first), out var r2) ? r2 : null);

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public enum JamoRole { Choseong, Jungseong, Jongseong }
 public enum VowelAttach { Side, Below }
@@ -11,7 +12,7 @@ public class JamoMagnet : MonoBehaviour
 
     [Header("표시 문자")]
     public string glyph;
-
+   
     [Header("초성(베이스) 소켓")]
     public RectTransform rightAnchor;        // 옆모음
     public RectTransform bottomAnchor;       // 아래모음
@@ -37,6 +38,7 @@ public class JamoMagnet : MonoBehaviour
         rt = GetComponent<RectTransform>();
         All.Add(this);
 
+       
         if (role == JamoRole.Jungseong && !string.IsNullOrEmpty(glyph))
             vowelAttach = GuessVowelAttach(glyph);
 
@@ -56,19 +58,15 @@ public class JamoMagnet : MonoBehaviour
     bool HasAnySockets()
         => (rightAnchor != null) || (bottomAnchor != null) || (bottomFinalAnchor != null);
 
+    public void SetGlyph(string g)
+    {
+        glyph = g;
+       
+    }
+
     public bool TrySnap(RectTransform dragRoot, Camera uiCamera)
     {
-        // 자음이면 받침 후보, 단 이미 붙은 파트가 있으면(완성 블록) 금지
-        bool tryingFinal;
-        if (role == JamoRole.Jungseong)
-        {
-            tryingFinal = false;
-        }
-        else
-        {
-            if (attachedVowel != null || attachedFinal != null) return false;
-            tryingFinal = true;
-        }
+        bool tryingFinal = (role != JamoRole.Jungseong);
 
         JamoMagnet best = null;
         RectTransform targetAnchor = null;
@@ -77,18 +75,23 @@ public class JamoMagnet : MonoBehaviour
         foreach (var m in All)
         {
             if (!m || m.role != JamoRole.Choseong) continue;
+            if (m == this) continue;
 
             RectTransform cand = null;
+
             if (!tryingFinal)
             {
                 if (m.attachedVowel) continue;
                 cand = (vowelAttach == VowelAttach.Side) ? m.rightAnchor : m.bottomAnchor;
+                if (!CanAttachVowelToBase(m, vowelAttach, glyph)) continue;
             }
             else
             {
+               
                 if (InvalidFinal.Contains(glyph)) continue;
                 cand = m.bottomFinalAnchor;
             }
+
             if (!cand) continue;
             if (!cand.transform.IsChildOf(m.transform)) continue;
 
@@ -102,12 +105,6 @@ public class JamoMagnet : MonoBehaviour
 
         if (tryingFinal)
         {
-            if (best.attachedFinal)
-            {
-                if (!TryFuseFinal(best, best.attachedFinal, this)) return false;
-                return true;
-            }
-
             AttachTo(targetAnchor);
             role = JamoRole.Jongseong;
             best.attachedFinal = this;
@@ -122,6 +119,26 @@ public class JamoMagnet : MonoBehaviour
             if (!best.attachedVowel) TryFuseVowel(best);
             return true;
         }
+    }
+
+    bool CanAttachVowelToBase(JamoMagnet baseCho, VowelAttach incomingType, string incomingGlyph)
+    {
+        var db = JamoVowelFuseDB.Instance;
+        if (!db) return true;
+
+        if (incomingType == VowelAttach.Side && baseCho.attachedVowelBelow != null)
+        {
+            string below = (baseCho.attachedVowelBelow.glyph ?? "").Trim();
+            string side = (incomingGlyph ?? "").Trim();
+            return db.Find(below, side) != null;
+        }
+        if (incomingType == VowelAttach.Below && baseCho.attachedVowelSide != null)
+        {
+            string below = (incomingGlyph ?? "").Trim();
+            string side = (baseCho.attachedVowelSide.glyph ?? "").Trim();
+            return db.Find(below, side) != null;
+        }
+        return true;
     }
 
     void AttachTo(RectTransform socket)
@@ -148,58 +165,29 @@ public class JamoMagnet : MonoBehaviour
         if (!below || !side) return;
 
         var rule = JamoVowelFuseDB.Instance?.Find((below.glyph ?? "").Trim(), (side.glyph ?? "").Trim());
-        if (rule == null || !rule.fusedPrefab) return;
+        if (rule == null) return;
 
         var parent = baseCho.rightAnchor ? baseCho.rightAnchor : baseCho.GetComponent<RectTransform>();
-        var fused = Object.Instantiate(rule.fusedPrefab, parent, false);
-        var frt = fused.GetComponent<RectTransform>();
-        frt.anchoredPosition = rule.fusedOffset;
 
-        var fm = fused.GetComponent<JamoMagnet>() ?? fused.AddComponent<JamoMagnet>();
-        fm.role = JamoRole.Jungseong;
-        if (string.IsNullOrEmpty(fm.glyph))
-            fm.glyph = string.IsNullOrEmpty(rule.fusedGlyph) ? (below.glyph + side.glyph) : rule.fusedGlyph;
+        var host = side;
+        var remove = below;
 
-        Object.Destroy(below.gameObject);
-        Object.Destroy(side.gameObject);
+        host.transform.SetParent(parent, false);
+        var hrt = host.GetComponent<RectTransform>();
+        hrt.anchoredPosition = rule.fusedOffset;
+
+        host.role = JamoRole.Jungseong;
+        host.SetGlyph(!string.IsNullOrEmpty(rule.fusedGlyph) ? rule.fusedGlyph : (below.glyph + side.glyph));
+
+        Destroy(remove.gameObject);
         baseCho.attachedVowelBelow = null;
         baseCho.attachedVowelSide = null;
-        baseCho.attachedVowel = fm;
+        baseCho.attachedVowel = host;
 
-        var cg = fused.GetComponent<CanvasGroup>() ?? fused.AddComponent<CanvasGroup>();
+        var cg = host.GetComponent<CanvasGroup>() ?? host.gameObject.AddComponent<CanvasGroup>();
         cg.blocksRaycasts = false;
-        var drag = fused.GetComponent("DraggableWordUI") as Behaviour;
+        var drag = host.GetComponent("DraggableWordUI") as Behaviour;
         if (drag) drag.enabled = false;
-    }
-
-    bool TryFuseFinal(JamoMagnet baseCho, JamoMagnet first, JamoMagnet second)
-    {
-        var db = JamoVowelFuseDB.Instance;
-        if (!db) return false;
-
-        var rule = db.Find((first.glyph ?? "").Trim(), (second.glyph ?? "").Trim());
-        if (rule == null || !rule.fusedPrefab) return false;
-
-        var parent = baseCho.bottomFinalAnchor ? baseCho.bottomFinalAnchor : baseCho.GetComponent<RectTransform>();
-        var fused = Object.Instantiate(rule.fusedPrefab, parent, false);
-        var frt = fused.GetComponent<RectTransform>();
-        frt.anchoredPosition = rule.fusedOffset;
-
-        var fm = fused.GetComponent<JamoMagnet>() ?? fused.AddComponent<JamoMagnet>();
-        fm.role = JamoRole.Jongseong;
-        if (string.IsNullOrEmpty(fm.glyph))
-            fm.glyph = string.IsNullOrEmpty(rule.fusedGlyph) ? (first.glyph + second.glyph) : rule.fusedGlyph;
-
-        Object.Destroy(first.gameObject);
-        Object.Destroy(second.gameObject);
-        baseCho.attachedFinal = fm;
-
-        var cg = fused.GetComponent<CanvasGroup>() ?? fused.AddComponent<CanvasGroup>();
-        cg.blocksRaycasts = false;
-        var drag = fused.GetComponent("DraggableWordUI") as Behaviour;
-        if (drag) drag.enabled = false;
-
-        return true;
     }
 
     RectTransform EnsureChildSocket(RectTransform socket, string childName)
@@ -207,8 +195,6 @@ public class JamoMagnet : MonoBehaviour
         if (socket && socket.transform.IsChildOf(transform)) return socket;
         var t = transform.Find(childName);
         var rtChild = t ? t.GetComponent<RectTransform>() : null;
-        if (!rtChild)
-            Debug.LogWarning($"[JamoMagnet] '{name}' socket '{childName}' not found/invalid.");
         return rtChild;
     }
 }
