@@ -127,7 +127,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -141,7 +141,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 100
+  spritePixelsToUnits: 58
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -897,7 +897,38 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      menu_grape_0: -2797519759180093586
+      menu_grape_1: -8392242500433491311
+      menu_grape_10: -5323081751961103060
+      menu_grape_11: -2024951380131267548
+      menu_grape_12: 4410848440007555506
+      menu_grape_13: 1215783778896939626
+      menu_grape_14: 1526659231584379116
+      menu_grape_15: 4232339965794922797
+      menu_grape_16: -7420425450284897602
+      menu_grape_17: 9186151231998497162
+      menu_grape_18: -2575570932720332214
+      menu_grape_19: 1245142568440669777
+      menu_grape_2: -1197380925975663967
+      menu_grape_20: 4237146453818559330
+      menu_grape_21: -8825536645326637271
+      menu_grape_22: -4915761389024414686
+      menu_grape_23: -8082428896903484022
+      menu_grape_24: -3336107462512957839
+      menu_grape_25: -6669954179771157240
+      menu_grape_26: -1533761587859583107
+      menu_grape_27: 3028158086849898450
+      menu_grape_28: -337080180740849899
+      menu_grape_29: -7164622552093015908
+      menu_grape_3: -3508119326485113190
+      menu_grape_30: 4640538748392727057
+      menu_grape_4: 1078547485240540325
+      menu_grape_5: -5986364860277622259
+      menu_grape_6: -1672268512821750109
+      menu_grape_7: -7594297442897661134
+      menu_grape_8: 5773621807134890258
+      menu_grape_9: 1986171008585864037
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -1,5 +1,11 @@
 using UnityEngine;
-
+/// <summary>
+/// 캔버스 안에 격자 배치 영역을 정의
+/// - 셀 크기/간격/패딩으로 칸 수(columns, rows)를 계산
+/// - 좌표 <-> 인덱스 변환
+/// - 드래그 아이콘이 영역 밖으로 나가지 않도록 클램프
+/// - 여기서 다루는 좌표는 모두 이 UIGridArea의 RectTransform 로컬 좌표
+/// - 다른 RectTransform(아이콘 부모 등)에서 넘어온 좌표는 DraggableIcon에서 변환해 전달
 [RequireComponent(typeof(RectTransform))]
 public class UIGridArea : MonoBehaviour
 {
@@ -16,21 +22,30 @@ public class UIGridArea : MonoBehaviour
     public bool clampToBounds = true;
 
     private RectTransform _rt;
+
+
+    // 현재 그리드가 가질 수 있는 가로/세로 칸 수
     public int columns { get; private set; }
     public int rows { get; private set; }
 
     private void Awake()
     {
         _rt = GetComponent<RectTransform>();
-        RecomputeGrid();
+        RecalculateGrid();
     }
 
-    void OnRectTransformDimensionsChange()  // 해상도/캔버스 스케일 바뀔 때 자동 갱신
+    /// <summary>
+    /// 레이아웃(해상도/캔버스 스케일) 변경 시 자동 호출되어 칸 수를 재계산하는 메서드
+    /// </summary>
+    void OnRectTransformDimensionsChange()  
     {
-        if (_rt != null) RecomputeGrid();
+        if (_rt != null) RecalculateGrid();
     }
 
-    public void RecomputeGrid()
+    /// <summary>
+    /// 영역 크기와 셀 피치(셀크기+간격)를 사용해 columns/rows를 재계산하는 메서드
+    /// </summary>
+    public void RecalculateGrid()
     {
         var r = _rt.rect;
         float usableW = Mathf.Max(0, r.width - padding.x * 2f);
@@ -38,16 +53,16 @@ public class UIGridArea : MonoBehaviour
 
         Vector2 pitch = cellSize + cellSpacing;
 
-        // 칸 수 = (usable + 간격) / pitch  (가장자리 마지막 간격을 고려해 +spacing 보정)
+        // 칸 수 = (usable + 마지막 간격 보정) / pitch
         columns = Mathf.Max(1, Mathf.FloorToInt((usableW + cellSpacing.x) / pitch.x));
         rows = Mathf.Max(1, Mathf.FloorToInt((usableH + cellSpacing.y) / pitch.y));
-        // Debug.Log($"grid {columns}x{rows}, rect={r}");
     }
 
     /// <summary>
-    /// 영역 내로 좌표 제한 (피벗 위치에 관계없이 안전하게)
+    /// 아이콘(RectTransform)의 피벗/크기를 고려하여
+    /// 전달된 위치(local, grid 로컬 기준)가 영역 안에 있도록 좌표를 클램프하는 메서드
     /// </summary>
-    public Vector2 ClampToArea(Vector2 local, RectTransform icon)
+    public Vector2 ClampPositionToArea(Vector2 local, RectTransform icon)
     {
         Rect r = _rt.rect;
         float left = r.xMin + padding.x;
@@ -68,24 +83,40 @@ public class UIGridArea : MonoBehaviour
             Mathf.Clamp(local.y, minY, maxY)
         );
     }
-    private Vector2 BottomLeftWithPadding()
+
+    /// <summary>
+    /// 좌하단(로컬) + 패딩을 적용한 원점 좌표를 반환하는 메서드
+    /// </summary>
+
+    private Vector2 GetBottomLeftWithPadding()
     {
         var r = _rt.rect;
         return new Vector2(r.xMin + padding.x, r.yMin + padding.y);
     }
 
-    public bool IsInsideIndex(Vector2Int idx)
+    /// <summary>
+    /// 해당 셀 인덱스가 그리드 내부인지 여부
+    /// </summary>
+
+    public bool IsValidCellIndex(Vector2Int idx)
         => idx.x >= 0 && idx.y >= 0 && idx.x < columns && idx.y < rows;
 
-    public Vector2Int ClampIndex(Vector2Int idx)
+    /// <summary>
+    /// 셀 인덱스를 그리드 범위로 자르는 메서드
+    /// </summary>
+
+    public Vector2Int ClampCellIndex(Vector2Int idx)
         => new Vector2Int(
             Mathf.Clamp(idx.x, 0, columns - 1),
             Mathf.Clamp(idx.y, 0, rows - 1)
         );
 
-    public Vector2Int LocalPosToIndex(Vector2 local)
+    /// <summary>
+    /// grid 로컬 좌표 → 셀 인덱스
+    /// </summary>
+    public Vector2Int LocalPositionToCell(Vector2 local)
     {
-        Vector2 origin = BottomLeftWithPadding();
+        Vector2 origin = GetBottomLeftWithPadding();
         Vector2 pitch = cellSize + cellSpacing;
         Vector2 delta = local - origin;
 
@@ -95,10 +126,13 @@ public class UIGridArea : MonoBehaviour
         return new Vector2Int(ix, iy);
     }
 
-    public Vector2 IndexToLocalPos(Vector2Int idx)
+    /// <summary>
+    /// 셀 인덱스 → grid 로컬 좌표(해당 셀의 중심점)
+    /// </summary>
+    public Vector2 CellToLocalPosition(Vector2Int idx)
     {
-        idx = ClampIndex(idx);
-        Vector2 origin = BottomLeftWithPadding();
+        idx = ClampCellIndex(idx);
+        Vector2 origin = GetBottomLeftWithPadding();
         Vector2 pitch = cellSize + cellSpacing;
         return origin + new Vector2(idx.x * pitch.x, idx.y * pitch.y) + cellSize * 0.5f;
     }

@@ -127,7 +127,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -141,7 +141,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 100
+  spritePixelsToUnits: 58
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -897,7 +897,38 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      menu_peach_0: 6795223659080271465
+      menu_peach_1: 8274114370962570100
+      menu_peach_10: 5707333619305669569
+      menu_peach_11: -2317185990816349568
+      menu_peach_12: -5330686165550944127
+      menu_peach_13: 7967649193632892312
+      menu_peach_14: 4475386744082909507
+      menu_peach_15: -2418133566634224775
+      menu_peach_16: -7490380456966422071
+      menu_peach_17: -5904818422351572744
+      menu_peach_18: 3974749986536548687
+      menu_peach_19: -5462593687604198038
+      menu_peach_2: -1433818323941518983
+      menu_peach_20: -7194854810229551586
+      menu_peach_21: 8056829129187277473
+      menu_peach_22: -5072772238095885295
+      menu_peach_23: 8601492775855937527
+      menu_peach_24: 250103067245600566
+      menu_peach_25: -1005768937081069477
+      menu_peach_26: -7648670923627444115
+      menu_peach_27: -4056950058520208873
+      menu_peach_28: 6597851247808367345
+      menu_peach_29: 3423913643927316265
+      menu_peach_3: 7659599067401680627
+      menu_peach_30: -6143091174948931843
+      menu_peach_4: -5026711516081717562
+      menu_peach_5: 7226814849003184513
+      menu_peach_6: -4282613996855561571
+      menu_peach_7: 2947545999586769367
+      menu_peach_8: 8337907699319019588
+      menu_peach_9: -7304121148785832081
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
