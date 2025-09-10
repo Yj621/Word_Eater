@@ -67,4 +67,10 @@ public class UIManager : MonoBehaviour
 
         sequence.Play();
     }
+
+    public void Test_PopUp(string s)
+    {
+        NoticeManager.Instance.Show(s);
+    }
+
 }
