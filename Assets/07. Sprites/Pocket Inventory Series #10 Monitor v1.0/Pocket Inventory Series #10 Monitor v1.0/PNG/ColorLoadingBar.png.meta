@@ -1,0 +1,481 @@
+fileFormatVersion: 2
+guid: 93c00a8e717e1604abbcee49f8380cb0
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 2800967950396863582
+    second: ColorLoadingBar_0
+  - first:
+      213: -8174809317506398128
+    second: ColorLoadingBar_1
+  - first:
+      213: 8866515786656597313
+    second: ColorLoadingBar_2
+  - first:
+      213: 338262005065300859
+    second: ColorLoadingBar_3
+  - first:
+      213: -4438401582591219792
+    second: ColorLoadingBar_4
+  - first:
+      213: -5408359254113717768
+    second: ColorLoadingBar_5
+  - first:
+      213: 8666181782060563915
+    second: ColorLoadingBar_6
+  - first:
+      213: -573084861286122906
+    second: ColorLoadingBar_7
+  - first:
+      213: 6351531425188539714
+    second: ColorLoadingBar_8
+  - first:
+      213: 6121185516673938322
+    second: ColorLoadingBar_9
+  - first:
+      213: 4901422869186964087
+    second: ColorLoadingBar_10
+  - first:
+      213: 1444886618455111471
+    second: ColorLoadingBar_11
+  - first:
+      213: 5784537895781423668
+    second: ColorLoadingBar_12
+  - first:
+      213: 4729180909864683595
+    second: ColorLoadingBar_13
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: ColorLoadingBar_0
+      rect:
+        serializedVersion: 2
+        x: 17
+        y: 66
+        width: 275
+        height: 15
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e54b8aeb2890fd620800000000000000
+      internalID: 2800967950396863582
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ColorLoadingBar_1
+      rect:
+        serializedVersion: 2
+        x: 17
+        y: 33
+        width: 275
+        height: 15
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0584a7bdc3e3d8e80800000000000000
+      internalID: -8174809317506398128
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ColorLoadingBar_2
+      rect:
+        serializedVersion: 2
+        x: 18
+        y: 4
+        width: 13
+        height: 11
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1454f0391213c0b70800000000000000
+      internalID: 8866515786656597313
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ColorLoadingBar_3
+      rect:
+        serializedVersion: 2
+        x: 31
+        y: 4
+        width: 19
+        height: 11
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b7bbdec508fb1b400800000000000000
+      internalID: 338262005065300859
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ColorLoadingBar_4
+      rect:
+        serializedVersion: 2
+        x: 50
+        y: 3
+        width: 13
+        height: 11
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0b76e1bb641a762c0800000000000000
+      internalID: -4438401582591219792
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ColorLoadingBar_5
+      rect:
+        serializedVersion: 2
+        x: 79
+        y: 3
+        width: 13
+        height: 11
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8f1fad0c9e5a1f4b0800000000000000
+      internalID: -5408359254113717768
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ColorLoadingBar_6
+      rect:
+        serializedVersion: 2
+        x: 92
+        y: 3
+        width: 19
+        height: 11
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bcd7ea65a66744870800000000000000
+      internalID: 8666181782060563915
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ColorLoadingBar_7
+      rect:
+        serializedVersion: 2
+        x: 111
+        y: 3
+        width: 13
+        height: 11
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 66af2e0ea5efb08f0800000000000000
+      internalID: -573084861286122906
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ColorLoadingBar_8
+      rect:
+        serializedVersion: 2
+        x: 136
+        y: 3
+        width: 13
+        height: 11
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 24de71aed2c252850800000000000000
+      internalID: 6351531425188539714
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ColorLoadingBar_9
+      rect:
+        serializedVersion: 2
+        x: 149
+        y: 3
+        width: 19
+        height: 11
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 293bd95cbc1d2f450800000000000000
+      internalID: 6121185516673938322
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ColorLoadingBar_10
+      rect:
+        serializedVersion: 2
+        x: 168
+        y: 3
+        width: 13
+        height: 11
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 77a6dd3712a550440800000000000000
+      internalID: 4901422869186964087
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ColorLoadingBar_11
+      rect:
+        serializedVersion: 2
+        x: 195
+        y: 3
+        width: 13
+        height: 11
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f277bb169b44d0410800000000000000
+      internalID: 1444886618455111471
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ColorLoadingBar_12
+      rect:
+        serializedVersion: 2
+        x: 208
+        y: 3
+        width: 19
+        height: 11
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 43a56d3819ec64050800000000000000
+      internalID: 5784537895781423668
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ColorLoadingBar_13
+      rect:
+        serializedVersion: 2
+        x: 227
+        y: 3
+        width: 13
+        height: 11
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b480b033bfc61a140800000000000000
+      internalID: 4729180909864683595
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 1de3b900adfead54fb1efe05a21114ac
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      ColorLoadingBar_0: 2800967950396863582
+      ColorLoadingBar_1: -8174809317506398128
+      ColorLoadingBar_10: 4901422869186964087
+      ColorLoadingBar_11: 1444886618455111471
+      ColorLoadingBar_12: 5784537895781423668
+      ColorLoadingBar_13: 4729180909864683595
+      ColorLoadingBar_2: 8866515786656597313
+      ColorLoadingBar_3: 338262005065300859
+      ColorLoadingBar_4: -4438401582591219792
+      ColorLoadingBar_5: -5408359254113717768
+      ColorLoadingBar_6: 8666181782060563915
+      ColorLoadingBar_7: -573084861286122906
+      ColorLoadingBar_8: 6351531425188539714
+      ColorLoadingBar_9: 6121185516673938322
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
