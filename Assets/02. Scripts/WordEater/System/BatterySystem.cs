@@ -14,6 +14,10 @@ namespace WordEater.Systems
     /// </summary>
     public class BatterySystem : MonoBehaviour
     {
+        [Header("테스트/실사용 겸용: 0~100%")]
+        [SerializeField, Range(0, 100)]
+        private int currentBattery = 100; // 퍼센트가 단일 소스
+
         [Header("총 배터리 칸 수")]
         [SerializeField] private int maxCells = 5;   // 전체 칸 개수
 
@@ -24,21 +28,34 @@ namespace WordEater.Systems
         [SerializeField] private int feedAttemptsPerCell = 2;      // FeedData: 2번 시도 → 1칸
         [SerializeField] private int optimizeAttemptsPerCell = 2;  // OptimizeAlgo: 2번 시도 → 1칸
 
+
         // 누적 카운터
         private int feedCountBuffer = 0;
         private int optimizeCountBuffer = 0;
 
         public int MaxCells => maxCells;          // 최대 칸 수 (읽기 전용)
-        public int CurrentCells { get; private set; } // 현재 남은 칸 수
+        public int CurrentCells { get; private set; } // 현재 칸 (퍼센트로부터 환산)
+
+        // 1칸 = 몇 % 인지
+        private float PercentPerCell => 100f / Mathf.Max(1, maxCells);
 
         private void Awake()
         {
-            // 시작 시 남은 칸을 세팅 (0 ~ max 범위로 제한)
-            CurrentCells = Mathf.Clamp(startCells, 0, maxCells);
-
-            // 배터리 UI 초기 세팅
-            GameEvents.OnBatteryChanged?.Invoke(CurrentCells, MaxCells);
+            // 퍼센트 -> 칸 환산 및 UI 초기화
+            SyncCellsFromPercent();
+            RaiseChanged();
         }
+
+        // 인스펙터에서 값 바꿀 때 에디터에서도 바로 UI 반영되게(런타임 중에도 동작함)
+        private void OnValidate()
+        {
+            // maxCells 최소 1 보장
+            maxCells = Mathf.Max(1, maxCells);
+            currentBattery = Mathf.Clamp(currentBattery, 0, 100);
+            SyncCellsFromPercent();
+            RaiseChanged();
+        }
+
 
         /// <summary>
         /// 액션 시도 시 배터리를 소모하는 메서드
@@ -71,15 +88,15 @@ namespace WordEater.Systems
                 need = 1;
             }
 
-            // 일반 소모 처리
+            // 현재 칸 부족이면 막기
             if (CurrentCells < need)
             {
                 GameEvents.OnActionBlockedLowBattery?.Invoke(action);
                 return false;
             }
 
-            CurrentCells -= need;
-            GameEvents.OnBatteryChanged?.Invoke(CurrentCells, MaxCells);
+            // 퍼센트를 기준으로 깎고 → 칸 재계산
+            ConsumeCellsAsPercent(need);
 
             if (CurrentCells <= 0)
                 GameEvents.OnBatteryDepleted?.Invoke();
@@ -92,25 +109,52 @@ namespace WordEater.Systems
         /// </summary>
         public void Refill(int cells)
         {
-            CurrentCells = Mathf.Clamp(CurrentCells + cells, 0, MaxCells);
-            GameEvents.OnBatteryChanged?.Invoke(CurrentCells, MaxCells);
+            // 칸 → 퍼센트로 환산해서 올림
+            int addPercent = Mathf.RoundToInt(cells * PercentPerCell);
+            currentBattery = Mathf.Clamp(currentBattery + addPercent, 0, 100);
+            SyncCellsFromPercent();
+            RaiseChanged();
         }
 
-        /// <summary>
-        /// 각 액션별 기본 소모량 정의
-        /// - FeedData: 1칸 (실제로는 2번 시도에 1칸)
-        /// - OptimizeAlgo: 1칸
-        /// - CleanNoise: 2칸
-        /// </summary>
+        /// <summary>외부에서 퍼센트로 직접 세팅(테스트용)</summary>
+        public void SetBatteryPercent(int percent)
+        {
+            currentBattery = Mathf.Clamp(percent, 0, 100);
+            SyncCellsFromPercent();
+            RaiseChanged();
+        }
+
+        /// <summary>각 액션별 기본 소모량(칸)</summary>
         private int GetCellsCost(ActionType action)
         {
             switch (action)
             {
-                case ActionType.FeedData: return 1;
-                case ActionType.OptimizeAlgo: return 1;
-                case ActionType.CleanNoise: return 1;
+                case ActionType.FeedData: return 1; // 2회 시 1칸은 누적 로직으로 처리
+                case ActionType.OptimizeAlgo: return 1; // 2회 시 1칸은 누적 로직으로 처리
+                case ActionType.CleanNoise: return 2; // 주석 설명에 맞춰 2칸
                 default: return 1;
             }
+        }
+        // ---- 내부 유틸 ----
+
+        private void ConsumeCellsAsPercent(int needCells)
+        {
+            int decPercent = Mathf.RoundToInt(needCells * PercentPerCell);
+            currentBattery = Mathf.Clamp(currentBattery - decPercent, 0, 100);
+            SyncCellsFromPercent();
+            RaiseChanged();
+        }
+
+        private void SyncCellsFromPercent()
+        {
+            CurrentCells = Mathf.Clamp(
+                Mathf.RoundToInt(maxCells * (currentBattery / 100f)),
+                0, MaxCells);
+        }
+
+        private void RaiseChanged()
+        {
+            GameEvents.OnBatteryChanged?.Invoke(CurrentCells, MaxCells);
         }
     }
 }
