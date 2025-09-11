@@ -3941,6 +3941,18 @@ MonoBehaviour:
     BackgroundTexture: {fileID: 0}
     IsBackgroundRecursive: 0
     IsHidden: 0
+  - Type: 0
+    Name: 
+    GameObject: {fileID: 1922716697}
+    Ordinal: 14
+    Priority: 0
+    IconType: 12000
+    IconTexture: {fileID: 0}
+    IsIconRecursive: 0
+    BackgroundType: 12000
+    BackgroundTexture: {fileID: 0}
+    IsBackgroundRecursive: 0
+    IsHidden: 0
 --- !u!4 &565576153
 Transform:
   m_ObjectHideFlags: 0
@@ -6010,6 +6022,7 @@ GameObject:
   - component: {fileID: 931777812}
   - component: {fileID: 931777814}
   - component: {fileID: 931777813}
+  - component: {fileID: 931777816}
   - component: {fileID: 931777815}
   m_Layer: 5
   m_Name: Battery
@@ -6092,19 +6105,36 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Padding:
-    m_Left: 0
+    m_Left: -16
     m_Right: 0
     m_Top: 0
     m_Bottom: 0
-  m_ChildAlignment: 4
-  m_Spacing: -40
+  m_ChildAlignment: 3
+  m_Spacing: -26.69
   m_ChildForceExpandWidth: 0
   m_ChildForceExpandHeight: 0
   m_ChildControlWidth: 0
   m_ChildControlHeight: 0
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
-  m_ReverseArrangement: 0
+  m_ReverseArrangement: 1
+--- !u!114 &931777816
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 931777811}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b38b8f6bd5f5baa4784a941c55f2c49f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cellImages:
+  - {fileID: 351757664}
+  - {fileID: 1799900501}
+  - {fileID: 1788840449}
+  - {fileID: 1447967247}
 --- !u!1 &977496004
 GameObject:
   m_ObjectHideFlags: 0
@@ -8130,6 +8160,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   growthConfig: {fileID: 11400000, guid: 059308513756f234789c5f90bfa6a4e9, type: 2}
   wordService: {fileID: 739059911}
+  battery: {fileID: 0}
   stage: 0
   currentAnswer: 
   correctThisStage: 0
@@ -11332,6 +11363,54 @@ MonoBehaviour:
   keyType: 0
   index: 15
   longPressThreshold: 0.35
+--- !u!1 &1922716697
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1922716699}
+  - component: {fileID: 1922716698}
+  m_Layer: 0
+  m_Name: BatteryManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1922716698
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1922716697}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2536ceff589f3bc40938c8db4eb8a97f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxCells: 5
+  startCells: 5
+  feedAttemptsPerCell: 2
+  optimizeAttemptsPerCell: 2
+--- !u!4 &1922716699
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1922716697}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1270.2786, y: 2953.776, z: -1.0659039}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1930129607
 GameObject:
   m_ObjectHideFlags: 0
@@ -12000,3 +12079,4 @@ SceneRoots:
   - {fileID: 1240265099}
   - {fileID: 739059912}
   - {fileID: 422986167}
+  - {fileID: 1922716699}

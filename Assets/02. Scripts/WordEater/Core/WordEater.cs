@@ -2,17 +2,19 @@ using UnityEngine;
 using WordEater.Core;
 using WordEater.Data;
 using WordEater.Services;
+using WordEater.Systems;
 
 namespace WordEater.Core
 {
     /// <summary>
-    /// '한 마리' 워드 이터의 생애 주기를 관리하는 상태 머신
+    /// 한 마리 워드 이터의 생애 주기를 관리하는 상태 머신
     /// </summary>
     public class WordEater : MonoBehaviour
     {
-        [Header("Refs")]
+        [Header("할당")]
         [SerializeField] private GrowthConfig growthConfig;          // 단계 규칙 SO
-        [SerializeField] private WordAssignmentService wordService;  // 단어 배정 서비스
+        [SerializeField] private WordAssignmentService wordService;  // 단어 배정 
+        [SerializeField] private BatterySystem battery;
 
         [Header("Runtime (read-only)")]
         [SerializeField] private GrowthStage stage = GrowthStage.Bit; // 현재 단계
@@ -21,6 +23,8 @@ namespace WordEater.Core
 
         private TurnController turn;   // 턴/오답 관리자
         private WordEntry currentEntry; // 현재 단어 데이터(주제/연관어 포함)
+
+
 
         private void Awake()
         {
@@ -45,7 +49,7 @@ namespace WordEater.Core
                 : wordService.PickNextLinkedWord(currentEntry, s);
 
             currentAnswer = currentEntry.word;
-            GameEvnets.OnNewWordAssigned?.Invoke(currentAnswer); // UI: "새 단어 등장" (정답 직접 노출 대신 디버그/프로토타입용)
+            GameEvents.OnNewWordAssigned?.Invoke(currentAnswer); // UI: "새 단어 등장" (정답 직접 노출 대신 디버그/프로토타입용)
         }
 
 
@@ -54,6 +58,10 @@ namespace WordEater.Core
         /// </summary>
         public void DoFeedData(string userInput)
         {
+            //배터리 먼저 확인
+            if (!battery.TryConsume(ActionType.FeedData))
+                return;
+
             // 턴 소모(FeedData는 1턴)
             if (!turn.ConsumeTurn(ActionType.FeedData))
             {
@@ -62,7 +70,7 @@ namespace WordEater.Core
 
             // 정답 판정(v1 : 완전 일치, v2 : 오타/의미 유사도 확정 예정)
             bool ok = IsCorrect(userInput, currentAnswer);
-            GameEvnets.OnFeedResult?.Invoke(userInput, ok);
+            GameEvents.OnFeedResult?.Invoke(userInput, ok);
 
             if (ok)
             {
@@ -71,7 +79,7 @@ namespace WordEater.Core
 
                 currentEntry = wordService.PickNextLinkedWord(currentEntry, stage);
                 currentAnswer = currentEntry.word;
-                GameEvnets.OnNewWordAssigned?.Invoke(currentAnswer);
+                GameEvents.OnNewWordAssigned?.Invoke(currentAnswer);
 
                 // 진화 조건 당성 시 진화 처리
                 if (correctThisStage >= growthConfig.Get(stage).requiredCorrectToAdvance)
@@ -129,14 +137,14 @@ namespace WordEater.Core
             if (stage == GrowthStage.Word)
             {
                 // 성체 달성 → 도감 등록·보상 지급(추후 연결)
-                GameEvnets.OnEvolved?.Invoke(stage);
+                GameEvents.OnEvolved?.Invoke(stage);
                 // 다음 개체 생성 루틴으로 넘어가거나 휴지통 UI 호출
                 return;
             }
 
             // 다음 단계로
             stage = (GrowthStage)((int)stage + 1);
-            GameEvnets.OnEvolved?.Invoke(stage);
+            GameEvents.OnEvolved?.Invoke(stage);
             BeginStage(stage);
         }
 
@@ -145,7 +153,7 @@ namespace WordEater.Core
         /// </summary>
         private void Die()
         {
-            GameEvnets.OnDied?.Invoke();
+            GameEvents.OnDied?.Invoke();
             // TODO: 휴지통 연출·부활 아이템·광고보상 등 트리거
             enabled = false;
         }

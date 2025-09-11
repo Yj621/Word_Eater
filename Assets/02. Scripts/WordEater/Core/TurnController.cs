@@ -24,7 +24,7 @@ namespace WordEater.Core
             var cfg = _growth.Get(stage);
             TurnsLeft = cfg.turnsPerStage;
             MistakesLeft = cfg.maxMistakes;
-            GameEvnets.OnStageStarted?.Invoke(stage, TurnsLeft, MistakesLeft);
+            GameEvents.OnStageStarted?.Invoke(stage, TurnsLeft, MistakesLeft);
         }
 
         /// <summary>
@@ -34,7 +34,7 @@ namespace WordEater.Core
         {
             int cost = action == ActionType.CleanNoise ? 2 : 1;
             TurnsLeft -= cost;
-            GameEvnets.OnTurnsChanged?.Invoke(TurnsLeft);
+            GameEvents.OnTurnsChanged?.Invoke(TurnsLeft);
             return TurnsLeft >= 0;
         }
 
