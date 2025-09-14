@@ -277,7 +277,7 @@ public class DraggableIcon : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         }
 
         // 크기/위치 동기화
-        _placeholderRT.sizeDelta = new Vector2(280f, 280f);         // 전체 프레임 크기
+        _placeholderRT.sizeDelta = new Vector2(150f, 150f);         // 전체 프레임 크기
         _placeholderRT.anchoredPosition = startCellCenterInParent;  // 셀 중심
 
         // 아이콘 크기(원 아이콘과 동일)
