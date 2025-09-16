@@ -25,7 +25,7 @@ public class JamoVowelFuseDB : MonoBehaviour
         dict = new();
         foreach (var r in rules)
         {
-            if (string.IsNullOrWhiteSpace(r.first) || string.IsNullOrWhiteSpace(r.second)) continue;
+            if (string.IsNullOrWhiteSpace(r.first) || string.IsNullOrWhiteSpace(r.second) || !r.fusedPrefab) continue;
             dict[(r.first.Trim(), r.second.Trim())] = r;
         }
     }
@@ -35,9 +35,8 @@ public class JamoVowelFuseDB : MonoBehaviour
         if (dict == null) return null;
         first = (first ?? "").Trim();
         second = (second ?? "").Trim();
-        // 순서 고정 규칙이지만, 편의상 역순도 시도
-        return dict.TryGetValue((first, second), out var r)
-             ? r
-             : (dict.TryGetValue((second, first), out var r2) ? r2 : null);
+        if (dict.TryGetValue((first, second), out var r)) return r;
+        if (dict.TryGetValue((second, first), out var r2)) return r2; // 역순 허용
+        return null;
     }
 }
