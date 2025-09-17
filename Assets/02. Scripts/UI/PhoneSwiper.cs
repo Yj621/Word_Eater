@@ -23,6 +23,7 @@ public class PhoneSwiper : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
     public float swipeThreshold = 120f;   // 드래그 종결 시 페이지 전환 임계 픽셀
     public float snapSpeed = 12f;         // 스냅 속도(클수록 빠름)
     public bool useUnscaledTime = true;
+    public bool isUsingTab = false;
 
     int pageCount;
     int current;
@@ -34,6 +35,7 @@ public class PhoneSwiper : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
 
     void Awake()
     {
+        isUsingTab = false;
         if (!viewport) viewport = transform as RectTransform;
 
         if (pages == null || pages.Length == 0)
@@ -95,6 +97,7 @@ public class PhoneSwiper : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
 
     public void OnBeginDrag(PointerEventData eventData)
     {
+        if (isUsingTab) return;
         dragging = true;
         dragStartPointer = eventData.position;
         dragStartContentPos = content.anchoredPosition;
@@ -103,7 +106,7 @@ public class PhoneSwiper : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
 
     public void OnDrag(PointerEventData eventData)
     {
-        if (!dragging) return;
+        if (isUsingTab || !dragging) return;
         float dx = eventData.position.x - dragStartPointer.x;
         float minX = -((pageCount - 1) * pageWidth);
         float targetX = Mathf.Clamp(dragStartContentPos.x + dx, minX, 0f);
@@ -112,6 +115,12 @@ public class PhoneSwiper : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
 
     public void OnEndDrag(PointerEventData eventData)
     {
+        if (isUsingTab)
+        {                      
+            dragging = false;
+            SnapTo(current);
+            return;
+        }
         dragging = false;
         float totalDx = eventData.position.x - dragStartPointer.x;
 

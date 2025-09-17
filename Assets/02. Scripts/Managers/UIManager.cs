@@ -10,9 +10,11 @@ public class UIManager : MonoBehaviour
     public float animationDuration = 0.5f; // 애니메이션 지속 시간
 
     private bool isKeyboardOpen = false; // 키보드 상태 추적 변수
+    PhoneSwiper phoneSwiper;
 
     void Start()
     {
+        phoneSwiper = GetComponent<PhoneSwiper>();
     }
 
     /// <summary>
@@ -22,10 +24,12 @@ public class UIManager : MonoBehaviour
     {
         if (isKeyboardOpen)
         {
+            phoneSwiper.isUsingTab = false;
             CloseKeyboard();
         }
         else
         {
+            phoneSwiper.isUsingTab = true;
             OpenKeyboard();
         }
     }
