@@ -147,7 +147,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Exclamation_Lightblue_0: 7884718028465252153
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

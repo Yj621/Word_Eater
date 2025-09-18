@@ -147,7 +147,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Rubik_Gray_0: -8564460806212343240
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

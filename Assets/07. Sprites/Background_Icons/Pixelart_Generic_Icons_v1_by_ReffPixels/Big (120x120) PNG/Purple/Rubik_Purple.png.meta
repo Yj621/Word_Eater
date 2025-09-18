@@ -147,7 +147,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Rubik_Purple_0: -69581256346407970
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

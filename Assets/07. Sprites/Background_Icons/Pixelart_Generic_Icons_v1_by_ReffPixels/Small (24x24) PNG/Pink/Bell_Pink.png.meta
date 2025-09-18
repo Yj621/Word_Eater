@@ -147,7 +147,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Bell_Pink_0: -6848303078795261794
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

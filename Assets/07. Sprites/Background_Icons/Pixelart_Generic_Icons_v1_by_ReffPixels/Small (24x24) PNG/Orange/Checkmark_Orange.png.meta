@@ -147,7 +147,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Checkmark_Orange_0: -8067832136092829624
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
