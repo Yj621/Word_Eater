@@ -14,11 +14,12 @@ namespace WordEater.Core
         [SerializeField] private GrowthConfig growthConfig;          // 단계 규칙 SO
         [SerializeField] private WordAssignmentService wordService;  // 단어 배정 
         [SerializeField] private BatterySystem battery;
+        [SerializeField] private SubmitManager submitmanager;
+
 
         [Header("Runtime (read-only)")]
         [SerializeField] private GrowthStage stage = GrowthStage.Bit; // 현재 단계
         [SerializeField] private string currentAnswer;                // 현재 정답(프로토타입용 노출)
-        [SerializeField] private int correctThisStage;                // 이번 단계에서 맞춘 개수
 
         private TurnController turn;   // 턴/오답 관리자
         private WordEntry currentEntry; // 현재 단어 데이터(주제/연관어 포함)
@@ -40,12 +41,22 @@ namespace WordEater.Core
         /// </summary>
         private void BeginStage(GrowthStage s, bool initial = false)
         {
-            correctThisStage = 0;
             turn.StartStage(s);
 
-            currentEntry = initial
-                ? wordService.PickInitialWord(s)
-                : wordService.PickNextLinkedWord(currentEntry, s);
+            if (initial)
+            {
+                //BIT상태로 변경
+                stage = GrowthStage.Bit;
+
+                currentEntry = wordService.PickInitialWord(s);
+
+                // 꿈에서 주는거 같은 애니메이션 추가
+                submitmanager.OnRelevantButton();
+            }
+            else
+            {
+                currentEntry = wordService.PickNextLinkedWord(currentEntry, s);
+            }
 
             currentAnswer = currentEntry.word;
             GameEvents.OnNewWordAssigned?.Invoke(currentAnswer); // UI: "새 단어 등장" (정답 직접 노출 대신 디버그/프로토타입용)
@@ -57,9 +68,12 @@ namespace WordEater.Core
         /// </summary>
         public void DoFeedData(string userInput)
         {
+            /*
             //배터리 먼저 확인
             if (!battery.TryConsume(ActionType.FeedData))
                 return;
+                */
+
 
             // 턴 소모(FeedData는 1턴)
             if (!turn.ConsumeTurn(ActionType.FeedData))
@@ -73,18 +87,11 @@ namespace WordEater.Core
 
             if (ok)
             {
-                // 정답 누적 및 다음 문제 배정
-                correctThisStage++;
-
                 currentEntry = wordService.PickNextLinkedWord(currentEntry, stage);
                 currentAnswer = currentEntry.word;
                 GameEvents.OnNewWordAssigned?.Invoke(currentAnswer);
 
-                // 진화 조건 당성 시 진화 처리
-                if (correctThisStage >= growthConfig.Get(stage).requiredCorrectToAdvance)
-                {
-                    EvolveOrFinish();
-                }
+                EvolveOrFinish();
             }
             else
             {
@@ -138,6 +145,11 @@ namespace WordEater.Core
                 // 성체 달성 → 도감 등록·보상 지급(추후 연결)
                 GameEvents.OnEvolved?.Invoke(stage);
                 // 다음 개체 생성 루틴으로 넘어가거나 휴지통 UI 호출
+
+
+                Debug.Log("게임 클리어, 다시 시작");
+                BeginStage(stage, initial: true);
+
                 return;
             }
 
@@ -154,7 +166,17 @@ namespace WordEater.Core
         {
             GameEvents.OnDied?.Invoke();
             // TODO: 휴지통 연출·부활 아이템·광고보상 등 트리거
+            Debug.Log("게임 오버");
+
             enabled = false;
+
+
+            Debug.Log("새로 시작");
+            BeginStage(stage, initial: true);
+        }
+
+        public WordEntry returnCurrentEnrty() {
+            return currentEntry;
         }
 
         public string CurrentAnswer => currentAnswer;
