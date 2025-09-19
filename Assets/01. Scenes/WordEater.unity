@@ -873,7 +873,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 214.16583, y: -75}
+  m_AnchoredPosition: {x: 212.30559, y: -75}
   m_SizeDelta: {x: 350, y: 50}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!114 &77969608
@@ -1609,6 +1609,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pythonConnectManager: {fileID: 51999060}
   resultText: {fileID: 185815074}
+  wordEater: {fileID: 1240265097}
 --- !u!1 &145696496
 GameObject:
   m_ObjectHideFlags: 0
@@ -2013,7 +2014,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\uC720\uC0AC\uC131 \uB2E8\uC5B4"
+  m_text: "\uC720\uC0AC\uC131 \uB2E8\uC5B4 \uAC80\uC0C9 \uC911.."
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: b0f4314ca2f299d4a8be5048c7d997de, type: 2}
   m_sharedMaterial: {fileID: -6199847611498842976, guid: b0f4314ca2f299d4a8be5048c7d997de, type: 2}
@@ -3412,6 +3413,7 @@ MonoBehaviour:
   cellSpacing: {x: 20, y: 20}
   padding: {x: 20, y: 20}
   clampToBounds: 1
+  fixedColumns: 3
 --- !u!222 &279932162
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -4896,6 +4898,7 @@ MonoBehaviour:
   cellSpacing: {x: 20, y: 20}
   padding: {x: 20, y: 20}
   clampToBounds: 1
+  fixedColumns: 3
 --- !u!114 &417404408
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13833,7 +13836,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 430.66583, y: -50}
+  m_AnchoredPosition: {x: 428.8056, y: -50}
   m_SizeDelta: {x: 50, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1229974143
@@ -17358,6 +17361,8 @@ MonoBehaviour:
   pythonConnectManager: {fileID: 51999060}
   inputText: {fileID: 1777265113}
   resultText: {fileID: 1097319482}
+  resultPanel: {fileID: 2144230655}
+  wordEater: {fileID: 1240265097}
 --- !u!1 &1603091355
 GameObject:
   m_ObjectHideFlags: 0
@@ -17899,6 +17904,7 @@ MonoBehaviour:
   cellSpacing: {x: 20, y: 20}
   padding: {x: 20, y: 20}
   clampToBounds: 1
+  fixedColumns: 3
 --- !u!222 &1721900345
 CanvasRenderer:
   m_ObjectHideFlags: 0

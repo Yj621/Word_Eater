@@ -71,6 +71,7 @@ public class PythonConnectManager : MonoBehaviour
             if (request.result == UnityWebRequest.Result.Success)
             {
                 string jsonResponse = request.downloadHandler.text;
+                Debug.Log("서버 응답: " + jsonResponse);
                 ResultData responseData = JsonConvert.DeserializeObject<ResultData>(jsonResponse);
 
                 if (responseData.result != null && responseData.result.Count > 0)

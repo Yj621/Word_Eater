@@ -1,5 +1,4 @@
 using UnityEngine;
-using WordEater.Core;
 using WordEater.Data;
 using WordEater.Services;
 using WordEater.Systems;
@@ -157,5 +156,7 @@ namespace WordEater.Core
             // TODO: 휴지통 연출·부활 아이템·광고보상 등 트리거
             enabled = false;
         }
+
+        public string CurrentAnswer => currentAnswer;
     }
 }
