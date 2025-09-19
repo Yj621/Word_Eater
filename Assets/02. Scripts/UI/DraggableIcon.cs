@@ -65,17 +65,17 @@ public class DraggableIcon : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
         // 현재 anchoredPosition(부모 로컬) → Grid 로컬 → 셀 인덱스
         Vector2 inGrid = ParentToGridLocal(_rt.anchoredPosition);
-        Vector2Int cell = gridArea.LocalPositionToCell(inGrid);
-        cell = gridArea.ClampCellIndex(cell);
+        Vector2Int cell = gridArea.PosToCell(inGrid);
+        cell = gridArea.ClampCell(cell);
 
         // 그 셀을 우선 점유 시도
         if (!GridOccupancy.Instance.TryOccupyAtCell(cell, this))
         {
             // 이미 누가 있으면, 가장 가까운 빈 칸을 예약/점유하고 아이콘도 그 위치로 이동
             var reserved = GridOccupancy.Instance.ReserveNearestFreeCell(
-                cell, this, maxRadius: 30, gridArea.IsValidCellIndex);
+                cell, this, maxRadius: 30, gridArea.IsValidCell);
 
-            Vector2 snappedInGrid = gridArea.CellToLocalPosition(reserved);
+            Vector2 snappedInGrid = gridArea.CellToPos(reserved);
             Vector2 snappedInParent = GridToParentLocal(snappedInGrid);
             _rt.anchoredPosition = snappedInParent;  // 장면 시작 시 겹침을 자동 해소
         }
@@ -136,7 +136,7 @@ public class DraggableIcon : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
             Vector2 targetInGrid = pointerInGrid + _dragOffsetInGridSpace;
 
             if (gridArea.clampToBounds)
-                targetInGrid = gridArea.ClampPositionToArea(targetInGrid, _rt);
+                targetInGrid = gridArea.ClampToArea(targetInGrid, _rt);
 
             _rt.anchoredPosition = GridToParentLocal(targetInGrid);
         }
@@ -158,23 +158,23 @@ public class DraggableIcon : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         Vector2 currentInGrid = ParentToGridLocal(_rt.anchoredPosition);
 
         // 가장 가까운 셀 인덱스 계산 → 셀 중심(Grid 로컬)
-        Vector2Int cell = gridArea.LocalPositionToCell(currentInGrid);
-        cell = gridArea.ClampCellIndex(cell);
-        Vector2 snappedInGrid = gridArea.CellToLocalPosition(cell);
+        Vector2Int cell = gridArea.PosToCell(currentInGrid);
+        cell = gridArea.ClampCell(cell);
+        Vector2 snappedInGrid = gridArea.CellToPos(cell);
 
         // 점유 관리(있다면): target 셀 기준으로 가장 가까운 빈 칸을 찾아 점유
         if (GridOccupancy.Instance != null)
         {
-            Vector2Int targetCell = gridArea.LocalPositionToCell(snappedInGrid);
-            targetCell = gridArea.ClampCellIndex(targetCell);
+            Vector2Int targetCell = gridArea.PosToCell(snappedInGrid);
+            targetCell = gridArea.ClampCell(targetCell);
 
             GridOccupancy.Instance.ReserveNearestFreeCell(
-                targetCell, this, maxRadius: 30, gridArea.IsValidCellIndex);
+                targetCell, this, maxRadius: 30, gridArea.IsValidCell);
 
             if (GridOccupancy.Instance.TryGetCellOfIcon(this, out var occupiedCell))
             {
-                occupiedCell = gridArea.ClampCellIndex(occupiedCell);
-                snappedInGrid = gridArea.CellToLocalPosition(occupiedCell);
+                occupiedCell = gridArea.ClampCell(occupiedCell);
+                snappedInGrid = gridArea.CellToPos(occupiedCell);
             }
             else
             {
@@ -184,7 +184,7 @@ public class DraggableIcon : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         }
 
         // 최종 좌표도 한 번 더 안정적으로 클램프
-        snappedInGrid = gridArea.ClampPositionToArea(snappedInGrid, _rt);
+        snappedInGrid = gridArea.ClampToArea(snappedInGrid, _rt);
 
         // 적용은 아이콘 부모 로컬 기준
         Vector2 snappedInParent = GridToParentLocal(snappedInGrid);
@@ -238,9 +238,9 @@ public class DraggableIcon : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     private void ShowPlaceholderAtStartCell()
     {
         Vector2 startInGrid = ParentToGridLocal(_startAnchoredPosInParent);
-        Vector2Int startCell = gridArea.LocalPositionToCell(startInGrid);
-        startCell = gridArea.ClampCellIndex(startCell);
-        Vector2 startCellCenterInGrid = gridArea.CellToLocalPosition(startCell);
+        Vector2Int startCell = gridArea.PosToCell(startInGrid);
+        startCell = gridArea.ClampCell(startCell);
+        Vector2 startCellCenterInGrid = gridArea.CellToPos(startCell);
         Vector2 startCellCenterInParent = GridToParentLocal(startCellCenterInGrid);
 
         if (_placeholderGO == null)
