@@ -5334,6 +5334,7 @@ MonoBehaviour:
   pythonConnectManager: {fileID: 51999060}
   uimanager: {fileID: 321487235}
   keyboardmanager: {fileID: 1446860476}
+  wordeater: {fileID: 1240265097}
 --- !u!4 &481052215
 Transform:
   m_ObjectHideFlags: 0
@@ -13966,9 +13967,9 @@ MonoBehaviour:
   growthConfig: {fileID: 11400000, guid: 059308513756f234789c5f90bfa6a4e9, type: 2}
   wordService: {fileID: 739059911}
   battery: {fileID: 0}
+  submitmanager: {fileID: 481052214}
   stage: 0
   currentAnswer: 
-  correctThisStage: 0
 --- !u!212 &1240265098
 SpriteRenderer:
   m_ObjectHideFlags: 0

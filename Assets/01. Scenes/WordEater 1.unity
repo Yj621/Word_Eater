@@ -2569,6 +2569,7 @@ MonoBehaviour:
   swipeThreshold: 120
   snapSpeed: 12
   useUnscaledTime: 1
+  isUsingTab: 0
 --- !u!1 &329390272
 GameObject:
   m_ObjectHideFlags: 0
@@ -3557,6 +3558,7 @@ MonoBehaviour:
   cellSpacing: {x: 20, y: 20}
   padding: {x: 20, y: 20}
   clampToBounds: 1
+  fixedColumns: 3
 --- !u!114 &417404408
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9943,9 +9945,11 @@ MonoBehaviour:
   wordService: {fileID: 739059911}
   battery: {fileID: 0}
   submitmanager: {fileID: 481052214}
+  BitImg: {fileID: 376747241359653198, guid: 74301ebcc5a44c54b95a000ea786ca20, type: 3}
+  ByteImg: {fileID: -2307929912617645041, guid: 74301ebcc5a44c54b95a000ea786ca20, type: 3}
+  WordImg: {fileID: -5405038573520594224, guid: 74301ebcc5a44c54b95a000ea786ca20, type: 3}
   stage: 0
   currentAnswer: 
-  correctThisStage: 0
 --- !u!212 &1240265098
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -9990,7 +9994,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 454ce33ac04b99347a22452d5bac15ee, type: 3}
+  m_Sprite: {fileID: 376747241359653198, guid: 74301ebcc5a44c54b95a000ea786ca20, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -10010,7 +10014,7 @@ Transform:
   m_GameObject: {fileID: 1240265096}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.2, z: 0}
+  m_LocalPosition: {x: 0, y: 3.87, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
