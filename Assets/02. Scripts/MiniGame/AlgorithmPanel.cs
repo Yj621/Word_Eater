@@ -8,29 +8,26 @@ public class AlgorithmPanel : MonoBehaviour
     public bool Mode; // true : Easy, false : Hard
     public GameObject GameTab;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    // 캐시
+    private MiniGameController _mini;
+
     void Start()
     {
         ani = GetComponent<Animator>();
         GameTab.SetActive(false);
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        if (GameTab) _mini = GameTab.GetComponentInChildren<MiniGameController>(true);
     }
 
     public void OpenEasyMode()
     {
-        StartCoroutine(OpenPageTab());
         Mode = true;
+        StartCoroutine(OpenPageTab());
     }
 
     public void OpenHardMode()
     {
-        StartCoroutine(OpenPageTab());
         Mode = false;
+        StartCoroutine(OpenPageTab());
     }
 
     public void CloseMode()
@@ -43,14 +40,22 @@ public class AlgorithmPanel : MonoBehaviour
         phoneSwiper.isUsingTab = true;
         ani.SetTrigger("Open");
         yield return new WaitForSeconds(0.5f);
+
         GameTab.SetActive(true);
+        // 미니게임 시작
+        if (_mini == null) _mini = GameTab.GetComponentInChildren<MiniGameController>(true);
+        _mini?.Begin();
     }
 
     public IEnumerator CloasePageTab()
     {
+        // 미니게임 정리
+        if (_mini == null) _mini = GameTab.GetComponentInChildren<MiniGameController>(true);
+        _mini?.StopAllGames();
+
+        GameTab.SetActive(false);
         phoneSwiper.isUsingTab = false;
         ani.SetTrigger("Close");
         yield return new WaitForSeconds(0.5f);
-        GameTab.SetActive(false);
     }
 }
