@@ -16,6 +16,10 @@ namespace WordEater.Core
         [SerializeField] private BatterySystem battery;
         [SerializeField] private SubmitManager submitmanager;
 
+        [SerializeField] private Sprite BitImg;
+        [SerializeField] private Sprite ByteImg;
+        [SerializeField] private Sprite WordImg;
+
 
         [Header("Runtime (read-only)")]
         [SerializeField] private GrowthStage stage = GrowthStage.Bit; // 현재 단계
@@ -43,10 +47,17 @@ namespace WordEater.Core
         {
             turn.StartStage(s);
 
+
+            //처음 (다시시작이나 게임 클리어 포함)
             if (initial)
             {
                 //BIT상태로 변경
                 stage = GrowthStage.Bit;
+                var sr = GetComponent<SpriteRenderer>();
+                if (sr != null)
+                {
+                    sr.sprite = BitImg;
+                }
 
                 currentEntry = wordService.PickInitialWord(s);
 
@@ -56,7 +67,26 @@ namespace WordEater.Core
             else
             {
                 currentEntry = wordService.PickNextLinkedWord(currentEntry, s);
+
+                // 단계별 이미지 변경
+                if (s == GrowthStage.Byte)
+                {
+                    var sr = GetComponent<SpriteRenderer>();
+                    if (sr != null)
+                    {
+                        sr.sprite = ByteImg;
+                    }
+                }
+                else if (s == GrowthStage.Word)
+                {
+                    var sr = GetComponent<SpriteRenderer>();
+                    if (sr != null)
+                    {
+                        sr.sprite = WordImg;
+                    }
+                }
             }
+
 
             currentAnswer = currentEntry.word;
             GameEvents.OnNewWordAssigned?.Invoke(currentAnswer); // UI: "새 단어 등장" (정답 직접 노출 대신 디버그/프로토타입용)
@@ -156,6 +186,7 @@ namespace WordEater.Core
             // 다음 단계로
             stage = (GrowthStage)((int)stage + 1);
             GameEvents.OnEvolved?.Invoke(stage);
+
             BeginStage(stage);
         }
 
