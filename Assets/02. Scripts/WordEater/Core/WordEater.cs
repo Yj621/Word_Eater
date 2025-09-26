@@ -15,6 +15,8 @@ namespace WordEater.Core
         [SerializeField] private WordAssignmentService wordService;  // 단어 배정 
         [SerializeField] private BatterySystem battery;
         [SerializeField] private SubmitManager submitmanager;
+        [SerializeField] private GameManager gamemanager;
+
 
         [SerializeField] private Sprite BitImg;
         [SerializeField] private Sprite ByteImg;
@@ -35,15 +37,10 @@ namespace WordEater.Core
             turn = new TurnController(growthConfig);
         }
 
-        private void Start()
-        {
-            BeginStage(stage, initial: true);
-        }
-
         /// <summary>
         /// 단계 시작(턴/오답 초기화 + 단어 배정)
         /// </summary>
-        private void BeginStage(GrowthStage s, bool initial = false)
+        public void BeginStage(GrowthStage s, bool initial = false)
         {
             turn.StartStage(s);
 
@@ -177,8 +174,9 @@ namespace WordEater.Core
                 // 다음 개체 생성 루틴으로 넘어가거나 휴지통 UI 호출
 
 
-                Debug.Log("게임 클리어, 다시 시작");
-                BeginStage(stage, initial: true);
+
+                //게임 클리어. 게임메니저에서 함수 호출
+                gamemanager.EndingController(2);
 
                 return;
             }
@@ -197,13 +195,11 @@ namespace WordEater.Core
         {
             GameEvents.OnDied?.Invoke();
             // TODO: 휴지통 연출·부활 아이템·광고보상 등 트리거
-            Debug.Log("게임 오버");
 
             enabled = false;
 
-
-            Debug.Log("새로 시작");
-            BeginStage(stage, initial: true);
+            // 게임오버. 게임메니저에서 함수 호출
+            gamemanager.EndingController(1);
         }
 
         public WordEntry returnCurrentEnrty() {
@@ -211,5 +207,9 @@ namespace WordEater.Core
         }
 
         public string CurrentAnswer => currentAnswer;
+
+        public GrowthStage ReturnStage() {
+            return stage;
+        }
     }
 }

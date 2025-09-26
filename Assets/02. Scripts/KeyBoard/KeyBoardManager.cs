@@ -228,7 +228,7 @@ public class KeyBoardManager : MonoBehaviour
         {
             EndDrag(); // 그냥 현재 위치에 고정
         }
-        Debug.Log(dragging);
+        //Debug.Log(dragging);
     }
 
     void UpdateDoubleLabels()
