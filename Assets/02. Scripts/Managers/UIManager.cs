@@ -5,12 +5,14 @@ public class UIManager : MonoBehaviour
 {
     [Header("Keyborad UI")]
     [SerializeField] private RectTransform _keyboardRect; // 키보드 UI의 RectTransform
-    [SerializeField] private Vector2 _showPosition; // 키보드가 펴졌을 때의 목표 위치 (앵커 기준)
-    [SerializeField] private Vector2 _hidePosition; // 키보드가 접혔을 때의 목표 위치 (앵커 기준)
-    public float animationDuration = 0.5f; // 애니메이션 지속 시간
+    private float _animationDuration = 0.5f; // 애니메이션 지속 시간
 
-    private bool isKeyboardOpen = false; // 키보드 상태 추적 변수
+    private bool _isKeyboardOpen = false; // 키보드 상태 추적 변수
     PhoneSwiper phoneSwiper;
+
+    // 원하는 위치 고정 (anchoredPosition 기준)
+    private Vector2 _showPosition = new Vector2(0, 0);       // Y = 0
+    private Vector2 _hidePosition = new Vector2(0, -450);    // Y = -480
 
     void Start()
     {
@@ -22,7 +24,7 @@ public class UIManager : MonoBehaviour
     /// </summary>
     public void ToggleKeyboard()
     {
-        if (isKeyboardOpen)
+        if (_isKeyboardOpen)
         {
             phoneSwiper.isUsingTab = false;
             CloseKeyboard();
@@ -39,20 +41,13 @@ public class UIManager : MonoBehaviour
     /// </summary>
     public void OpenKeyboard()
     {
-        if (isKeyboardOpen) return; // 이미 열려있으면 실행 안 함
-        isKeyboardOpen = true;
 
-        // DOTween 시퀀스를 사용하여 위치와 크기 애니메이션을 동시에 실행
-        Sequence sequence = DOTween.Sequence();
+        if (_isKeyboardOpen) return;
+        _isKeyboardOpen = true;
 
-        // anchoredPosition을 showPosition으로 이동
-        sequence.Append(_keyboardRect.DOAnchorPos(_showPosition, animationDuration).SetEase(Ease.OutCirc));
-
-        // scale을 (1, 1, 1)로 변경 (동시에 실행)
-        sequence.Join(_keyboardRect.DOScale(1f, animationDuration).SetEase(Ease.OutCirc));
-
-        // 시퀀스 실행
-        sequence.Play();
+        _keyboardRect
+            .DOAnchorPos(_showPosition, _animationDuration)
+            .SetEase(Ease.OutCirc);
     }
 
     /// <summary>
@@ -60,21 +55,26 @@ public class UIManager : MonoBehaviour
     /// </summary>
     public void CloseKeyboard()
     {
-        if (!isKeyboardOpen) return; // 이미 닫혀있으면 실행 안 함
-        isKeyboardOpen = false;
+        if (!_isKeyboardOpen) return;
+        _isKeyboardOpen = false;
 
-        Sequence sequence = DOTween.Sequence();
-
-        // anchoredPosition을 hidePosition으로 이동
-        sequence.Append(_keyboardRect.DOAnchorPos(_hidePosition, animationDuration).SetEase(Ease.InCirc));
-
-
-        sequence.Play();
+        _keyboardRect
+            .DOAnchorPos(_hidePosition, _animationDuration)
+            .SetEase(Ease.InCirc);
     }
 
-    public void Test_PopUp(string s)
+    public void Test_PopUp()
     {
-        NoticeManager.Instance.Show(s);
+        NoticeManager.Instance.ShowTimed("3초뒤 닫힘", 3f);
     }
-
+    public void Test_PopUp2()
+    {
+        NoticeManager.Instance.ShowSticky("X버튼을 눌러야 닫힘");
+    }
+    public void Test_PopUp3()
+    {
+        var handle = NoticeManager.Instance.ShowManual("사용자가 임의로 닫으면 안됨");
+        // 작업 진행 후 닫는 요청 보내기 (현재는 바로 닫아서 실행이 안 되는것 처럼 보임)
+        handle.Dismiss();
+    }
 }

@@ -24,10 +24,10 @@ namespace WordEater.Systems
         [Header("시작 칸 수")]
         [SerializeField] private int startCells = 5; // 게임 시작 시 충전 상태 (기본 풀 충전)
 
-        [Header("몇 번 시도에 1칸 소모할지")]
+/*        [Header("몇 번 시도에 1칸 소모할지")]
         [SerializeField] private int feedAttemptsPerCell = 2;      // FeedData: 2번 시도 → 1칸
         [SerializeField] private int optimizeAttemptsPerCell = 2;  // OptimizeAlgo: 2번 시도 → 1칸
-
+*/
 
         // 누적 카운터
         private int feedCountBuffer = 0;
@@ -64,41 +64,20 @@ namespace WordEater.Systems
         /// </summary>
         public bool TryConsume(ActionType action)
         {
-            int need = GetCellsCost(action);
+            float costInCells = GetCellsCost(action); // float 형태로 비용 가져오기
+            int costInPercent = Mathf.RoundToInt(costInCells * PercentPerCell);
 
-            // 누적형 소모 처리 (FeedData / OptimizeAlgo)
-            if (action == ActionType.FeedData)
-            {
-                feedCountBuffer++;
-                // 임계치 미만: 아직 소모 안 함(성공 처리만)
-                if (feedCountBuffer < Mathf.Max(1, feedAttemptsPerCell))
-                    return true;
-
-                // 임계치 도달: 1칸 소모
-                feedCountBuffer = 0;
-                need = 1;
-            }
-            else if (action == ActionType.OptimizeAlgo)
-            {
-                optimizeCountBuffer++;
-                if (optimizeCountBuffer < Mathf.Max(1, optimizeAttemptsPerCell))
-                    return true;
-
-                optimizeCountBuffer = 0;
-                need = 1;
-            }
-
-            // 현재 칸 부족이면 막기
-            if (CurrentCells < need)
+            // 현재 퍼센트가 필요한 퍼센트보다 적으면 막기
+            if (currentBattery < costInPercent)
             {
                 GameEvents.OnActionBlockedLowBattery?.Invoke(action);
                 return false;
             }
 
-            // 퍼센트를 기준으로 깎고 → 칸 재계산
-            ConsumeCellsAsPercent(need);
+            // float 비용으로 배터리 소모
+            Consume(costInCells);
 
-            if (CurrentCells <= 0)
+            if (CurrentCells <= 0 && currentBattery <= 0) // 배터리가 0이 되었는지 명확히 체크
                 GameEvents.OnBatteryDepleted?.Invoke();
 
             return true;
@@ -125,36 +104,38 @@ namespace WordEater.Systems
         }
 
         /// <summary>각 액션별 기본 소모량(칸)</summary>
-        private int GetCellsCost(ActionType action)
+        private float GetCellsCost(ActionType action)
         {
             switch (action)
             {
-                case ActionType.FeedData: return 1; // 2회 시 1칸은 누적 로직으로 처리
-                case ActionType.OptimizeAlgo: return 1; // 2회 시 1칸은 누적 로직으로 처리
-                case ActionType.CleanNoise: return 2; // 주석 설명에 맞춰 2칸
-                default: return 1;
+                case ActionType.FeedData: return 0.5f;     // 1회 시 0.5칸(10%) 소모
+                case ActionType.OptimizeAlgo: return 0.5f; // 1회 시 0.5칸(10%) 소모
+                case ActionType.CleanNoise: return 2f;
+                default: return 1f;
             }
         }
         // ---- 내부 유틸 ----
 
-        private void ConsumeCellsAsPercent(int needCells)
+        private void Consume(float cellsToConsume)
         {
-            int decPercent = Mathf.RoundToInt(needCells * PercentPerCell);
+            int decPercent = Mathf.RoundToInt(cellsToConsume * PercentPerCell);
             currentBattery = Mathf.Clamp(currentBattery - decPercent, 0, 100);
             SyncCellsFromPercent();
             RaiseChanged();
         }
 
+
         private void SyncCellsFromPercent()
         {
             CurrentCells = Mathf.Clamp(
-                Mathf.RoundToInt(maxCells * (currentBattery / 100f)),
+                Mathf.CeilToInt(maxCells * (currentBattery / 100f)), // Round 대신 Ceil로 변경하여 1%라도 남으면 1칸으로 표시
                 0, MaxCells);
         }
 
         private void RaiseChanged()
         {
-            GameEvents.OnBatteryChanged?.Invoke(CurrentCells, MaxCells);
+            // UI 텍스트는 퍼센트를 직접 사용하도록 이벤트 인자 변경
+            GameEvents.OnBatteryChanged?.Invoke(CurrentCells, MaxCells, currentBattery);
         }
     }
 }

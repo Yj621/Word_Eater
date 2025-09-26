@@ -1,54 +1,90 @@
 using DG.Tweening;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class NoticeUI : MonoBehaviour
 {
     [Header("Notice 관련")]
-    public TextMeshProUGUI messageText;
-    public CanvasGroup cg;
-    public RectTransform panel;
+    [SerializeField] private TextMeshProUGUI _messageText;
+    [SerializeField] private CanvasGroup _cg;
+    [SerializeField] private RectTransform _panel;
+
+    [Header("버튼")]
+    public Button closeButton;     // X 버튼(없으면 Inspector에서 null로 둬도 됨)
 
     [Header("Dotween 관련")]
-    public float showSeconds = 2f; // 표시 시간
-    public float inDuration = 0.5f; // 들어올때
-    public float outDuration = 0.4f;
-    public Vector2 startOffset = new Vector2(0, 200f);
+    [SerializeField] private float _showSeconds = 2f; // 표시 시간
+    [SerializeField] private float _inDuration = 0.5f; // 들어올때
+    [SerializeField] private float _outDuration = 0.4f;
+    [SerializeField] private Vector2 _startOffset = new Vector2(0, 200f);
 
     Tween currentTween;
+    NoticeOptions activeOptions;
+    bool isShowing;
 
     void Awake()
     {
-        cg.alpha = 0f;
-        panel.anchoredPosition += startOffset; // 시작 위치 offset
+        _cg.alpha = 0f;
+        _panel.anchoredPosition += _startOffset;
+
+        if (closeButton != null) closeButton.onClick.AddListener(Dismiss);
     }
 
-    public void Show(string msg, float? seconds = null)
+
+    public void Show(NoticeOptions options)
     {
-        if (seconds.HasValue) showSeconds = seconds.Value;
+        activeOptions = options;
+        _messageText.text = options.Message;
 
-        messageText.text = msg;
+        // 버튼 가시성
+        if (closeButton != null)
+            closeButton.gameObject.SetActive(options.DismissMode == NoticeDismissMode.Button);
 
-        // 기존 트윈 정리
-        currentTween?.Kill();
-
-        // 시작 상태 초기화
-        cg.alpha = 0f;
-        panel.anchoredPosition = startOffset;
-
+        // 초기 상태
         gameObject.SetActive(true);
+        currentTween?.Kill();
+        _cg.alpha = 0f;
+        _panel.anchoredPosition = _startOffset;
+        isShowing = true;
 
-        // In 애니메이션 (슬라이드+페이드)
-        currentTween = DOTween.Sequence()
-            .Append(cg.DOFade(1f, inDuration))
-            .Join(panel.DOAnchorPos(Vector2.zero, inDuration).SetEase(Ease.OutBack))
-            .AppendInterval(showSeconds)
-            // Out 애니메이션 (슬라이드+페이드 아웃)
-            .Append(cg.DOFade(0f, outDuration))
-            .Join(panel.DOAnchorPos(startOffset, outDuration).SetEase(Ease.InBack))
-            .OnComplete(() =>
-            {
-                gameObject.SetActive(false); // 자동 숨김
-            });
+        // In
+        var seq = DOTween.Sequence()
+            .Append(_cg.DOFade(1f, _inDuration))
+            .Join(_panel.DOAnchorPos(Vector2.zero, _inDuration).SetEase(Ease.OutBack));
+
+        // Auto면 대기 후 Out
+        if (options.DismissMode == NoticeDismissMode.Auto)
+        {
+            seq.AppendInterval(Mathf.Max(0f, options.Duration))
+               .Append(_cg.DOFade(0f, _outDuration))
+               .Join(_panel.DOAnchorPos(_startOffset, _outDuration).SetEase(Ease.InBack))
+               .OnComplete(CompleteClose);
+        }
+
+        currentTween = seq;
     }
+
+    // 외부/버튼/탭으로 닫기
+    public void Dismiss()
+    {
+        if (!isShowing) return;
+        currentTween?.Kill();
+        currentTween = DOTween.Sequence()
+            .Append(_cg.DOFade(0f, _outDuration))
+            .Join(_panel.DOAnchorPos(_startOffset, _outDuration).SetEase(Ease.InBack))
+            .OnComplete(CompleteClose);
+    }
+
+    void CompleteClose()
+    {
+        isShowing = false;
+        gameObject.SetActive(false);
+        var cb = activeOptions?.OnClosed;
+        activeOptions = null;
+        cb?.Invoke();
+    }
+
+    public bool IsShowing => isShowing;
+
 }

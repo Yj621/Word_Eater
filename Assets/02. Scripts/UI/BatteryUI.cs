@@ -33,7 +33,7 @@ public class BatteryUI : MonoBehaviour
     /// 배터리 잔량이 바뀔 때 호출되는 콜백
     /// 남은 칸 수(current)에 따라 이미지 On/Off 처리
     /// </summary>
-    private void HandleBatteryChanged(int current, int max)
+    private void HandleBatteryChanged(int current, int max, int percent)
     {
         float ratio = (float)current / max;
 
@@ -54,9 +54,9 @@ public class BatteryUI : MonoBehaviour
             if (on)
                 cellImages[i].color = targetColor;
         }
-
-        // 퍼센트 텍스트 표시
         if (batteryText != null)
-            batteryText.text = $"{Mathf.RoundToInt(ratio * 100)}%";
+        {
+            batteryText.text = $"{percent}%";
+        }
     }
 }

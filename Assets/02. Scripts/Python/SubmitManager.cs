@@ -13,6 +13,7 @@ public class SubmitManager : MonoBehaviour
         if (!keyboardmanager.TryBuildWord(out var word2))
         {
             Debug.Log("TryBuildWord 실패, word2 = " + word2);
+            NoticeManager.Instance.ShowTimed("부정확한 단어", 1.3f);
             return; //입력한 단어 
 
         }
@@ -21,13 +22,13 @@ public class SubmitManager : MonoBehaviour
         {
             if (result.HasValue)
             {
-                uimanager.Test_PopUp($"Similarty : {result.Value}");
+                NoticeManager.Instance.ShowSticky($"유사도 : {result.Value}");
 
                 wordeater.DoFeedData(word2);
             }
             else
             {
-                uimanager.Test_PopUp("Uncorrect Word!");
+                NoticeManager.Instance.ShowTimed("Uncorrect Word!", 2f);
             }
         }));
     }
@@ -39,16 +40,16 @@ public class SubmitManager : MonoBehaviour
         {
             if (result.Count == 1 && result[0] == "요청 실패")
             {
-                uimanager.Test_PopUp("Connect Error!");
+                NoticeManager.Instance.ShowTimed("Connect Error!", 3f);
             }
             else if (result.Count == 1 && result[0] == "부정확한 단어")
             {
-                uimanager.Test_PopUp("Uncorrect Error!");
+                NoticeManager.Instance.ShowTimed("Uncorrect Error!", 3f);
             }
             else
             {
                 int randomIndex = UnityEngine.Random.Range(0, result.Count);
-                uimanager.Test_PopUp($"Relevant : {result[randomIndex]}");
+                NoticeManager.Instance.ShowSticky($"Relevant : {result[randomIndex]}");
             }
         }));
 
