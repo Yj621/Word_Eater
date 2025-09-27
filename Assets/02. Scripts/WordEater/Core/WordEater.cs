@@ -56,14 +56,13 @@ namespace WordEater.Core
                     sr.sprite = BitImg;
                 }
 
-                currentEntry = wordService.PickInitialWord(s);
+                currentEntry = wordService.PickInitialWord();
 
                 // 꿈에서 주는거 같은 애니메이션 추가
                 submitmanager.OnRelevantButton();
             }
             else
             {
-                currentEntry = wordService.PickNextLinkedWord(currentEntry, s);
 
                 // 단계별 이미지 변경
                 if (s == GrowthStage.Byte)
@@ -114,10 +113,6 @@ namespace WordEater.Core
 
             if (ok)
             {
-                currentEntry = wordService.PickNextLinkedWord(currentEntry, stage);
-                currentAnswer = currentEntry.word;
-                GameEvents.OnNewWordAssigned?.Invoke(currentAnswer);
-
                 EvolveOrFinish();
             }
             else
@@ -182,6 +177,11 @@ namespace WordEater.Core
             }
 
             // 다음 단계로
+            currentEntry = wordService.PickNextLinkedWord(currentEntry, stage);
+            currentAnswer = currentEntry.word;
+            GameEvents.OnNewWordAssigned?.Invoke(currentAnswer);
+
+
             stage = (GrowthStage)((int)stage + 1);
             GameEvents.OnEvolved?.Invoke(stage);
 

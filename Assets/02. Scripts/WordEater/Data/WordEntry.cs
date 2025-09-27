@@ -8,13 +8,10 @@ namespace WordEater.Data
         [Tooltip("정답 단어")] 
         public string word;
 
-        [Tooltip("주제/맥락(색/상성 힌트에 사용)")] 
-        public string topic;
+        [Tooltip("단계.0->bit , 1->byte , 2->word 각 단계에 맞는 단어만 나게 하기 위함")] 
+        public int stage;
 
-        [Tooltip("연관 키워드(힌트/AI 프롬프트 시드로 활용)")]
+        [Tooltip("하위 단어들 모음")]
         public string[] related;
-
-        [Tooltip("난이도(0=쉬움 ~ 3=어려움)")]
-        public int difficulty;
     }
 }

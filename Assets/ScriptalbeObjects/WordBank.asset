@@ -14,51 +14,260 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   entries:
   - word: "\uC8FC\uC0AC\uC704"
-    topic: "\uD655\uB960"
+    stage: 0
     related:
-    - "\uB358\uC9C0\uAE30"
-    - "\uBA74"
+    - "\uD655\uB960"
+    - "\uC6B4"
     - "\uAC8C\uC784"
-    difficulty: 0
-  - word: "\uD655\uB960"
-    topic: "\uD1B5\uACC4"
-    related:
-    - "\uAE30\uB313\uAC12"
-    - "\uD45C\uBCF8"
-    - "\uBD84\uD3EC"
-    difficulty: 1
-  - word: "\uD1B5\uACC4\uD559"
-    topic: "\uC218\uD559"
-    related:
-    - "\uAC80\uC815"
-    - "\uCD94\uC815"
-    - "\uD68C\uADC0"
-    difficulty: 2
   - word: "\uAC70\uC6B8"
-    topic: "\uBE5B"
+    stage: 0
     related:
     - "\uBC18\uC0AC"
-    - "\uC0C1"
-    - "\uC720\uB9AC"
-    difficulty: 0
-  - word: "\uBC18\uC0AC"
-    topic: "\uAD11\uD559"
+    - "\uB300\uCE6D"
+    - "\uAD11\uC120"
+  - word: "\uD638\uB791\uC774"
+    stage: 0
     related:
-    - "\uAC01\uB3C4"
-    - "\uBC95\uC120"
-    - "\uC2A4\uD399"
-    difficulty: 1
-  - word: "\uAD11\uD559"
-    topic: "\uBB3C\uB9AC"
+    - "\uB3D9\uBB3C"
+    - "\uC0C1\uC9D5"
+    - "\uBBFC\uC18D"
+  - word: "\uBCC4"
+    stage: 0
     related:
-    - "\uAD74\uC808"
-    - "\uAC04\uC12D"
-    - "\uD30C\uC7A5"
-    difficulty: 2
+    - "\uC911\uB825"
+    - "\uCC9C\uBB38"
+    - "\uC6B4\uBA85"
+  - word: "\uBC14\uB78C"
+    stage: 0
+    related:
+    - "\uD750\uB984"
+    - "\uB0A0\uC528"
+    - "\uC5D0\uB108\uC9C0"
+  - word: "\uAC15"
+    stage: 0
+    related:
+    - "\uD750\uB984"
+    - "\uC9C0\uD615"
+    - "\uC0DD\uBA85"
   - word: "\uB098\uBB34"
-    topic: "\uC790\uC5F0"
+    stage: 0
     related:
-    - "\uC78E"
-    - "\uC232"
-    - "\uBFCC\uB9AC"
-    difficulty: 0
+    - "\uC131\uC7A5"
+    - "\uC21C\uD658"
+    - "\uC0DD\uD0DC"
+  - word: "\uB300\uD654"
+    stage: 0
+    related:
+    - "\uC18C\uD1B5"
+    - "\uAD6C\uC870"
+    - "\uC0AC\uD68C"
+  - word: "\uD655\uB960"
+    stage: 1
+    related:
+    - "\uC218\uD559"
+    - "\uD1B5\uACC4"
+    - "\uAC8C\uC784"
+  - word: "\uC6B4"
+    stage: 1
+    related:
+    - "\uC218\uD559"
+    - "\uD1B5\uACC4"
+    - "\uAC8C\uC784"
+  - word: "\uAC8C\uC784"
+    stage: 1
+    related:
+    - "\uC218\uD559"
+    - "\uBB38\uD654"
+    - "\uC608\uC220"
+  - word: "\uBC18\uC0AC"
+    stage: 1
+    related:
+    - "\uAD11\uD559"
+    - "\uBB3C\uB9AC"
+    - "\uCC9C\uBB38"
+  - word: "\uB300\uCE6D"
+    stage: 1
+    related:
+    - "\uAD11\uD559"
+    - "\uBB3C\uB9AC"
+    - "\uCC9C\uBB38"
+  - word: "\uAD11\uC120"
+    stage: 1
+    related:
+    - "\uAD11\uD559"
+    - "\uBB3C\uB9AC"
+    - "\uCC9C\uBB38"
+  - word: "\uD30C\uB3D9"
+    stage: 1
+    related:
+    - "\uBB3C\uB9AC"
+    - "\uC18C\uB9AC"
+    - "\uACF5\uD559"
+  - word: "\uC5D0\uB108\uC9C0"
+    stage: 1
+    related:
+    - "\uBB3C\uB9AC"
+    - "\uACF5\uD559"
+    - "\uC0DD\uBB3C"
+  - word: "\uB3D9\uBB3C"
+    stage: 1
+    related:
+    - "\uC0DD\uBB3C"
+    - "\uC790\uC5F0"
+    - "\uC0DD\uD0DC"
+  - word: "\uC0C1\uC9D5"
+    stage: 1
+    related:
+    - "\uBB38\uD654"
+    - "\uC608\uC220"
+    - "\uCCA0\uD559"
+  - word: "\uBBFC\uC18D"
+    stage: 1
+    related:
+    - "\uBB38\uD654"
+    - "\uC5ED\uC0AC"
+    - "\uC608\uC220"
+  - word: "\uC911\uB825"
+    stage: 1
+    related:
+    - "\uBB3C\uB9AC"
+    - "\uCC9C\uBB38"
+    - "\uC9C0\uAD6C"
+  - word: "\uC6B4\uBA85"
+    stage: 1
+    related:
+    - "\uCCA0\uD559"
+    - "\uBB38\uD654"
+    - "\uC5ED\uC0AC"
+  - word: "\uD750\uB984"
+    stage: 1
+    related:
+    - "\uC790\uC5F0"
+    - "\uAE30\uC0C1"
+    - "\uC0DD\uD0DC"
+  - word: "\uB0A0\uC528"
+    stage: 1
+    related:
+    - "\uAE30\uC0C1"
+    - "\uC790\uC5F0"
+    - "\uC9C0\uB9AC"
+  - word: "\uC9C0\uD615"
+    stage: 1
+    related:
+    - "\uC790\uC5F0"
+    - "\uC9C0\uB9AC"
+    - "\uC5ED\uC0AC"
+  - word: "\uC0DD\uBA85"
+    stage: 1
+    related:
+    - "\uC0DD\uBB3C"
+    - "\uC790\uC5F0"
+    - "\uC0DD\uD0DC"
+  - word: "\uC131\uC7A5"
+    stage: 1
+    related:
+    - "\uC0DD\uD0DC"
+    - "\uC790\uC5F0"
+    - "\uC0DD\uBB3C"
+  - word: "\uC21C\uD658"
+    stage: 1
+    related:
+    - "\uC0DD\uD0DC"
+    - "\uC790\uC5F0"
+    - "\uC9C0\uAD6C"
+  - word: "\uB17C\uB9AC"
+    stage: 1
+    related:
+    - "\uCCA0\uD559"
+    - "\uACF5\uD559"
+    - "\uC218\uD559"
+  - word: "\uC5F0\uC0B0"
+    stage: 1
+    related:
+    - "\uB370\uC774\uD130"
+    - "\uACF5\uD559"
+    - "\uC218\uD559"
+  - word: "\uC815\uBCF4"
+    stage: 1
+    related:
+    - "\uB370\uC774\uD130"
+    - "\uACF5\uD559"
+    - "\uC218\uD559"
+  - word: "\uC18C\uD1B5"
+    stage: 1
+    related:
+    - "\uC5B8\uC5B4"
+    - "\uC0AC\uD68C"
+    - "\uBB38\uD654"
+  - word: "\uAD6C\uC870"
+    stage: 1
+    related:
+    - "\uC5B8\uC5B4"
+    - "\uC0AC\uD68C"
+    - "\uBB38\uD654"
+  - word: "\uB370\uC774\uD130"
+    stage: 1
+    related:
+    - "\uACF5\uD559"
+    - "\uC218\uD559"
+    - "\uD1B5\uACC4"
+  - word: "\uC218\uD559"
+    stage: 2
+    related: []
+  - word: "\uD1B5\uACC4"
+    stage: 2
+    related: []
+  - word: "\uBB38\uD654"
+    stage: 2
+    related: []
+  - word: "\uCCA0\uD559"
+    stage: 2
+    related: []
+  - word: "\uBB3C\uB9AC"
+    stage: 2
+    related: []
+  - word: "\uAD11\uD559"
+    stage: 2
+    related: []
+  - word: "\uCC9C\uBB38"
+    stage: 2
+    related: []
+  - word: "\uC18C\uB9AC"
+    stage: 2
+    related: []
+  - word: "\uACF5\uD559"
+    stage: 2
+    related: []
+  - word: "\uC0DD\uBB3C"
+    stage: 2
+    related: []
+  - word: "\uC790\uC5F0"
+    stage: 2
+    related: []
+  - word: "\uC5ED\uC0AC"
+    stage: 2
+    related: []
+  - word: "\uC9C0\uB9AC"
+    stage: 2
+    related: []
+  - word: "\uAE30\uC0C1"
+    stage: 2
+    related: []
+  - word: "\uC9C0\uAD6C"
+    stage: 2
+    related: []
+  - word: "\uC0DD\uD0DC"
+    stage: 2
+    related: []
+  - word: "\uB370\uC774\uD130"
+    stage: 2
+    related: []
+  - word: "\uC5B8\uC5B4"
+    stage: 2
+    related: []
+  - word: "\uC0AC\uD68C"
+    stage: 2
+    related: []
+  - word: "\uC608\uC220"
+    stage: 2
+    related: []

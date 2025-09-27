@@ -17,12 +17,13 @@ namespace WordEater.Services
         /// <summary>
         /// 단계 난이도에 맞는 초기 단어 선택
         /// </summary>
-        public WordEntry PickInitialWord(GrowthStage stage)
+        public WordEntry PickInitialWord()
         {
-            // 간단한 규칙: Bit=쉬움, Byte=중간, Word=어려움 위주
-            int targetDiff = stage == GrowthStage.Bit ? 0 : (stage == GrowthStage.Byte ? 1 : 2);
-            var pool = wordBank.entries.Where(e => e.difficulty <= targetDiff + 1).ToList();
-            if (pool.Count == 0) pool = wordBank.entries;
+            // stage 0(Bit) 단어 중에서 랜덤 선택
+            var pool = wordBank.entries
+                .Where(e => e.stage == 0)
+                .ToList();
+
             return pool[Random.Range(0, pool.Count)];
         }
 
@@ -32,14 +33,24 @@ namespace WordEater.Services
         /// 
         public WordEntry PickNextLinkedWord(WordEntry prev, GrowthStage stage)
         {
-            // "주사위→확률→통계학", "거울→반사→광학" 같은 계열을 연상
-            // 동일 topic/related가 겹치는 항목 우선
-            var pool = wordBank.entries
-                .Where(e => e.word != prev.word &&
-                            (e.topic == prev.topic || e.related.Intersect(prev.related).Any()))
-                .ToList();
+            int nextStage = (int)stage+1;
 
-            if (pool.Count == 0) pool = wordBank.entries.Where(e => e.word != prev.word).ToList();
+            // 현재 단어의 related에 있는 단어 중, 다음 단계에 속하는 단어만 선택
+            var pool = wordBank.entries
+                    .Where(e => (int)e.stage == nextStage && prev.related.Contains(e.word))
+                    .ToList();
+
+
+            /*
+            // 만약 related가 없다면(아마 오타) 다음 단계 전체에서 랜덤 선택
+            if (pool.Count == 0)
+            {
+                pool = wordBank.entries
+                    .Where(e => (int)e.stage == nextStage)
+                    .ToList();
+            }
+            */
+
             return pool[Random.Range(0, pool.Count)];
         }
     }
