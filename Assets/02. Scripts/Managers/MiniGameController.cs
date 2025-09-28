@@ -20,6 +20,8 @@ public class MiniGameController : MonoBehaviour
     public float _timeLimitEasy = 5f;
     public float _timeLimitHard = 3f;
 
+    public int ClearCount = 0;
+
     private void Awake()
     {
         algorithmPanel = GetComponentInParent<AlgorithmPanel>();
@@ -28,6 +30,11 @@ public class MiniGameController : MonoBehaviour
             foreach (var g in minigames) if (g) g.SetActive(false);
         }
         if (timer) { timer.gameObject.SetActive(true); timer.value = 0f; }
+    }
+
+    private void Update()
+    {
+        Debug.Log(ClearCount);
     }
 
     /// <summary>
@@ -64,6 +71,7 @@ public class MiniGameController : MonoBehaviour
     {
         if (!_running) return;
         // 다음 게임으로 즉시 진행
+        ClearCount++;
         float limit = algorithmPanel != null && algorithmPanel.Mode ? _timeLimitEasy : _timeLimitHard;
         SetupTimer(limit);
         StartRandomGame(skipIndex: _currentIndex);
