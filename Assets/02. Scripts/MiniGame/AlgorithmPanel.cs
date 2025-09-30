@@ -1,5 +1,7 @@
 using System.Collections;
+using Unity.VisualScripting.Antlr3.Runtime.Tree;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class AlgorithmPanel : MonoBehaviour
 {
@@ -7,6 +9,9 @@ public class AlgorithmPanel : MonoBehaviour
     public PhoneSwiper phoneSwiper;
     public bool Mode; // true : Easy, false : Hard
     public GameObject GameTab;
+    public GameObject ResultTab;
+    public bool IsOpen => GameTab.activeSelf || ResultTab.activeSelf;
+    public Button[] Buttons;
 
     // 캐시
     private MiniGameController _mini;
@@ -15,7 +20,16 @@ public class AlgorithmPanel : MonoBehaviour
     {
         ani = GetComponent<Animator>();
         GameTab.SetActive(false);
+        ResultTab.SetActive(false);
         if (GameTab) _mini = GameTab.GetComponentInChildren<MiniGameController>(true);
+    }
+
+    private void Update()
+    {
+            for(int i = 0; i < Buttons.Length; i++)
+            {
+                Buttons[i].interactable = !IsOpen;
+            }
     }
 
     public void OpenEasyMode()
@@ -54,8 +68,21 @@ public class AlgorithmPanel : MonoBehaviour
         _mini?.StopAllGames();
 
         GameTab.SetActive(false);
-        phoneSwiper.isUsingTab = false;
         ani.SetTrigger("Close");
         yield return new WaitForSeconds(0.5f);
+
+        // 결과 주입 -> 활성화
+        var rp = ResultTab.GetComponentInChildren<ResultPanel>(true);
+        if (rp != null)
+            rp.Init(Mode, _mini != null ? _mini.ClearCount : 0);
+
+        ResultTab.SetActive(true);
+    }
+
+    public void CloseResultTab()
+    {
+        ResultTab.SetActive(false);
+        phoneSwiper.isUsingTab = false;
+       _mini.ClearCount = 0;
     }
 }
