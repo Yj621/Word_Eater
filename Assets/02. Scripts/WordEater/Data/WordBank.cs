@@ -76,7 +76,7 @@ namespace WordEater.Data
             new WordEntry { word="데이터", stage=2, related=new string[]{ } },
             new WordEntry { word="언어", stage=2, related=new string[]{ } },
             new WordEntry { word="사회", stage=2, related=new string[]{ } },
-        new WordEntry { word="예술", stage=2, related=new string[]{ } },
+            new WordEntry { word="예술", stage=2, related=new string[]{ } },
         };
     }
 }
