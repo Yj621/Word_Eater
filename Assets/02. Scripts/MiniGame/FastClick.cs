@@ -12,7 +12,7 @@ public class FastClick : MonoBehaviour
     [SerializeField] private Button buttonPrefab;
 
     [Header("설정")]
-    [SerializeField] private int clicksToClear = 10;   // 10번 성공 시 클리어
+    [SerializeField] private int clicksToClear = 7;   // 10번 성공 시 클리어
     [SerializeField] private float minMoveDistance = 80f; // 이전 위치와 최소 거리(픽셀)
     [SerializeField] private bool playPopOnMove = true;   // 이동 시 살짝 튀는 연출
 
