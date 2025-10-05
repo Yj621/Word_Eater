@@ -12,6 +12,10 @@ public class AlgorithmCall : MonoBehaviour
     public WordEater.Core.WordEater wordEater; // WordEater 참조 추가
     public BatterySystem batterySystem;
 
+    [SerializeField] private RectTransform panel;
+    [SerializeField] private RectTransform SecondCall;
+
+
     // 로딩 애니메이션 코루틴을 제어하기 위한 변수
     private Coroutine loadingAnimationCoroutine;
     public void OnShowSimilarWord()
@@ -88,4 +92,5 @@ public class AlgorithmCall : MonoBehaviour
             yield return new WaitForSeconds(0.4f);
         }
     }
+
 }

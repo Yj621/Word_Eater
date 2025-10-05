@@ -4,6 +4,7 @@ using TMPro;
 using WordEater.Core;
 using WordEater.Systems;
 using System.Collections;
+using DG.Tweening;
 
 public class AlgorithmMessage : MonoBehaviour
 {
@@ -15,13 +16,38 @@ public class AlgorithmMessage : MonoBehaviour
     public WordEater.Core.WordEater wordEater;
     public BatterySystem batterySystem;
 
+    //애니메이션 시간
+    private RectTransform resultRect;
+    [SerializeField] private float duration = 0.3f;
+    private Vector2 hiddenPos; // 화면 밖 위치
+    private Vector2 shownPos;  // 화면 안 위치
+
+
     // 로딩 애니메이션 코루틴을 제어하기 위한 변수
     private Coroutine loadingAnimationCoroutine;
+
 
     void Start()
     {
         inputField.onEndEdit.AddListener(UpdateInputText);
+
+        resultRect = resultPanel.GetComponent<RectTransform>();
     }
+
+    //dotween 애니메이션
+    public void ShowResultPanel()
+    {
+        resultRect.gameObject.SetActive(true);
+
+        Vector2 shownPos = resultRect.anchoredPosition;
+        Vector2 hiddenPos = shownPos + new Vector2(-Screen.width, 0);
+        resultRect.anchoredPosition = hiddenPos;
+
+        resultPanel.SetActive(true);
+        resultRect.DOAnchorPos(shownPos, 0.2f).SetEase(Ease.OutBack);
+    }
+
+
 
     private void UpdateInputText(string value)
     {
@@ -37,7 +63,7 @@ public class AlgorithmMessage : MonoBehaviour
         }
 
         // 결과 패널을 먼저 활성화하고 로딩 애니메이션 시작
-        resultPanel.SetActive(true);
+        ShowResultPanel();
         loadingAnimationCoroutine = StartCoroutine(AnimateLoadingText());
 
         string userInput = inputField.text;
