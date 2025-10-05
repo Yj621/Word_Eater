@@ -2,8 +2,9 @@ using DG.Tweening;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
-public class NoticeUI : MonoBehaviour
+public class NoticeUI : MonoBehaviour, IPointerClickHandler
 {
     [Header("Notice 관련")]
     [SerializeField] private TextMeshProUGUI _messageText;
@@ -28,7 +29,7 @@ public class NoticeUI : MonoBehaviour
         _cg.alpha = 0f;
         _panel.anchoredPosition += _startOffset;
 
-        if (closeButton != null) closeButton.onClick.AddListener(Dismiss);
+        //if (closeButton != null) closeButton.onClick.AddListener(Dismiss);
     }
 
 
@@ -37,10 +38,11 @@ public class NoticeUI : MonoBehaviour
         activeOptions = options;
         _messageText.text = options.Message;
 
+        /*
         // 버튼 가시성
         if (closeButton != null)
             closeButton.gameObject.SetActive(options.DismissMode == NoticeDismissMode.Button);
-
+        */
         // 초기 상태
         gameObject.SetActive(true);
         currentTween?.Kill();
@@ -85,6 +87,16 @@ public class NoticeUI : MonoBehaviour
         cb?.Invoke();
     }
 
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        if (!isShowing) return;
+
+        // Button 모드일 때만 화면 클릭으로 닫기
+        if (activeOptions != null && activeOptions.DismissMode == NoticeDismissMode.Button)
+        {
+            Dismiss();
+        }
+    }
     public bool IsShowing => isShowing;
 
 }
