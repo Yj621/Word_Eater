@@ -1,4 +1,6 @@
 using UnityEngine;
+using System;
+using System.Linq;
 
 /// <summary>
 /// 캔버스 안에서 아이콘을 배치할 수 있는 격자(Grid) 영역을 정의
@@ -12,6 +14,13 @@ using UnityEngine;
 [RequireComponent(typeof(RectTransform))]
 public class UIGridArea : MonoBehaviour
 {
+
+    // 그리드가 재계산된 뒤 알림을 보내는 이벤트
+    public event Action OnGridRecalculated;
+
+    [Header("해상도/레이아웃 변경 시 아이콘 자동 재배치")]
+    public bool autoReflowOnGridChange = true;
+
     [Header("한 칸의 크기(px)")]
     public Vector2 cellSize = new Vector2(130, 200);
 
@@ -35,6 +44,7 @@ public class UIGridArea : MonoBehaviour
 
     // 해상도에 따라 좌우 자동 여백(가운데 정렬용)
     float _autoPadX = 0f;
+
 
     /// <summary>
     /// RectTransform 초기화 및 최소 가로폭 보정
@@ -91,6 +101,23 @@ public class UIGridArea : MonoBehaviour
         float usableH = Mathf.Max(0, r.height - padding.y * 2f);
         float pitchY = cellSize.y + cellSpacing.y;
         rows = Mathf.Max(1, Mathf.FloorToInt((usableH + cellSpacing.y) / pitchY));
+
+        // 재계산 알림
+        OnGridRecalculated?.Invoke();
+
+    }  
+    
+    /// <summary>
+    /// 이 Grid를 사용하는 DraggableIcon들을 모두 재배치
+    /// </summary>
+    public void ForceReflowAllIcons()
+    {
+        // 같은 캔버스/패널 트리에서 찾아도 되고, 필요 시 별도 레지스트리를 둘 수도 있음
+        var icons = GetComponentsInChildren<DraggableIcon>(includeInactive: true)
+                    .Where(ic => ic != null && ic.gridArea == this);
+
+        foreach (var icon in icons)
+            icon.ReflowToOccupiedCell(); // 아래 2)에서 추가할 메서드
     }
 
     /// <summary>
