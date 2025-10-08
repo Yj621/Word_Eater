@@ -8,85 +8,72 @@ using DG.Tweening;
 
 public class AlgorithmMessage : MonoBehaviour
 {
-    [SerializeField] private TMP_InputField inputField; // 인스펙터에서 할당
-    [SerializeField] private PythonConnectManager pythonConnectManager; // 인스펙터에서 할당
-    [SerializeField] private TextMeshProUGUI inputText; // 현재 입력한 단어를 표시할 UI Text
-    [SerializeField] private TextMeshProUGUI resultText; // 유사도 결과를 표시할 UI Text
-    [SerializeField] private GameObject resultPanel; // 결과 패널
-    public WordEater.Core.WordEater wordEater;
-    public BatterySystem batterySystem;
+    [Header("메세지 패널 관련")]
+    [SerializeField] private TMP_InputField inputField;
+    [SerializeField] private PythonConnectManager pythonConnectManager;
+    [SerializeField] private TextMeshProUGUI inputText;
+    [SerializeField] private TextMeshProUGUI resultText;
+    [SerializeField] private GameObject resultPanel;
+    [SerializeField] private WordEater.Core.WordEater wordEater;
+    [SerializeField] private BatterySystem batterySystem;
+    [SerializeField] private UILoadingText loading;
 
-    //애니메이션 시간
+    [Header("애니메이션 관련")]
+    [SerializeField] private float duration = 0.2f;
     private RectTransform resultRect;
-    [SerializeField] private float duration = 0.3f;
-    private Vector2 hiddenPos; // 화면 밖 위치
-    private Vector2 shownPos;  // 화면 안 위치
+    private Vector2 shownPos;
+    private Vector2 hiddenPos;
 
-
-    // 로딩 애니메이션 코루틴을 제어하기 위한 변수
-    private Coroutine loadingAnimationCoroutine;
-
+    void Awake()
+    {
+        resultRect = resultPanel.GetComponent<RectTransform>();
+        shownPos = resultRect.anchoredPosition;
+        hiddenPos = shownPos + new Vector2(-Screen.width, 0f);
+        resultRect.anchoredPosition = hiddenPos;
+        resultPanel.SetActive(false);
+    }
 
     void Start()
     {
         inputField.onEndEdit.AddListener(UpdateInputText);
-
-        resultRect = resultPanel.GetComponent<RectTransform>();
     }
 
-    //dotween 애니메이션
-    public void ShowResultPanel()
+    private void UpdateInputText(string value) => inputText.text = value;
+
+    /// <summary>
+    /// 결과 패널 표시 애니메이션
+    /// </summary>
+    private void ShowResultPanel()
     {
-        resultRect.gameObject.SetActive(true);
-
-        Vector2 shownPos = resultRect.anchoredPosition;
-        Vector2 hiddenPos = shownPos + new Vector2(-Screen.width, 0);
-        resultRect.anchoredPosition = hiddenPos;
-
-        resultPanel.SetActive(true);
-        resultRect.DOAnchorPos(shownPos, 0.2f).SetEase(Ease.OutBack);
+        if (!resultPanel.activeSelf)
+        {
+            resultPanel.SetActive(true);
+            resultRect.anchoredPosition = hiddenPos;
+            resultRect.DOAnchorPos(shownPos, duration).SetEase(Ease.OutBack);
+        }
     }
 
-
-
-    private void UpdateInputText(string value)
-    {
-        inputText.text = value;
-    }
-
+    /// <summary>
+    /// 유사도 계산 요청 메서드
+    /// </summary>
     public void OnCheckSimilarity()
     {
-        // 만약 이전에 실행 중이던 로딩 애니메이션이 있다면 중지
-        if (loadingAnimationCoroutine != null)
-        {
-            StopCoroutine(loadingAnimationCoroutine);
-        }
+        // 먼저 배터리 확인
+        if (!AlgoGuards.EnsureBattery(batterySystem, ActionType.OptimizeAlgo, resultText))
+            return;
 
-        // 결과 패널을 먼저 활성화하고 로딩 애니메이션 시작
         ShowResultPanel();
-        loadingAnimationCoroutine = StartCoroutine(AnimateLoadingText());
+        loading?.StartAnim("유사도 계산 중");
 
-        string userInput = inputField.text;
-        string answerWord = wordEater != null ? wordEater.CurrentAnswer : "";
+        string userInput = inputField ? inputField.text : string.Empty;
+        string answerWord = wordEater ? wordEater.CurrentAnswer : string.Empty;
+
         StartCoroutine(pythonConnectManager.SimilartyTwoWord(answerWord, userInput, (similarity) =>
         {
-            // 결과를 받으면 로딩 애니메이션 즉시 중지
-            if (loadingAnimationCoroutine != null)
-            {
-                StopCoroutine(loadingAnimationCoroutine);
-                loadingAnimationCoroutine = null; // 참조 정리
-            }
-            if (similarity.HasValue)
-            { 
-                // 배터리 소모 시도
-                if (batterySystem != null && !batterySystem.TryConsume(ActionType.OptimizeAlgo))
-                {
-                    // 배터리가 부족하면 함수를 종료
-                    resultText.text = "배터리가 부족합니다.";
-                    return;
-                }
+            loading?.StopAnim();
 
-                // 배터리 소모에 성공한 경우에만 텍스트 업데이트
+            if (similarity.HasValue)
+            {
                 resultText.text = $"유사도: {similarity.Value}";
             }
             else
@@ -94,27 +81,5 @@ public class AlgorithmMessage : MonoBehaviour
                 resultText.text = "부정확한 단어 또는 요청 실패";
             }
         }));
-    }
-    /// <summary>
-    /// "관련 단어 찾는 중..." 텍스트 애니메이션을 처리하는 코루틴
-    /// </summary>
-    private IEnumerator AnimateLoadingText()
-    {
-        string baseText = "관련 단어 찾는 중";
-        int dotCount = 1;
-
-        while (true)
-        {
-            string dots = new string('.', dotCount);
-            resultText.text = baseText + dots;
-
-            dotCount++;
-            if (dotCount > 3)
-            {
-                dotCount = 1;
-            }
-
-            yield return new WaitForSeconds(0.4f);
-        }
     }
 }

@@ -1915,8 +1915,7 @@ MonoBehaviour:
   resultText: {fileID: 185815074}
   wordEater: {fileID: 1240265097}
   batterySystem: {fileID: 1922716698}
-  panel: {fileID: 141816755}
-  SecondCall: {fileID: 404244363}
+  loading: {fileID: 185815076}
 --- !u!1 &145696496
 GameObject:
   m_ObjectHideFlags: 0
@@ -2440,6 +2439,7 @@ GameObject:
   m_Component:
   - component: {fileID: 185815073}
   - component: {fileID: 185815075}
+  - component: {fileID: 185815076}
   - component: {fileID: 185815074}
   m_Layer: 5
   m_Name: Result_Text
@@ -2566,6 +2566,21 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 185815072}
   m_CullTransparentMesh: 1
+--- !u!114 &185815076
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 185815072}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b6e9c66d1e772474691bd832af9219eb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UILoadingText
+  target: {fileID: 185815074}
+  baseText: "\uAD00\uB828 \uB2E8\uC5B4 \uCC3E\uB294 \uC911"
+  interval: 0.4
 --- !u!1 &191028094
 GameObject:
   m_ObjectHideFlags: 0
@@ -3076,7 +3091,7 @@ MonoBehaviour:
   CallPanel: {fileID: 141816755}
   CallBtn: {fileID: 0}
   MessagePanel: {fileID: 1585313995}
-  MessageBtn: {fileID: 0}
+  MessageBtn: {fileID: 828573774}
   GalleryPanel: {fileID: 1563725930}
   GalleryBtn: {fileID: 0}
 --- !u!4 &217426117
@@ -11097,7 +11112,7 @@ GameObject:
   - component: {fileID: 828573775}
   - component: {fileID: 828573777}
   m_Layer: 5
-  m_Name: Image
+  m_Name: MessageClose_Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -14470,6 +14485,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1097319481}
   - component: {fileID: 1097319483}
+  - component: {fileID: 1097319484}
   - component: {fileID: 1097319482}
   m_Layer: 5
   m_Name: Result_Text (TMP)
@@ -14596,6 +14612,21 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1097319480}
   m_CullTransparentMesh: 1
+--- !u!114 &1097319484
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1097319480}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b6e9c66d1e772474691bd832af9219eb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UILoadingText
+  target: {fileID: 1097319482}
+  baseText: "\uC720\uC0AC\uB3C4 \uACC4\uC0B0 \uC911"
+  interval: 0.4
 --- !u!1 &1128261218
 GameObject:
   m_ObjectHideFlags: 0
@@ -21195,6 +21226,7 @@ MonoBehaviour:
   resultPanel: {fileID: 2144230655}
   wordEater: {fileID: 1240265097}
   batterySystem: {fileID: 1922716698}
+  loading: {fileID: 1097319484}
   duration: 0.3
 --- !u!1 &1601124829
 GameObject:
