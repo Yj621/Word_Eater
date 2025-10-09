@@ -185,4 +185,10 @@ public class PhoneSwiper : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
             dots[i].color = (i == current) ? dotActive : dotInactive;
         }
     }
+
+    public void GoToPage(int index)
+    {
+        if (isUsingTab) return;   // 탭 사용 중이면 막기
+        SetPage(index);
+    }
 }
