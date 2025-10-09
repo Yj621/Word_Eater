@@ -4,6 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using Random = UnityEngine.Random;
 
 public class KeyBoardManager : MonoBehaviour
 {
@@ -21,6 +22,10 @@ public class KeyBoardManager : MonoBehaviour
 
     [Header("입력 상태")]
     public bool isShiftPressed = false;
+    public LongPressKey[] longPressKeys; // 입력 기록용 (없어도 됨)
+    public int DefaultCount = 2;
+    private List<int> _counts = new();
+
 
     [Header("UI/World 스폰 설정")]
     public Canvas targetCanvas;       // UI 드래그용 Canvas (없으면 버튼의 Canvas를 자동 탐색)
@@ -42,7 +47,22 @@ public class KeyBoardManager : MonoBehaviour
 
     public void PressSingle(int index) => PressSingle(index, null);
     public void PressDouble(int index) => PressDouble(index, null);
+    public int GetCount(int index) => InRange(index) ? _counts[index] : 0;
 
+    void Awake()
+    {
+        // counts 초기화 + 버튼에 자기 manager 바인딩 + UI 갱신
+        _counts.Clear();
+        if (longPressKeys != null)
+        {
+            for (int i = 0; i < longPressKeys.Length; i++)
+            {
+                _counts.Add(DefaultCount);
+                if (longPressKeys[i]) longPressKeys[i].manager = this;
+                UpdateKeyText(i);
+            }
+        }
+    }
     // 롱프레스 + 드래그 시작 (PointerEventData 포함)
     public void PressSingle(int index, PointerEventData ev)
     {
@@ -333,7 +353,38 @@ public class KeyBoardManager : MonoBehaviour
         dragWorldTr = null;
     }
 
+    public void AddRandomKeys(int amount)
+    {
+        if (longPressKeys == null || longPressKeys.Length == 0 || amount <= 0) return;
 
+        for (int i = 0; i < amount; i++)
+        {
+            int idx = Random.Range(0, longPressKeys.Length);
+            _counts[idx]++;
+            UpdateKeyText(idx);
+        }
+    }
+
+    // 특정 인덱스 키를 정확히 n개 더하기(개발/디버그용)
+    public void AddKeyAt(int index, int add)
+    {
+        if (!InRange(index) || add == 0) return;
+        _counts[index] = Mathf.Max(0, _counts[index] + add);
+        UpdateKeyText(index);
+    }
+
+    // === 내부 ===
+    bool InRange(int i) => (longPressKeys != null && i >= 0 && i < longPressKeys.Length);
+
+    void UpdateKeyText(int index)
+    {
+        if (!InRange(index)) return;
+        var k = longPressKeys[index];
+        if (k != null && k.KeyCount != null)
+        {
+            k.KeyCount.text = _counts[index].ToString();
+        }
+    }
     bool TryGetPointerScreenPos(int pointerId, out Vector2 pos)
     {
 #if UNITY_EDITOR || UNITY_STANDALONE

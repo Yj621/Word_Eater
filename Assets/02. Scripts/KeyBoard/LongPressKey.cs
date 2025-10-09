@@ -1,4 +1,5 @@
 using System.Collections;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -6,10 +7,11 @@ public enum KeyType { Single, Double }
 
 public class LongPressKey : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IPointerExitHandler
 {
-    [Header("¿¬°á")]
+    [Header("ì—°ê²°")]
     public KeyBoardManager manager;
 
-    [Header("Å° ¼³Á¤")]
+    [Header("í‚¤ ì„¤ì •")]
+    public TextMeshProUGUI KeyCount;
     public KeyType keyType = KeyType.Single;
     public int index = 0;
     public float longPressThreshold = 0.35f;
