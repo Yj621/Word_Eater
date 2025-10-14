@@ -25,7 +25,7 @@ namespace WordEater.Core
         [SerializeField] private Sprite BitImg;
         [SerializeField] private Sprite ByteImg;
         [SerializeField] private Sprite WordImg;
-
+        [SerializeField] private bool isDead = false;
 
         [Header("Runtime (read-only)")]
         [SerializeField] private GrowthStage stage = GrowthStage.Bit; // 현재 단계
@@ -47,6 +47,7 @@ namespace WordEater.Core
         /// </summary>
         public void BeginStage(GrowthStage s, bool initial = false)
         {
+
             turn.StartStage(s);
 
 
@@ -89,6 +90,17 @@ namespace WordEater.Core
                 }
             }
 
+            // BeginStage 끝부분(초기 진입 포함)
+            if (GameReviveSystem.I != null && battery != null)
+            {
+                GameReviveSystem.I.SaveCheckpoint(this, battery.CurrentPercent);
+            }
+
+            // EvolveOrFinish에서 다음 단계 단어 배정 직후
+            if (GameReviveSystem.I != null && battery != null)
+            {
+                GameReviveSystem.I.SaveCheckpoint(this, battery.CurrentPercent);
+            }
 
             currentAnswer = currentEntry.word;
             GameEvents.OnNewWordAssigned?.Invoke(currentAnswer); // UI: "새 단어 등장" (정답 직접 노출 대신 디버그/프로토타입용)
@@ -100,19 +112,19 @@ namespace WordEater.Core
         /// </summary>
         public void DoFeedData(string userInput)
         {
-            /*
-            //배터리 먼저 확인
+
             if (!battery.TryConsume(ActionType.FeedData))
-                return;
-                */
+                return; // OnActionBlockedLowBattery 이벤트로 HUD/토스트 띄우기
 
 
             // 턴 소모(FeedData는 1턴)
             if (!turn.ConsumeTurn(ActionType.FeedData))
             {
-                Die(); return;
+                WordEaterDie();
+                return;
             }
 
+            if (turn.TurnsLeft <= 0) { WordEaterDie(); return; }
             // 정답 판정(v1 : 완전 일치, v2 : 오타/의미 유사도 확정 예정)
             bool ok = IsCorrect(userInput, currentAnswer);
             GameEvents.OnFeedResult?.Invoke(userInput, ok);
@@ -123,12 +135,12 @@ namespace WordEater.Core
             }
             else
             {
-                // 오답 1회 등록, 한계 초과시 사망
-                if (!turn.RegisterMistake()) { Die(); return; }
+                if (!turn.RegisterMistake()) { WordEaterDie(); return; }
             }
 
+
             // 턴 바닥나면 사망
-            if (turn.TurnsLeft < 0) { Die(); return; }
+            if (turn.TurnsLeft <= 0) { WordEaterDie(); return; }
         }
 
         /// <summary>
@@ -136,9 +148,10 @@ namespace WordEater.Core
         /// </summary>
         public void DoOptimizeAlgo() // 미니게임 자리(힌트/버프 지급)
         {
+            if (isDead) return;
             if (!turn.ConsumeTurn(ActionType.OptimizeAlgo))
             {
-                Die(); return;
+                WordEaterDie(); return;
             }
             // TODO: 힌트 토큰 +1, 상성 버프 스택 등
         }
@@ -148,9 +161,10 @@ namespace WordEater.Core
         /// </summary>
         public void DoCleanNoise() // 2턴 소모, 배율/보상 증가 버프
         {
+            if (isDead) return;
             if (!turn.ConsumeTurn(ActionType.CleanNoise))
             {
-                Die(); return;
+                WordEaterDie(); return;
             }
             // TODO: 배율 스택 += 1
         }
@@ -199,16 +213,64 @@ namespace WordEater.Core
         /// <summary>
         /// 사망 처리(휴지통/광고 보상 등 훅)
         /// </summary>
-        private void Die()
+        private void WordEaterDie()
         {
+            if (isDead) return; 
+            isDead = true;
             GameEvents.OnDied?.Invoke();
-            // TODO: 휴지통 연출·부활 아이템·광고보상 등 트리거
 
             enabled = false;
 
-            // 게임오버. 게임메니저에서 함수 호출
-            gamemanager.EndingController(1);
+            // 광고 팝업 띄우고, 거절하면 그때 엔딩
+            if (GameReviveSystem.I != null)
+            {
+                Debug.Log("광고 팝업 띄울겨");
+                GameReviveSystem.I.OnPlayerDied(onGiveUp: () =>
+                {
+                    // 정말 포기한 경우에만 게임오버 연출로 이동
+                    gamemanager.EndingController(1);
+                });
+            }
+            else
+            {
+                // 시스템이 없으면 안전하게 기존 흐름 유지
+                gamemanager.EndingController(1);
+            }
+
         }
+
+        // 부활시
+        public void Reactivate()
+        {
+            isDead = false;       // 죽은 상태 해제
+            enabled = true;       // 다시 동작
+                                  // 필요하면 무적 타이머/상태 초기화/입력언락 등을 여기서 처리
+        }
+
+        public int GetTurnsLeft() => turn.TurnsLeft;
+        public int GetMistakesLeft() => turn.MistakesLeft; // TurnController에 프로퍼티 노출 필요
+
+        public void RestoreTurns(int turnsLeft, int mistakesLeft)
+        {
+            turn.ForceRestore(turnsLeft, mistakesLeft); // TurnController에 강제 복원 API 추가
+        }
+
+        public void RestoreAnswer(string answer, GrowthStage s)
+        {
+            stage = s;
+            currentAnswer = answer;
+            GameEvents.OnNewWordAssigned?.Invoke(currentAnswer);
+
+            // 스프라이트 동기화
+            var sr = GetComponent<SpriteRenderer>();
+            if (sr != null)
+            {
+                if (stage == GrowthStage.Bit) sr.sprite = BitImg;
+                if (stage == GrowthStage.Byte) sr.sprite = ByteImg;
+                if (stage == GrowthStage.Word) sr.sprite = WordImg;
+            }
+        }
+
 
         public WordEntry returnCurrentEnrty()
         {

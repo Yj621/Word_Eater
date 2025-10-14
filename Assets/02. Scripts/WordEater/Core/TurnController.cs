@@ -10,11 +10,12 @@ namespace WordEater.Core
     
     public class TurnController
     {
-        private readonly GrowthConfig _growth; // 단계별 룰(GrowthConfig)
-        public int TurnsLeft { get; private set; }     // 남은 턴
-        public int MistakesLeft { get; private set; }  // 남은 허용 오답 수
+        private readonly GrowthConfig _growth;
+        public int TurnsLeft { get; private set; }
+        public int MistakesLeft { get; private set; }
 
         public TurnController(GrowthConfig growth) => _growth = growth;
+
 
         /// <summary>
         /// 단계 시작 시 규칙 초기화
@@ -34,8 +35,10 @@ namespace WordEater.Core
         {
             int cost = action == ActionType.CleanNoise ? 2 : 1;
             TurnsLeft -= cost;
+
+            // (OnTurnsChanged는 기존대로 두되, 필요시 RaiseTurnsChanged로 교체 가능)
             GameEvents.OnTurnsChanged?.Invoke(TurnsLeft);
-            return TurnsLeft >= 0;
+            return TurnsLeft > 0;
         }
 
         /// <summary>
@@ -44,7 +47,36 @@ namespace WordEater.Core
         public bool RegisterMistake()
         {
             MistakesLeft -= 1;
+            // 래퍼로 호출
+            GameEvents.RaiseMistakesChanged(MistakesLeft);
             return MistakesLeft >= 0;
         }
+
+        /// <summary>
+        /// ✅ 부활 복원을 위한 강제 복원 API (권장: stage 넘겨서 룰에 맞게 Clamp)
+        /// </summary>
+        public void ForceRestore(int turnsLeft, int mistakesLeft, GrowthStage stage)
+        {
+            var cfg = _growth.Get(stage);
+            TurnsLeft = Mathf.Clamp(turnsLeft, 0, cfg.turnsPerStage);
+            MistakesLeft = Mathf.Clamp(mistakesLeft, 0, cfg.maxMistakes);
+
+            GameEvents.OnStageStarted?.Invoke(stage, TurnsLeft, MistakesLeft);
+            GameEvents.OnTurnsChanged?.Invoke(TurnsLeft);
+            GameEvents.RaiseMistakesChanged(MistakesLeft);
+        }
+
+        /// <summary>
+        /// (옵션) stage 없이 그대로 복원 – 기존 호출부 호환용
+        /// </summary>
+        public void ForceRestore(int turnsLeft, int mistakesLeft)
+        {
+            TurnsLeft = turnsLeft;
+            MistakesLeft = mistakesLeft;
+
+            GameEvents.OnTurnsChanged?.Invoke(TurnsLeft);
+            GameEvents.RaiseMistakesChanged(MistakesLeft);
+        }
     }
+
 }
