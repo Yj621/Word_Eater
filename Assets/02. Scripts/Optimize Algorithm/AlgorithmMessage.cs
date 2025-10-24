@@ -74,7 +74,14 @@ public class AlgorithmMessage : MonoBehaviour
 
             if (similarity.HasValue)
             {
-                resultText.text = $"유사도: {similarity.Value}";
+                if (similarity.Value == 1)
+                {
+                    resultText.text = "정답!";
+                }
+                else
+                {
+                    resultText.text = $"유사도: {similarity.Value.ToString("F2")}";
+                }
             }
             else
             {

@@ -47,7 +47,6 @@ namespace WordEater.Core
         /// </summary>
         public void BeginStage(GrowthStage s, bool initial = false)
         {
-
             turn.StartStage(s);
 
 
@@ -61,6 +60,11 @@ namespace WordEater.Core
                 {
                     sr.sprite = BitImg;
                 }
+
+                //실패 최대 횟수 2로 변경
+                turn.SetMistake(2);
+                // 죽은 상태 해제
+                isDead = false;
 
                 // 현재 단어 선택
                 currentEntry = wordService.PickInitialWord();
@@ -135,7 +139,7 @@ namespace WordEater.Core
             }
             else
             {
-                if (!turn.RegisterMistake()) { WordEaterDie(); return; }
+                if (!turn.RegisterMistake()) {WordEaterDie(); return; }
             }
 
 

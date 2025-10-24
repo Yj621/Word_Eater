@@ -47,9 +47,16 @@ namespace WordEater.Core
         public bool RegisterMistake()
         {
             MistakesLeft -= 1;
+            Debug.Log("Left Mistake : " + MistakesLeft);
             // 래퍼로 호출
             GameEvents.RaiseMistakesChanged(MistakesLeft);
             return MistakesLeft >= 0;
+        }
+
+        //남은 턴 변경
+        public void SetMistake(int k) {
+            MistakesLeft = k;
+            GameEvents.RaiseMistakesChanged(MistakesLeft);
         }
 
         /// <summary>

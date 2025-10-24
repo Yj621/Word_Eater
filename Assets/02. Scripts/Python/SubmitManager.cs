@@ -22,7 +22,13 @@ public class SubmitManager : MonoBehaviour
         {
             if (result.HasValue)
             {
-                NoticeManager.Instance.ShowSticky($"유사도 : {result.Value}");
+                if (result.Value == 1)
+                {
+                    NoticeManager.Instance.ShowSticky("정답!");
+                }
+                else {
+                    NoticeManager.Instance.ShowSticky($"유사도 : {result.Value.ToString("F2")}");
+                    }
 
                 wordeater.DoFeedData(word2);
             }

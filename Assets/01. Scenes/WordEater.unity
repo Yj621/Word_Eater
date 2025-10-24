@@ -3148,11 +3148,11 @@ MonoBehaviour:
   wordeater: {fileID: 1240265097}
   touchblockPanel: {fileID: 1452064428}
   CallPanel: {fileID: 141816755}
-  CallBtn: {fileID: 0}
+  CallBtn: {fileID: 519769258}
   MessagePanel: {fileID: 1585313995}
-  MessageBtn: {fileID: 828573774}
+  MessageBtn: {fileID: 165185656}
   GalleryPanel: {fileID: 1563725930}
-  GalleryBtn: {fileID: 0}
+  GalleryBtn: {fileID: 140845273}
 --- !u!4 &217426117
 Transform:
   m_ObjectHideFlags: 0
@@ -3180,7 +3180,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a82eea42e722eb44b90dd0c5132ceaf1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AdsManager
-  rewardedAdRevivalId: ca-app-pub-1881501262849586/3221896109
+  rewardedAdUnitId: unused
 --- !u!114 &217426119
 MonoBehaviour:
   m_ObjectHideFlags: 0
