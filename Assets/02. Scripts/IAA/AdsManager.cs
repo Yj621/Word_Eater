@@ -45,7 +45,7 @@ public class AdsManager : MonoBehaviour
     // 미리 로드
     public void PreloadRewarded()
     {
-        if (string.IsNullOrEmpty(rewardedAdRevivalId)) return;
+        //if (string.IsNullOrEmpty(rewardedAdRevivalId)) return;
 
         if (_rewardedAd != null)
         {
@@ -54,6 +54,7 @@ public class AdsManager : MonoBehaviour
         }
 
         var request = new AdRequest();
+        /*
         RewardedAd.Load(rewardedAdRevivalId, request, (RewardedAd ad, LoadAdError error) =>
         {
             if (error != null)
@@ -66,6 +67,7 @@ public class AdsManager : MonoBehaviour
             HookRewardedEvents(_rewardedAd);
             Debug.Log("[Ads] Rewarded loaded.");
         });
+        */
     }
 
     private void HookRewardedEvents(RewardedAd ad)
