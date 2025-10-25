@@ -4,6 +4,7 @@ using UnityEngine;
 using WordEater.Data;
 using WordEater.Services;
 using WordEater.Systems;
+using UnityEngine.SceneManagement;
 using static UnityEngine.EventSystems.EventTrigger;
 
 namespace WordEater.Core
@@ -76,7 +77,12 @@ namespace WordEater.Core
                 if (sr != null)
                     GalleryCapture.SaveSpriteThumb(sr, $"thumb_{pendingEvoId}_s0", 256);
 
-                submitmanager.OnRelevantButton();
+                string currentScene = SceneManager.GetActiveScene().name;
+
+                if (currentScene != "TutoScene")
+                {
+                    submitmanager.OnRelevantButton();
+                }
             }
             else
             {
