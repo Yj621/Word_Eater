@@ -35,6 +35,8 @@ namespace WordEater.Systems
 
         public int MaxCells => maxCells;          // 최대 칸 수 (읽기 전용)
         public int CurrentCells { get; private set; } // 현재 칸 (퍼센트로부터 환산)
+        public int CurrentPercent => currentBattery;
+
 
         // 1칸 = 몇 % 인지
         private float PercentPerCell => 100f / Mathf.Max(1, maxCells);
