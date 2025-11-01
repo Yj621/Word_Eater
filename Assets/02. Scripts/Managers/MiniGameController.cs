@@ -32,14 +32,6 @@ public class MiniGameController : MonoBehaviour
         if (timer) { timer.gameObject.SetActive(true); timer.value = 0f; }
     }
 
-    private void Update()
-    {
-        Debug.Log(ClearCount);
-    }
-
-    /// <summary>
-    /// AlgorithmPanel에서 GameTab이 열릴 때 호출해주면 됨.
-    /// </summary>
     public void Begin()
     {
         if (_running) return;
@@ -53,9 +45,6 @@ public class MiniGameController : MonoBehaviour
         StartRandomGame(skipIndex: -1);
     }
 
-    /// <summary>
-    /// AlgorithmPanel에서 탭 닫을 때/실패할 때 호출
-    /// </summary>
     public void StopAllGames()
     {
         _running = false;

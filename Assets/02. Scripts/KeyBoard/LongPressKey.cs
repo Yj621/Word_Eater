@@ -11,7 +11,6 @@ public class LongPressKey : MonoBehaviour, IPointerDownHandler, IPointerUpHandle
     public KeyBoardManager manager;
 
     [Header("키 설정")]
-    public TextMeshProUGUI KeyCount;
     public KeyType keyType = KeyType.Single;
     public int index = 0;
     public float longPressThreshold = 0.35f;

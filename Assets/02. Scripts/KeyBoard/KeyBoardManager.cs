@@ -56,15 +56,14 @@ public class KeyBoardManager : MonoBehaviour
             for (int i = 0; i < longPressKeys.Length; i++)
             {
                 if (longPressKeys[i]) longPressKeys[i].manager = this;
-                UpdateKeyText(i);
             }
         }
     }
     // 롱프레스 + 드래그 시작 (PointerEventData 포함)
     public void PressSingle(int index, PointerEventData ev)
     {
-        if (!IsValidIndex(index, SingleWordButtons, SingleWords)) return;
-        if (!TryConsumeAndRefresh(index, 1)) return;
+        if (!IsValidIndex(index, SingleWordButtons, SingleWords)) return; 
+        if (!TryConsumeAndRefresh(index, 1)) return; 
         BeginDragSpawn(SingleWordButtons[index], SingleWords[index], ev);
     }
 
@@ -357,15 +356,12 @@ public class KeyBoardManager : MonoBehaviour
         if (!KeyCount.isReady || amount <= 0) return;
         KeyCount.AddRandom(amount);
 
-        if (longPressKeys != null)
-            for (int i = 0; i < longPressKeys.Length; i++) UpdateKeyText(i);
     }
 
     public void AddKeyAt(int index, int add)
     {
         if (!InRange(index) || add == 0 || !KeyCount.isReady) return;
         KeyCount.AddAt(index, add);
-        UpdateKeyText(index);
     }
 
 
@@ -377,26 +373,14 @@ public class KeyBoardManager : MonoBehaviour
             NotEnoughFeedback(index);
             return false;
         }
-        UpdateKeyText(index);
         return true;
     }
 
     void NotEnoughFeedback(int index)
     {
-        // TODO: 진동, SFX, 텍스트 빨간 깜빡임 등
-        // var txt = longPressKeys[index]?.KeyCount; ...
+        
     }
 
-
-    void UpdateKeyText(int index)
-    {
-        if (!InRange(index)) return;
-        var k = longPressKeys[index];
-        if (k != null && k.KeyCount != null)
-        {
-            k.KeyCount.text = GetCount(index).ToString();
-        }
-    }
     bool TryGetPointerScreenPos(int pointerId, out Vector2 pos)
     {
 #if UNITY_EDITOR || UNITY_STANDALONE

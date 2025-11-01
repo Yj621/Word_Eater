@@ -1653,7 +1653,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   manager: {fileID: 1446860476}
-  KeyCount: {fileID: 0}
   keyType: 0
   index: 7
   longPressThreshold: 0.35
@@ -3065,7 +3064,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   manager: {fileID: 1446860476}
-  KeyCount: {fileID: 0}
   keyType: 0
   index: 8
   longPressThreshold: 0.35
@@ -3341,7 +3339,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   manager: {fileID: 1446860476}
-  KeyCount: {fileID: 0}
   keyType: 0
   index: 3
   longPressThreshold: 0.35
@@ -3561,7 +3558,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   manager: {fileID: 1446860476}
-  KeyCount: {fileID: 0}
   keyType: 0
   index: 2
   longPressThreshold: 0.35
@@ -5639,7 +5635,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   manager: {fileID: 1446860476}
-  KeyCount: {fileID: 0}
   keyType: 1
   index: 3
   longPressThreshold: 0.35
@@ -6579,7 +6574,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   manager: {fileID: 1446860476}
-  KeyCount: {fileID: 0}
   keyType: 1
   index: 0
   longPressThreshold: 0.35
@@ -8039,7 +8033,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   manager: {fileID: 1446860476}
-  KeyCount: {fileID: 0}
   keyType: 0
   index: 4
   longPressThreshold: 0.35
@@ -9603,7 +9596,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   manager: {fileID: 1446860476}
-  KeyCount: {fileID: 0}
   keyType: 1
   index: 6
   longPressThreshold: 0.35
@@ -10264,7 +10256,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   manager: {fileID: 1446860476}
-  KeyCount: {fileID: 0}
   keyType: 0
   index: 1
   longPressThreshold: 0.35
@@ -11434,7 +11425,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   manager: {fileID: 1446860476}
-  KeyCount: {fileID: 0}
   keyType: 0
   index: 11
   longPressThreshold: 0.35
@@ -11887,7 +11877,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   manager: {fileID: 1446860476}
-  KeyCount: {fileID: 0}
   keyType: 0
   index: 13
   longPressThreshold: 0.35
@@ -13745,7 +13734,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   manager: {fileID: 1446860476}
-  KeyCount: {fileID: 0}
   keyType: 1
   index: 5
   longPressThreshold: 0.35
@@ -13885,7 +13873,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   manager: {fileID: 1446860476}
-  KeyCount: {fileID: 0}
   keyType: 1
   index: 2
   longPressThreshold: 0.35
@@ -14699,7 +14686,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   manager: {fileID: 1446860476}
-  KeyCount: {fileID: 0}
   keyType: 0
   index: 6
   longPressThreshold: 0.35
@@ -14839,7 +14825,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   manager: {fileID: 1446860476}
-  KeyCount: {fileID: 0}
   keyType: 1
   index: 1
   longPressThreshold: 0.35
@@ -15790,7 +15775,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   manager: {fileID: 1446860476}
-  KeyCount: {fileID: 0}
   keyType: 0
   index: 10
   longPressThreshold: 0.35
@@ -16569,7 +16553,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   manager: {fileID: 1446860476}
-  KeyCount: {fileID: 0}
   keyType: 0
   index: 14
   longPressThreshold: 0.35
@@ -16785,7 +16768,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   manager: {fileID: 1446860476}
-  KeyCount: {fileID: 0}
   keyType: 0
   index: 16
   longPressThreshold: 0.35
@@ -17061,7 +17043,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   manager: {fileID: 1446860476}
-  KeyCount: {fileID: 0}
   keyType: 0
   index: 0
   longPressThreshold: 0.35
@@ -17239,7 +17220,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   manager: {fileID: 1446860476}
-  KeyCount: {fileID: 0}
   keyType: 1
   index: 4
   longPressThreshold: 0.35
@@ -18963,7 +18943,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   manager: {fileID: 1446860476}
-  KeyCount: {fileID: 0}
   keyType: 0
   index: 17
   longPressThreshold: 0.35
@@ -20126,7 +20105,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   manager: {fileID: 1446860476}
-  KeyCount: {fileID: 0}
   keyType: 0
   index: 18
   longPressThreshold: 0.35
@@ -21820,7 +21798,33 @@ MonoBehaviour:
   - {fileID: 338045451}
   - {fileID: 208104593}
   isShiftPressed: 0
-  longPressKeys: []
+  longPressKeys:
+  - {fileID: 451956922}
+  - {fileID: 987722933}
+  - {fileID: 922533124}
+  - {fileID: 346141543}
+  - {fileID: 1171994895}
+  - {fileID: 913381994}
+  - {fileID: 588392949}
+  - {fileID: 1154164707}
+  - {fileID: 635088643}
+  - {fileID: 241454754}
+  - {fileID: 212541524}
+  - {fileID: 547558680}
+  - {fileID: 1930129612}
+  - {fileID: 977496009}
+  - {fileID: 132203865}
+  - {fileID: 206600429}
+  - {fileID: 1809534274}
+  - {fileID: 1043444929}
+  - {fileID: 729640464}
+  - {fileID: 1932904230}
+  - {fileID: 758251476}
+  - {fileID: 1140161410}
+  - {fileID: 1902520750}
+  - {fileID: 1151668662}
+  - {fileID: 1275631804}
+  - {fileID: 1328764687}
   DefaultCount: 2
   targetCanvas: {fileID: 321487233}
   uiSpawnRoot: {fileID: 640887061}
@@ -25974,7 +25978,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   manager: {fileID: 1446860476}
-  KeyCount: {fileID: 0}
   keyType: 0
   index: 9
   longPressThreshold: 0.35
@@ -27152,7 +27155,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   manager: {fileID: 1446860476}
-  KeyCount: {fileID: 0}
   keyType: 0
   index: 15
   longPressThreshold: 0.35
@@ -27540,7 +27542,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   manager: {fileID: 1446860476}
-  KeyCount: {fileID: 0}
   keyType: 0
   index: 5
   longPressThreshold: 0.35
@@ -27755,7 +27756,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   manager: {fileID: 1446860476}
-  KeyCount: {fileID: 0}
   keyType: 0
   index: 12
   longPressThreshold: 0.35
