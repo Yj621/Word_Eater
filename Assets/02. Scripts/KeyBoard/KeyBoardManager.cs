@@ -24,7 +24,7 @@ public class KeyBoardManager : MonoBehaviour
     public bool isShiftPressed = false;
     public LongPressKey[] longPressKeys; // 입력 기록용 (없어도 됨)
     public int DefaultCount = 2;
-    
+    public int maxCount = 5;
     [Header("UI/World 스폰 설정")]
     public Canvas targetCanvas;       // UI 드래그용 Canvas (없으면 버튼의 Canvas를 자동 탐색)
     public RectTransform uiSpawnRoot; // UI 프리팹을 붙일 최상위(없으면 캔버스의 root RectTransform)
@@ -50,15 +50,35 @@ public class KeyBoardManager : MonoBehaviour
     bool InRange(int i) => (longPressKeys != null && i >= 0 && i < longPressKeys.Length);
     void Awake()
     {
-        KeyCount.Init(longPressKeys.Length, DefaultCount);
+        KeyCount.OnChanged -= OnKeyCountChanged;
+        KeyCount.OnChanged += OnKeyCountChanged;
+
+        KeyCount.Init(longPressKeys.Length, DefaultCount, maxCount);
+
         if (longPressKeys != null)
         {
             for (int i = 0; i < longPressKeys.Length; i++)
-            {
                 if (longPressKeys[i]) longPressKeys[i].manager = this;
-            }
         }
     }
+
+    void OnDestroy()
+    {
+        KeyCount.OnChanged -= OnKeyCountChanged;
+    }
+
+    void OnKeyCountChanged(int index, int newCount)
+    {
+        RefreshKeyUI(index);
+    }
+    void RefreshKeyUI(int index)
+    {
+        if (!InRange(index)) return;
+        var k = longPressKeys[index];
+        if (k == null) return;
+        k.RefreshVisuals(KeyCount.Get(index), KeyCount.MaxCount);
+    }
+
     // 롱프레스 + 드래그 시작 (PointerEventData 포함)
     public void PressSingle(int index, PointerEventData ev)
     {
@@ -75,11 +95,14 @@ public class KeyBoardManager : MonoBehaviour
         var prefab = (!isShiftPressed)
             ? (index < DSWords.Length ? DSWords[index] : null)
             : (index < DDWords.Length ? DDWords[index] : null);
-
         if (prefab == null) return;
-        if (!TryConsumeAndRefresh(index, 2)) return;
+
+        int cost = isShiftPressed ? 2 : 1;
+        if (!TryConsumeAndRefresh(index, cost)) { NotEnoughFeedback(index); return; }
+
         BeginDragSpawn(btn, prefab, ev);
     }
+
 
     public void PressShift()
     {
@@ -375,6 +398,51 @@ public class KeyBoardManager : MonoBehaviour
         }
         return true;
     }
+
+    public int GrantRandomLetters(int amount, bool singlesOnly = false, bool doublesOnly = false)
+    {
+        if (amount <= 0 || longPressKeys == null || longPressKeys.Length == 0) return 0;
+
+        // 후보 인덱스 수집 (최대치 미만만)
+        var eligible = new List<int>();
+        for (int i = 0; i < longPressKeys.Length; i++)
+        {
+            // 타입 필터 (패딩 null 사용 중이라는 전제)
+            bool isSingleSlot = (SingleWordButtons != null && i < SingleWordButtons.Length && SingleWordButtons[i] != null);
+            bool isDoubleSlot = (DoubleWordButtons != null && i < DoubleWordButtons.Length && DoubleWordButtons[i] != null);
+
+            if (singlesOnly && !isSingleSlot) continue;
+            if (doublesOnly && !isDoubleSlot) continue;
+
+            if (KeyCount.Get(i) < KeyCount.MaxCount)
+                eligible.Add(i);
+        }
+
+        if (eligible.Count == 0) return 0;
+
+        int actuallyAdded = 0;
+
+        for (int n = 0; n < amount; n++)
+        {
+            // 남은 후보가 없으면 중단
+            if (eligible.Count == 0) break;
+
+            // 랜덤 후보 하나 뽑기
+            int pick = Random.Range(0, eligible.Count);
+            int idx = eligible[pick];
+
+            // 한 칸 올리기 (KeyCount가 OnChanged로 UI 자동 갱신)
+            KeyCount.AddAt(idx, 1);
+            actuallyAdded++;
+
+            // 꽉 찼으면 후보에서 제거
+            if (KeyCount.Get(idx) >= KeyCount.MaxCount)
+                eligible.RemoveAt(pick);
+        }
+
+        return actuallyAdded;
+    }
+
 
     void NotEnoughFeedback(int index)
     {

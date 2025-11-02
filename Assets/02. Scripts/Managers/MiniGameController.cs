@@ -1,11 +1,13 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 public class MiniGameController : MonoBehaviour
 {
     [Header("게임 목록(패널 또는 프리팹)")]
     [SerializeField] private GameObject[] minigames;
+    [SerializeField] public KeyBoardManager keyboard;
 
     [Header("타이머 UI (Slider)")]
     [SerializeField] private Slider timer;
@@ -143,6 +145,7 @@ public class MiniGameController : MonoBehaviour
         {
             // 패널 쪽 애니메이션/상태는 기존 함수 그대로 사용
             algorithmPanel.StartCoroutine(algorithmPanel.CloasePageTab());
+            int added = keyboard.GrantRandomLetters(ClearCount);
         }
     }
 }

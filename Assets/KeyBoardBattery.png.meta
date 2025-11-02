@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: f939cd4922f386848a18e942f6dd4c46
+guid: e869a243f7550be45a497cf6286899a0
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -2264358371099610920
-    second: Square Frame_Black_0
+      213: 6187348341464804266
+    second: KeyBoardBattery_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -37,7 +37,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 0
+    filterMode: 1
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -46,10 +46,10 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 1
+  spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
-  alignment: 9
+  alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
   spritePixelsToUnits: 100
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
@@ -75,7 +75,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 0
+    textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -113,111 +113,23 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Square Frame_Black_0
+      name: KeyBoardBattery_0
       rect:
         serializedVersion: 2
         x: 0
-        y: 18
-        width: 24
+        y: 0
+        width: 20
         height: 4
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 8d0fc6efe026390e0800000000000000
-      internalID: -2264358371099610920
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Square Frame_Black_1
-      rect:
-        serializedVersion: 2
-        x: 0
-        y: 14
-        width: 24
-        height: 4
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 40b159e0b9bb7904f80db44a9045cf4c
-      internalID: -2002421003
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Square Frame_Black_2
-      rect:
-        serializedVersion: 2
-        x: 0
-        y: 10
-        width: 24
-        height: 4
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 01a295744a81a314e81c7195fa7c72fb
-      internalID: -1383159859
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Square Frame_Black_3
-      rect:
-        serializedVersion: 2
-        x: 0
-        y: 6
-        width: 24
-        height: 4
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 2655874cb1ce7a140b4410c59cf3e677
-      internalID: 1244720112
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Square Frame_Black_4
-      rect:
-        serializedVersion: 2
-        x: 0
-        y: 2
-        width: 24
-        height: 4
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 09643c1fdd421d540bb394f137093692
-      internalID: 601971382
+      spriteID: aabac9ad880edd550800000000000000
+      internalID: 6187348341464804266
       vertices: []
       indices: 
       edges: []
@@ -226,23 +138,17 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 5e97eb03825dee720800000000000000
-    internalID: 1537655665
+    spriteID: 
+    internalID: 0
     vertices: []
     indices: 
     edges: []
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries:
-      - key: SpriteEditor.SliceSettings
-        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":5.0},"gridSpriteSize":{"x":24.0,"y":4.0},"gridSpriteOffset":{"x":0.0,"y":2.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
+      entries: []
     nameFileIdTable:
-      Square Frame_Black_0: -2264358371099610920
-      Square Frame_Black_1: -2002421003
-      Square Frame_Black_2: -1383159859
-      Square Frame_Black_3: 1244720112
-      Square Frame_Black_4: 601971382
+      KeyBoardBattery_0: 6187348341464804266
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

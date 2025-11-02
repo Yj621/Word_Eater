@@ -14,12 +14,26 @@ public class LongPressKey : MonoBehaviour, IPointerDownHandler, IPointerUpHandle
     public KeyType keyType = KeyType.Single;
     public int index = 0;
     public float longPressThreshold = 0.35f;
+    public GameObject[] KeyBoardBatterys;
 
     bool pressing;
     bool fired;
     Coroutine waitCo;
-    PointerEventData lastDownEvent;
+    PointerEventData lastDownEvent; 
 
+    public void SetValue(int value, int max)
+    {
+        if (KeyBoardBatterys == null || KeyBoardBatterys.Length == 0) return;
+        value = Mathf.Clamp(value, 0, max);
+
+        for (int i = 0; i < KeyBoardBatterys.Length; i++)
+        {
+            var cell = KeyBoardBatterys[i];
+            if (!cell) continue;
+            bool on = i < value;        
+            cell.SetActive(on);
+        }
+    }
     public void OnPointerDown(PointerEventData eventData)
     {
         lastDownEvent = eventData;
@@ -58,5 +72,10 @@ public class LongPressKey : MonoBehaviour, IPointerDownHandler, IPointerUpHandle
                 else manager.PressDouble(index, lastDownEvent);
             }
         }
+    }
+
+    public void RefreshVisuals(int count, int globalMax)
+    {
+        SetValue(count, globalMax);
     }
 }
