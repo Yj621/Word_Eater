@@ -11,8 +11,11 @@ public class TutoMamager : MonoBehaviour
     public GameObject ExplainImg;
     public TMP_Text ExplainText;
 
+    public TMP_Text OutputText;
+
     private int stepIndex = 0;
     private Button currentButton;
+
 
     private bool clicked = false;
 
@@ -51,7 +54,7 @@ public class TutoMamager : MonoBehaviour
                         ExplainText.text = "배경 설정 설명문";
                         break;
 
-                    case 1:
+                    case 2:
                         ExplainText.text = "단어 생성과 Submit 설명문";
                         break;
 
@@ -83,10 +86,22 @@ public class TutoMamager : MonoBehaviour
 
             // 모든 버튼 비활성화
             foreach (var btn in TutoButtons)
-                btn.interactable = false;
+                btn.GetComponent<Image>().raycastTarget = false;
 
+            //전화 끄기는 텍스트가 나온 뒤에
+            if (stepIndex == 6)
+            {
+                TouchEffect.gameObject.SetActive(false);
+
+                yield return new WaitUntil(() => OutputText.text.Contains(":"));
+
+                TouchEffect.gameObject.SetActive(true);
+                currentButton.GetComponent<Image>().raycastTarget = true;
+
+            }
             // 현재 단계 버튼만 활성화
-            currentButton.interactable = true;
+            else currentButton.GetComponent<Image>().raycastTarget = true;
+
 
             // 이미지 위치 이동
             TouchEffect.transform.position = currentButton.transform.position;
