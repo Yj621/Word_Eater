@@ -43,6 +43,7 @@ public class KeyBoardManager : MonoBehaviour
 
     public TextMeshProUGUI resultText; // 결과 표시용 라벨
 
+
     public void PressSingle(int index) => PressSingle(index, null);
     public void PressDouble(int index) => PressDouble(index, null);
     public int GetCount(int index) => (KeyCount.isReady ? KeyCount.Get(index) : 0);
@@ -66,6 +67,10 @@ public class KeyBoardManager : MonoBehaviour
     {
         KeyCount.OnChanged -= OnKeyCountChanged;
     }
+    public void OnPieceDeleted(int invIndex)
+    {
+        KeyCount.AddAt(invIndex, 1);
+    }
 
     void OnKeyCountChanged(int index, int newCount)
     {
@@ -84,7 +89,7 @@ public class KeyBoardManager : MonoBehaviour
     {
         if (!IsValidIndex(index, SingleWordButtons, SingleWords)) return; 
         if (!TryConsumeAndRefresh(index, 1)) return; 
-        BeginDragSpawn(SingleWordButtons[index], SingleWords[index], ev);
+        BeginDragSpawn(SingleWordButtons[index], SingleWords[index], ev, index);
     }
 
     public void PressDouble(int index, PointerEventData ev)
@@ -99,8 +104,7 @@ public class KeyBoardManager : MonoBehaviour
 
         int cost = isShiftPressed ? 2 : 1;
         if (!TryConsumeAndRefresh(index, cost)) { NotEnoughFeedback(index); return; }
-
-        BeginDragSpawn(btn, prefab, ev);
+        BeginDragSpawn(btn, prefab, ev, index);
     }
 
 
@@ -114,7 +118,6 @@ public class KeyBoardManager : MonoBehaviour
     {
         if (!TryBuildWord(out var word)) return;
         if (resultText) resultText.text = word;
-        Debug.Log($"[Submit] {word}");
     }
 
     bool CanBuildWord()
@@ -302,36 +305,30 @@ public class KeyBoardManager : MonoBehaviour
         return true;
     }
 
-    
-    void BeginDragSpawn(Button button, GameObject prefab, PointerEventData ev)
+
+    void BeginDragSpawn(Button button, GameObject prefab, PointerEventData ev, int invIndex)
     {
         var buttonRT = button.GetComponent<RectTransform>();
-
-        // UI 프리팹 판정
-        bool isUIPrefab = prefab.GetComponent<RectTransform>() != null
-                       && prefab.GetComponent<CanvasRenderer>() != null;
-
-        // 스크린 좌표 계산 (버튼 위치 기준)
         Vector2 buttonScreen = RectTransformUtility.WorldToScreenPoint(uiCamera, buttonRT.position);
         Vector2 startScreen = ev != null ? ev.position : buttonScreen;
+
+        bool isUIPrefab = prefab.GetComponent<RectTransform>() && prefab.GetComponent<CanvasRenderer>();
 
         if (isUIPrefab)
         {
             var root = ResolveUISpawnRoot();
-
-            // 스크린 -> 로컬
             RectTransformUtility.ScreenPointToLocalPointInRectangle(root, startScreen, uiCamera, out var local);
-
             var go = Instantiate(prefab, root);
             var rt = go.GetComponent<RectTransform>();
-            // 드래그 전용 기본 세팅
             rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
             rt.pivot = new Vector2(0.5f, 0.5f);
             rt.anchoredPosition = local + (Vector2)spawnOffset;
             rt.localScale = Vector3.one;
+
             var drag = go.GetComponent<DraggableWordUI>();
             drag.Init(root, allowedArea, trashArea, uiCamera);
-            // 드래그 상태 진입
+            drag.BindSource(this, invIndex);     // ★ 원본 인덱스 바인딩
+
             dragIsUI = true;
             dragUIRect = rt;
             dragWorldTr = null;
@@ -341,8 +338,15 @@ public class KeyBoardManager : MonoBehaviour
             var cam = Camera.main;
             var sp = new Vector3(startScreen.x, startScreen.y, worldDepth);
             var worldPos = cam ? cam.ScreenToWorldPoint(sp) : buttonRT.position;
-
             var go = Instantiate(prefab, worldPos + spawnOffset, Quaternion.identity);
+
+            var drag = go.GetComponent<DraggableWordUI>();
+            if (drag != null)
+            {
+                // 월드 프리팹이어도 바인딩만은 해둔다(환불용)
+                drag.Init(null, null, null, null);
+                drag.BindSource(this, invIndex);
+            }
 
             dragIsUI = false;
             dragUIRect = null;
@@ -350,7 +354,7 @@ public class KeyBoardManager : MonoBehaviour
         }
 
         dragging = true;
-        activePointerId = ev != null ? ev.pointerId : -1; // 마우스 기본 -1
+        activePointerId = ev != null ? ev.pointerId : -1;
     }
 
     RectTransform ResolveUISpawnRoot()

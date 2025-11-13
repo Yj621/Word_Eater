@@ -28075,6 +28075,7 @@ MonoBehaviour:
   allowedArea: {fileID: 720936762}
   trashArea: {fileID: 265061037}
   resultText: {fileID: 156466874}
+  ui: {fileID: 321487235}
 --- !u!1 &1447967245
 GameObject:
   m_ObjectHideFlags: 0

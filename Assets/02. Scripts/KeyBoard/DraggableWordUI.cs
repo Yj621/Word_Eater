@@ -4,13 +4,16 @@ using UnityEngine.UI;
 
 public class DraggableWordUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
-    RectTransform rt;                 // ³» RectTransform
-    RectTransform dragRoot;           // È­¸é ÀüÃ¼¸¦ µ¤´Â µå·¡±× ·çÆ®(= uiSpawnRoot)
-    RectTransform allowedArea;        // Çã¿ë ±¸¿ª
-    RectTransform trashArea;          // ¾²·¹±âÅë
-    Camera uiCamera;                  // Overlay¸é null
+    RectTransform rt;                 // ë‚´ RectTransform
+    RectTransform dragRoot;           // í™”ë©´ ì „ì²´ë¥¼ ë®ëŠ” ë“œë˜ê·¸ ë£¨íŠ¸(= uiSpawnRoot)
+    RectTransform allowedArea;        // í—ˆìš© êµ¬ì—­
+    RectTransform trashArea;          // ì“°ë ˆê¸°í†µ
+    Camera uiCamera;                  // Overlayë©´ null
 
-    CanvasGroup cg;                   // µå·¡±× Áß Raycast ¸·±â¿ë(¼±ÅÃ)
+    CanvasGroup cg;                   // ë“œë˜ê·¸ ì¤‘ Raycast ë§‰ê¸°ìš©(ì„ íƒ)
+
+    int sourceInventoryIndex = -1;
+    KeyBoardManager owner;
 
     public void Init(RectTransform dragRoot, RectTransform allowedArea, RectTransform trashArea, Camera uiCamera)
     {
@@ -18,6 +21,12 @@ public class DraggableWordUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         this.allowedArea = allowedArea;
         this.trashArea = trashArea;
         this.uiCamera = uiCamera;
+    }
+
+    public void BindSource(KeyBoardManager _keyboardm, int invIndex)
+    {
+        owner = _keyboardm;
+        sourceInventoryIndex = invIndex;
     }
 
     void Awake()
@@ -30,10 +39,10 @@ public class DraggableWordUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     {
         if (!rt || !dragRoot) return;
 
-        // µå·¡±× Áß ´Ù¸¥ UI¿Í Ãæµ¹ ÁÙÀÌ±â
+        // ë“œë˜ê·¸ ì¤‘ ë‹¤ë¥¸ UIì™€ ì¶©ëŒ ì¤„ì´ê¸°
         cg.blocksRaycasts = false;
 
-        // È­¸é ÃÖ»ó´ÜÀ¸·Î
+        // í™”ë©´ ìµœìƒë‹¨ìœ¼ë¡œ
         rt.SetAsLastSibling();
     }
 
@@ -49,14 +58,16 @@ public class DraggableWordUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        // ¾²·¹±âÅë ¾È¿¡ µå·Ó ¡æ »èÁ¦
+        // ì“°ë ˆê¸°í†µ ì•ˆì— ë“œë¡­ â†’ ì‚­ì œ
         if (trashArea && RectTransformUtility.RectangleContainsScreenPoint(trashArea, eventData.position, uiCamera))
         {
+            if (owner && sourceInventoryIndex >= 0)
+                owner.OnPieceDeleted(sourceInventoryIndex);
             Destroy(gameObject);
             return;
         }
 
-        // Çã¿ë ±¸¿ª ¹Û ¡æ »èÁ¦
+        // í—ˆìš© êµ¬ì—­ ë°– â†’ ì‚­ì œ
         if (allowedArea && !RectTransformUtility.RectangleContainsScreenPoint(allowedArea, eventData.position, uiCamera))
         {
             Destroy(gameObject);
@@ -70,7 +81,7 @@ public class DraggableWordUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
             magnet.TrySnap(dragRoot, uiCamera);
         }
 
-        // Á¤»ó µå·Ó ¡æ ±×´ë·Î °íÁ¤
+        // ì •ìƒ ë“œë¡­ â†’ ê·¸ëŒ€ë¡œ ê³ ì •
         cg.blocksRaycasts = true;
     }
 }
