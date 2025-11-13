@@ -1136,3 +1136,7 @@ MonoBehaviour:
   btnVowel: {fileID: 6094656904007665511}
   gridRoot: {fileID: 7482647901412101562}
   jamoButtonTemplate: {fileID: 3189205523268529834, guid: af0b250b7faa76c48a2b5460b002a67c, type: 3}
+  confirmPanel: {fileID: 0}
+  confirmText: {fileID: 0}
+  btnConfirmYes: {fileID: 0}
+  btnConfirmNo: {fileID: 0}
