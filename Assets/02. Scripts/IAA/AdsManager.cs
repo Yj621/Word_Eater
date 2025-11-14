@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class AdsManager : MonoBehaviour
 {
-    public static AdsManager I { get; private set; }
+    public static AdsManager Instance { get; private set; }
 
 #if UNITY_ANDROID
     [SerializeField] private string rewardedAdRevivalId = "ca-app-pub-1881501262849586/3221896109"; // 테스트용
@@ -20,8 +20,8 @@ public class AdsManager : MonoBehaviour
 
     private void Awake()
     {
-        if (I != null) { Destroy(gameObject); return; }
-        I = this;
+        if (Instance != null) { Destroy(gameObject); return; }
+        Instance = this;
         DontDestroyOnLoad(gameObject);
     }
 

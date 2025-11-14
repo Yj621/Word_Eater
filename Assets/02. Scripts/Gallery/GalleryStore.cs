@@ -48,13 +48,13 @@ public class GalleryStore : MonoBehaviour
 
     public void ClearAll()
     {
-        // 1) 메모리 데이터 비우기
+        // 메모리 데이터 비우기
         Data.items.Clear();
 
-        // 2) JSON 파일도 덮어쓰기
+        // JSON 파일도 덮어쓰기
         Save();
 
-        // 3) 썸네일 파일들 삭제
+        // 썸네일 파일들 삭제
         string[] thumbs = Directory.GetFiles(Application.persistentDataPath, "thumb_*.png");
         foreach (var path in thumbs)
         {

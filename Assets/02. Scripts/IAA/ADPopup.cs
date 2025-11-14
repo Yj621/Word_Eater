@@ -1,14 +1,19 @@
 using System;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
-public class RevivePopup : MonoBehaviour
+public class ADPopup : MonoBehaviour
 {
     [Header("Refs")]
     [SerializeField] private CanvasGroup canvasGroup;
     [SerializeField] private Button watchAdButton;
     [SerializeField] private Button noThanksButton;
-    [SerializeField] private GameObject spinner; // 로딩 표시용
+
+    [Header("Text Refs")]
+    [SerializeField] private TextMeshProUGUI titleText;
+    [SerializeField] private TextMeshProUGUI watchAdLabel;
+    [SerializeField] private TextMeshProUGUI noThanksLabel;
 
     private Action _onAccept;
     private Action _onDecline;
@@ -21,15 +26,22 @@ public class RevivePopup : MonoBehaviour
         HideImmediate();
     }
 
+    /// <summary>
+    /// 이번 팝업의 용도(부활/배터리 등)에 맞게 문구 설정
+    /// </summary>
+    public void Configure(string title, string watchAdText, string noThanksText)
+    {
+        if (titleText != null) titleText.text = title;
+        if (watchAdLabel != null) watchAdLabel.text = watchAdText;
+        if (noThanksLabel != null) noThanksLabel.text = noThanksText;
+    }
+
     public void Show(Action onAccept, Action onDecline)
     {
         _onAccept = onAccept;
         _onDecline = onDecline;
         _visible = true;
 
-        if (spinner != null) spinner.SetActive(false);
-
-        // 팝업은 UnscaledTime 기반으로 동작 (애니메이션/타이머 쓴다면)
         var cg = canvasGroup;
         if (cg != null)
         {
@@ -38,7 +50,6 @@ public class RevivePopup : MonoBehaviour
             cg.interactable = true;
         }
 
-        // 최상단 보장(없다면 추가)
         var canvas = GetComponentInParent<Canvas>();
         if (canvas != null)
         {
@@ -74,26 +85,21 @@ public class RevivePopup : MonoBehaviour
     {
         if (!_visible) return;
 
-        if (spinner != null) spinner.SetActive(true);
         watchAdButton.interactable = false;
         noThanksButton.interactable = false;
 
-        // 광고 표시
-        AdsManager.I.ShowReviveAd(
-            onRevive: () =>
+        AdsManager.Instance.ShowRewarded(
+            onRewardEarned: () =>
             {
-                // 광고 보상 수령 → 부활 승인
-                _onAccept?.Invoke();
+                _onAccept?.Invoke();  // 부활 / 배터리 충전 / 기타 보상
                 Hide();
                 ResetButtons();
             },
-            onFail: () =>
+            onUnavailable: () =>
             {
-                // 광고가 준비 안됨/실패 → 안내 후 버튼 복구
-                if (spinner != null) spinner.SetActive(false);
                 watchAdButton.interactable = true;
                 noThanksButton.interactable = true;
-                Debug.LogWarning("[Revive] 광고가 준비되지 않았습니다. 잠시 후 다시 시도해주세요.");
+                Debug.LogWarning("[Ads] 광고가 준비되지 않았습니다. 잠시 후 다시 시도해주세요.");
             }
         );
     }
@@ -107,7 +113,6 @@ public class RevivePopup : MonoBehaviour
 
     private void ResetButtons()
     {
-        if (spinner != null) spinner.SetActive(false);
         watchAdButton.interactable = true;
         noThanksButton.interactable = true;
     }

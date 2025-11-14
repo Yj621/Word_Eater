@@ -39,7 +39,10 @@ public class PhoneSwiper : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
         if (!viewport) viewport = transform as RectTransform;
 
         if (pages == null || pages.Length == 0)
-            pages = content.Cast<Transform>().Select(t => t as RectTransform).Where(r => r != null).ToArray();
+            pages = content.Cast<Transform>()
+                           .Select(t => t as RectTransform)
+                           .Where(r => r != null)
+                           .ToArray();
 
         pageCount = pages.Length;
         startPage = Mathf.Clamp(startPage, 0, Mathf.Max(0, pageCount - 1));
@@ -75,24 +78,30 @@ public class PhoneSwiper : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
 
     void Relayout()
     {
-        pageWidth = viewport.rect.width;
+        // 페이지 폭 기준 계산 (원본 page 크기 유지)
+        if (pageCount > 0)
+        {
+            // 프리팹/에디터에서 설정한 첫 번째 페이지 width 사용
+            pageWidth = pages[0].rect.width;
+        }
+        else
+        {
+            pageWidth = viewport ? viewport.rect.width : 0f;
+        }
 
-        // content는 가운데 기준
-        content.anchorMin = content.anchorMax = new Vector2(0.5f, 0.5f);
-        content.pivot = new Vector2(0.5f, 0.5f);
+        // content.anchorMin / anchorMax / pivot / sizeDelta 전혀 건드리지 않음
 
-        // 각 페이지를 가로로 나열(화면 크기에 맞춰 꽉 채움)
+        // 각 페이지의 x 위치만 index * pageWidth로 배치
         for (int i = 0; i < pageCount; i++)
         {
             var p = pages[i];
-            p.anchorMin = p.anchorMax = new Vector2(0.5f, 0.5f);
-            p.pivot = new Vector2(0.5f, 0.5f);
-            p.sizeDelta = new Vector2(viewport.rect.width, viewport.rect.height);
-            p.anchoredPosition = new Vector2(i * pageWidth, 0f);
+
+            // 원본 anchor/pivot/sizeDelta는 그대로 사용
+            var pos = p.anchoredPosition;
+            pos.x = i * pageWidth;      // 가로로 나열
+            p.anchoredPosition = pos;
         }
 
-        // content 폭을 넉넉히(필수는 아님)
-        content.sizeDelta = new Vector2(pageCount * pageWidth, viewport.rect.height);
     }
 
     public void OnBeginDrag(PointerEventData eventData)
@@ -104,6 +113,7 @@ public class PhoneSwiper : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
         if (snapCo != null) StopCoroutine(snapCo);
     }
 
+
     public void OnDrag(PointerEventData eventData)
     {
         if (isUsingTab || !dragging) return;
@@ -112,11 +122,10 @@ public class PhoneSwiper : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
         float targetX = Mathf.Clamp(dragStartContentPos.x + dx, minX, 0f);
         content.anchoredPosition = new Vector2(targetX, dragStartContentPos.y);
     }
-
     public void OnEndDrag(PointerEventData eventData)
     {
         if (isUsingTab)
-        {                      
+        {
             dragging = false;
             SnapTo(current);
             return;
@@ -127,7 +136,7 @@ public class PhoneSwiper : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
         if (Mathf.Abs(totalDx) > swipeThreshold)
         {
             if (totalDx < 0) SetPage(current + 1);   // 왼쪽으로 넘김 → 다음 페이지
-            else SetPage(current - 1);   // 오른쪽으로 넘김 → 이전 페이지
+            else SetPage(current - 1);               // 오른쪽으로 넘김 → 이전 페이지
         }
         else
         {
@@ -142,11 +151,17 @@ public class PhoneSwiper : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
     public void SetPage(int index)
     {
         index = Mathf.Clamp(index, 0, pageCount - 1);
-        if (index == current) { SnapTo(current); return; }
+        if (index == current)
+        {
+            SnapTo(current);
+            return;
+        }
+
         current = index;
         SnapTo(current);
         UpdateDots();
     }
+
 
     void JumpTo(int index)
     {

@@ -24,10 +24,8 @@ namespace WordEater.Systems
         [Header("시작 칸 수")]
         [SerializeField] private int startCells = 5; // 게임 시작 시 충전 상태 (기본 풀 충전)
 
-/*        [Header("몇 번 시도에 1칸 소모할지")]
-        [SerializeField] private int feedAttemptsPerCell = 2;      // FeedData: 2번 시도 → 1칸
-        [SerializeField] private int optimizeAttemptsPerCell = 2;  // OptimizeAlgo: 2번 시도 → 1칸
-*/
+        [Header("광고 충전 팝업")]
+        [SerializeField] private ADPopup batteryPopup; // 같은 프리팹이어도 되고, 다른 오브젝트여도 됨
 
         // 누적 카운터
         private int feedCountBuffer = 0;
@@ -56,6 +54,36 @@ namespace WordEater.Systems
             currentBattery = Mathf.Clamp(currentBattery, 0, 100);
             SyncCellsFromPercent();
             RaiseChanged();
+        }
+
+        /// <summary>
+        /// 광고 보고 배터리 충전 팝업 표시
+        /// - UI 버튼 OnClick에 이 메서드를 연결해서 사용
+        /// </summary>
+        public void ShowBatteryAdPopup()
+        {
+            if (batteryPopup == null)
+            {
+                Debug.LogWarning("[Battery] batteryAdPopup 미할당");
+                return;
+            }
+
+            batteryPopup.Configure(
+                title: "광고보고 배터리 충전하기",
+                watchAdText: "충전하기",
+                noThanksText: "아니오"
+            );
+
+            batteryPopup.Show(
+                onAccept: () =>
+                {
+                    RefillToMax();
+                },
+                onDecline: () =>
+                {
+                    Debug.Log("[Battery] 광고 충전 거절");
+                }
+            );
         }
 
 
@@ -97,6 +125,16 @@ namespace WordEater.Systems
             RaiseChanged();
         }
 
+        /// <summary>
+        /// 배터리를 100%로 완전 회복
+        /// </summary>
+        public void RefillToMax()
+        {
+            currentBattery = 100;    // 퍼센트 기준
+            SyncCellsFromPercent();  // 칸 환산
+            RaiseChanged();          // UI & 이벤트 반영
+        }
+
         /// <summary>외부에서 퍼센트로 직접 세팅(테스트용)</summary>
         public void SetBatteryPercent(int percent)
         {
@@ -116,7 +154,7 @@ namespace WordEater.Systems
                 default: return 1f;
             }
         }
-        // ---- 내부 유틸 ----
+        // 내부 유틸
 
         private void Consume(float cellsToConsume)
         {
@@ -127,16 +165,28 @@ namespace WordEater.Systems
         }
 
 
+        /// <summary>
+        /// currentBattery(%) 값을 기준으로 칸(CurrentCells)을 다시 계산하여 동기화
+        /// - 1%라도 남아 있으면 최소 1칸으로 표시하도록 Ceil 방식 사용
+        /// - 항상 0 ~ MaxCells 범위로 클램프
+        /// </summary>
         private void SyncCellsFromPercent()
         {
             CurrentCells = Mathf.Clamp(
-                Mathf.CeilToInt(maxCells * (currentBattery / 100f)), // Round 대신 Ceil로 변경하여 1%라도 남으면 1칸으로 표시
-                0, MaxCells);
+                Mathf.CeilToInt(maxCells * (currentBattery / 100f)),
+                0,
+                MaxCells
+            );
         }
 
+
+        /// <summary>
+        /// 배터리 상태 변경 이벤트를 호출
+        /// - UI 및 시스템 전반에서 CurrentCells, MaxCells, 퍼센트를 업데이트하는 용도로 사용
+        /// - GameEvents.OnBatteryChanged(CurrentCells, MaxCells, currentBattery) 호출
+        /// </summary>
         private void RaiseChanged()
         {
-            // UI 텍스트는 퍼센트를 직접 사용하도록 이벤트 인자 변경
             GameEvents.OnBatteryChanged?.Invoke(CurrentCells, MaxCells, currentBattery);
         }
     }

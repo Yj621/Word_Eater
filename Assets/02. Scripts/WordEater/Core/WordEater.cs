@@ -35,7 +35,7 @@ namespace WordEater.Core
         private TurnController turn;   // 턴/오답 관리자
         private WordEntry currentEntry; // 현재 단어 데이터(주제/연관어 포함)
 
-        private string pendingEvoId; // Bit/Byte 동안 쓸 임시 키=
+        private string pendingEvoId; // Bit/Byte 동안 쓸 임시 키
 
 
         private void Awake()
@@ -70,10 +70,10 @@ namespace WordEater.Core
                 // 현재 단어 선택
                 currentEntry = wordService.PickInitialWord();
 
-                // ✅ 임시 키 생성 (한 생애 내내 고정)
+                //  임시 키 생성 (한 생애 내내 고정)
                 pendingEvoId = $"evo_{System.DateTime.UtcNow.Ticks}";
 
-                // ✅ Bit 썸네일을 임시 키로 저장
+                //  Bit 썸네일을 임시 키로 저장
                 if (sr != null)
                     GalleryCapture.SaveSpriteThumb(sr, $"thumb_{pendingEvoId}_s0", 256);
 
@@ -90,7 +90,7 @@ namespace WordEater.Core
                 if (s == GrowthStage.Byte)
                 {
                     if (sr != null) sr.sprite = ByteImg;
-                    // ✅ Byte 썸네일을 임시 키로 저장
+                    //  Byte 썸네일을 임시 키로 저장
                     if (sr != null)
                         GalleryCapture.SaveSpriteThumb(sr, $"thumb_{pendingEvoId}_s1", 256);
                 }
@@ -101,15 +101,15 @@ namespace WordEater.Core
             }
 
             // BeginStage 끝부분(초기 진입 포함)
-            if (GameReviveSystem.I != null && battery != null)
+            if (GameReviveSystem.Instance != null && battery != null)
             {
-                GameReviveSystem.I.SaveCheckpoint(this, battery.CurrentPercent);
+                GameReviveSystem.Instance.SaveCheckpoint(this, battery.CurrentPercent);
             }
 
             // EvolveOrFinish에서 다음 단계 단어 배정 직후
-            if (GameReviveSystem.I != null && battery != null)
+            if (GameReviveSystem.Instance != null && battery != null)
             {
-                GameReviveSystem.I.SaveCheckpoint(this, battery.CurrentPercent);
+                GameReviveSystem.Instance.SaveCheckpoint(this, battery.CurrentPercent);
             }
 
             currentAnswer = currentEntry.word;
@@ -179,7 +179,7 @@ namespace WordEater.Core
             // TODO: 배율 스택 += 1
         }
 
-        // === 내부 로직 =======================================================
+        // 내부 로직
 
         private bool IsCorrect(string input, string answer)
         {
@@ -213,6 +213,8 @@ namespace WordEater.Core
             currentAnswer = currentEntry.word;
             GameEvents.OnNewWordAssigned?.Invoke(currentAnswer);
 
+            // 배터리 채워주기
+            battery.RefillToMax();
 
             stage = (GrowthStage)((int)stage + 1);
             GameEvents.OnEvolved?.Invoke(stage);
@@ -225,17 +227,17 @@ namespace WordEater.Core
         /// </summary>
         private void WordEaterDie()
         {
-            if (isDead) return; 
+            if (isDead) return;
             isDead = true;
             GameEvents.OnDied?.Invoke();
 
             enabled = false;
 
             // 광고 팝업 띄우고, 거절하면 그때 엔딩
-            if (GameReviveSystem.I != null)
+            if (GameReviveSystem.Instance != null)
             {
                 Debug.Log("광고 팝업 띄울겨");
-                GameReviveSystem.I.OnPlayerDied(onGiveUp: () =>
+                GameReviveSystem.Instance.OnPlayerDied(onGiveUp: () =>
                 {
                     // 정말 포기한 경우에만 게임오버 연출로 이동
                     gamemanager.EndingController(1);
@@ -246,7 +248,6 @@ namespace WordEater.Core
                 // 시스템이 없으면 안전하게 기존 흐름 유지
                 gamemanager.EndingController(1);
             }
-
         }
 
         // 부활시
@@ -306,7 +307,7 @@ namespace WordEater.Core
         {
             var entry = currentEntry;
 
-            // ✅ 최종 키: Word 단계의 MakeStableId (예: "2-수학")
+            // 최종 키: Word 단계의 MakeStableId (예: "2-수학")
             string finalId = MakeStableId(entry);
 
             // 임시 경로/최종 경로
@@ -316,11 +317,11 @@ namespace WordEater.Core
             string finS0 = Path.Combine(baseDir, $"thumb_{finalId}_s0.png");
             string finS1 = Path.Combine(baseDir, $"thumb_{finalId}_s1.png");
 
-            // ✅ Bit/Byte 파일을 최종 키 이름으로 이동(있을 때만)
+            // Bit/Byte 파일을 최종 키 이름으로 이동(있을 때만)
             MoveIfExists(tmpS0, finS0);
             MoveIfExists(tmpS1, finS1);
 
-            // ✅ Word 썸네일은 최종 키로 저장
+            // Word 썸네일은 최종 키로 저장
             var sr = GetComponent<SpriteRenderer>();
             string finS2 = Path.Combine(baseDir, $"thumb_{finalId}_s2.png");
             GalleryCapture.SaveSpriteThumb(sr, $"thumb_{finalId}_s2", 256);
