@@ -455,8 +455,18 @@ public class KeyBoardManager : MonoBehaviour
 
     bool TryGetPointerScreenPos(int pointerId, out Vector2 pos)
     {
+#if ENABLE_INPUT_SYSTEM
+        // 새 입력 시스템: Pointer.current가 있으면 그 좌표 사용
+        var pointer = UnityEngine.InputSystem.Pointer.current;
+        if (pointer != null)
+        {
+            pos = pointer.position.ReadValue();
+            return true;
+        }
+#endif
+
+        // 구 입력 시스템: 에디터/PC는 마우스, 모바일은 터치
 #if UNITY_EDITOR || UNITY_STANDALONE
-        // 마우스면 pointerId가 -1이든 0이든 그냥 커서 좌표 반환
         pos = Input.mousePosition;
         return true;
 #else
@@ -465,16 +475,22 @@ public class KeyBoardManager : MonoBehaviour
         var t = Input.GetTouch(i);
         if (t.fingerId == pointerId) { pos = t.position; return true; }
     }
-    pos = default;
-    return false;
+    // 만약 위가 실패하면 마우스 좌표로도 폴백 (일부 기기에서 유효)
+    pos = Input.mousePosition;
+    return true;
 #endif
     }
 
 
     bool IsPointerReleased(int pointerId)
     {
+#if ENABLE_INPUT_SYSTEM
+        var pointer = UnityEngine.InputSystem.Pointer.current;
+        // pointer가 없거나 press가 풀리면 released로 간주
+        return pointer == null || !pointer.press.isPressed;
+#else
 #if UNITY_EDITOR || UNITY_STANDALONE
-        return Input.GetMouseButtonUp(0);     
+    return Input.GetMouseButtonUp(0);
 #else
     for (int i = 0; i < Input.touchCount; i++)
     {
@@ -483,8 +499,8 @@ public class KeyBoardManager : MonoBehaviour
             (t.phase == TouchPhase.Ended || t.phase == TouchPhase.Canceled))
             return true;
     }
-    return false;                           
+    return false;
+#endif
 #endif
     }
-
 }
