@@ -6,6 +6,7 @@ using WordEater.Services;
 using WordEater.Systems;
 using UnityEngine.SceneManagement;
 using static UnityEngine.EventSystems.EventTrigger;
+using System.Collections;
 
 namespace WordEater.Core
 {
@@ -123,34 +124,45 @@ namespace WordEater.Core
         public void DoFeedData(string userInput)
         {
 
+            if (isDead) return;
+
+            // 배터리 먼저
             if (!battery.TryConsume(ActionType.FeedData))
-                return; // OnActionBlockedLowBattery 이벤트로 HUD/토스트 띄우기
-
-
-            // 턴 소모(FeedData는 1턴)
-            if (!turn.ConsumeTurn(ActionType.FeedData))
-            {
-                WordEaterDie();
                 return;
-            }
 
-            if (turn.TurnsLeft <= 0) { WordEaterDie(); return; }
-            // 정답 판정(v1 : 완전 일치, v2 : 오타/의미 유사도 확정 예정)
+            // 턴 소모
+            turn.ConsumeTurn(ActionType.FeedData);
+
+            // 정답 판정
             bool ok = IsCorrect(userInput, currentAnswer);
             GameEvents.OnFeedResult?.Invoke(userInput, ok);
 
             if (ok)
             {
+                // 정답인 경우는 원래 흐름대로
                 EvolveOrFinish();
             }
             else
             {
-                if (!turn.RegisterMistake()) {WordEaterDie(); return; }
+                // 오답인 경우 오답 연출 이벤트
+                turn.RegisterMistake();
             }
 
+            // 마지막에 한 번만 죽을지 판단
+            //    - 턴이 다 떨어졌거나
+            //    - 오답 허용치를 넘었거나
+            if (turn.TurnsLeft <= 0 || turn.MistakesLeft < 0)
+            {
+                // FX가 먼저 보이도록 약간 기다렸다가 사망 처리
+                StartCoroutine(DieAfterMistakeFx());
+            }
+        }
+        private IEnumerator DieAfterMistakeFx()
+        {
+            // 오답 FX(DOTween) 한 사이클 정도 보이게 0.3~0.5초 정도 대기
+            yield return new WaitForSeconds(0.35f);
 
-            // 턴 바닥나면 사망
-            if (turn.TurnsLeft <= 0) { WordEaterDie(); return; }
+            WordEaterDie();
         }
 
         /// <summary>

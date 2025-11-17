@@ -50,6 +50,12 @@ namespace WordEater.Core
             Debug.Log("Left Mistake : " + MistakesLeft);
             // 래퍼로 호출
             GameEvents.RaiseMistakesChanged(MistakesLeft);
+
+            // 오답 연출
+            GameEvents.RaiseMistakeHit();
+            // 진동
+            Handheld.Vibrate();
+
             return MistakesLeft >= 0;
         }
 
@@ -60,7 +66,7 @@ namespace WordEater.Core
         }
 
         /// <summary>
-        /// ✅ 부활 복원을 위한 강제 복원 API (권장: stage 넘겨서 룰에 맞게 Clamp)
+        /// 부활 복원을 위한 강제 복원 API (권장: stage 넘겨서 룰에 맞게 Clamp)
         /// </summary>
         public void ForceRestore(int turnsLeft, int mistakesLeft, GrowthStage stage)
         {
@@ -74,7 +80,7 @@ namespace WordEater.Core
         }
 
         /// <summary>
-        /// (옵션) stage 없이 그대로 복원 – 기존 호출부 호환용
+        /// stage 없이 그대로 복원 – 기존 호출부 호환용
         /// </summary>
         public void ForceRestore(int turnsLeft, int mistakesLeft)
         {
