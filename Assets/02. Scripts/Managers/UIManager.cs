@@ -14,9 +14,12 @@ public class UIManager : MonoBehaviour
     private Vector2 _showPosition = new Vector2(0, 0);       // Y = 0
     private Vector2 _hidePosition = new Vector2(0, -450);    // Y = -480
 
+    public GameObject PageIcon;
+
     void Start()
     {
         phoneSwiper = GetComponent<PhoneSwiper>();
+        PageIcon.SetActive(true);
     }
 
     /// <summary>
@@ -41,7 +44,7 @@ public class UIManager : MonoBehaviour
     /// </summary>
     public void OpenKeyboard()
     {
-
+        PageIcon.SetActive(false);
         if (_isKeyboardOpen) return;
         _isKeyboardOpen = true;
 
@@ -55,6 +58,7 @@ public class UIManager : MonoBehaviour
     /// </summary>
     public void CloseKeyboard()
     {
+        PageIcon.SetActive(true);
         if (!_isKeyboardOpen) return;
         _isKeyboardOpen = false;
 

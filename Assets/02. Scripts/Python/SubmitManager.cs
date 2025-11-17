@@ -37,6 +37,7 @@ public class SubmitManager : MonoBehaviour
                 NoticeManager.Instance.ShowTimed("Uncorrect Word!", 2f);
             }
         }));
+        uimanager.CloseKeyboard();
     }
 
     public void OnRelevantButton() {
