@@ -8587,7 +8587,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 17818284bf84ab2408b8826de11924e4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::KeyboardAvoider
-  chatRoot: {fileID: 1578392072}
+  target: {fileID: 1578392072}
 --- !u!1 &322545141
 GameObject:
   m_ObjectHideFlags: 0
@@ -44293,7 +44293,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -427.5}
+  m_AnchoredPosition: {x: 0, y: -427.49997}
   m_SizeDelta: {x: 0, y: -915}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1578392073
