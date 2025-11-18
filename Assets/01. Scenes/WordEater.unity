@@ -2238,7 +2238,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 235.55759, y: -75}
+  m_AnchoredPosition: {x: 212.30559, y: -75}
   m_SizeDelta: {x: 350, y: 50}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!114 &77969608
@@ -28629,18 +28629,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 1000577135}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ee1ff7731396f46a6b7c2528e4ea71b1, type: 3}
+  m_Script: {fileID: 11500000, guid: 17818284bf84ab2408b8826de11924e4, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: 
-  inputField: {fileID: 77969608}
-  pythonConnectManager: {fileID: 51999060}
-  inputText: {fileID: 1777265113}
-  resultText: {fileID: 1097319482}
-  resultPanel: {fileID: 2144230655}
-  wordEater: {fileID: 1240265097}
-  batterySystem: {fileID: 1922716698}
-  loading: {fileID: 1097319484}
-  duration: 0.3
+  m_EditorClassIdentifier: Assembly-CSharp::KeyboardAvoider
+  chatRoot: {fileID: 1578392072}
+  keyboardHeightRatio: 0.4
 --- !u!1 &1001079235
 GameObject:
   m_ObjectHideFlags: 0
@@ -33438,7 +33431,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 452.0576, y: -50}
+  m_AnchoredPosition: {x: 428.8056, y: -50}
   m_SizeDelta: {x: 50, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1229974143
@@ -44552,6 +44545,7 @@ GameObject:
   - component: {fileID: 1585313995}
   - component: {fileID: 1585313997}
   - component: {fileID: 1585313996}
+  - component: {fileID: 1585313998}
   m_Layer: 5
   m_Name: Message_Panel
   m_TagString: Untagged
@@ -44617,6 +44611,27 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1585313994}
   m_CullTransparentMesh: 1
+--- !u!114 &1585313998
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1585313994}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ee1ff7731396f46a6b7c2528e4ea71b1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  inputField: {fileID: 77969608}
+  pythonConnectManager: {fileID: 51999060}
+  inputText: {fileID: 1777265113}
+  resultText: {fileID: 1097319482}
+  resultPanel: {fileID: 2144230655}
+  wordEater: {fileID: 1240265097}
+  batterySystem: {fileID: 1922716698}
+  loading: {fileID: 1097319484}
+  duration: 0.3
 --- !u!1 &1585831196
 GameObject:
   m_ObjectHideFlags: 0

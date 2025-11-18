@@ -2,35 +2,38 @@ using UnityEngine;
 
 public class KeyboardAvoider : MonoBehaviour
 {
-    private RectTransform _rect;
-    private Vector2 _originalOffsetMin;
+    [Header("전체 채팅 패널(ScrollRect + 하단바 통째로)")]
+    [SerializeField] private RectTransform chatRoot;
+
+    [Header("대략적인 키보드 높이(화면 높이 비율)")]
+    [Range(0f, 1f)]
+    [SerializeField] private float keyboardHeightRatio = 0.4f; // 40% 정도
+
+    private Vector2 originalOffsetMin;
 
     void Awake()
     {
-        _rect = GetComponent<RectTransform>();
-        _originalOffsetMin = _rect.offsetMin;
+        if (chatRoot == null)
+            chatRoot = GetComponent<RectTransform>();
+
+        originalOffsetMin = chatRoot.offsetMin;
     }
 
-    void Update()
+    /// <summary>
+    /// InputField 에 포커스 들어올 때 호출
+    /// </summary>
+    public void OnInputSelected()
     {
-#if UNITY_EDITOR
-        _rect.offsetMin = _originalOffsetMin;
-        return;
-#endif
+        float kb = Screen.height * keyboardHeightRatio;
+        chatRoot.offsetMin = new Vector2(originalOffsetMin.x,
+                                         originalOffsetMin.y + kb);
+    }
 
-        if (TouchScreenKeyboard.visible)
-        {
-            var kb = TouchScreenKeyboard.area;
-            float h = kb.height;
-
-            _rect.offsetMin = new Vector2(
-                _originalOffsetMin.x,
-                _originalOffsetMin.y + h
-            );
-        }
-        else
-        {
-            _rect.offsetMin = _originalOffsetMin;
-        }
+    /// <summary>
+    /// InputField 포커스 빠질 때 호출
+    /// </summary>
+    public void OnInputDeselected()
+    {
+        chatRoot.offsetMin = originalOffsetMin;
     }
 }
