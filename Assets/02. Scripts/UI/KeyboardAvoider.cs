@@ -2,43 +2,49 @@ using UnityEngine;
 
 public class KeyboardAvoider : MonoBehaviour
 {
-    [Header("키보드에 맞춰 올릴 RectTransform (Input_Group)")]
-    [SerializeField] private RectTransform target;
+    [Header("전체 채팅 패널 (메시지 + Input_Group 부모)")]
+    [SerializeField] private RectTransform chatRoot;
 
-    [Header("추가 보정값 (UI px 단위)")]
-    [SerializeField] private float extraOffset = 200f;  // 필요하면 조절
+    [Header("추가로 더 올리고 싶을 때(UI px)")]
+    [SerializeField] private float extraBottomPadding = 400f;
 
+    private RectTransform canvasRect;
     private Canvas rootCanvas;
-    private Vector2 originalAnchoredPos;
+    private Vector2 originalOffsetMin;
     private float currentKeyboardHeight;
 
     void Awake()
     {
-        if (target == null)
-            target = GetComponent<RectTransform>();
+        if (chatRoot == null)
+            chatRoot = GetComponent<RectTransform>();
 
-        rootCanvas = target.GetComponentInParent<Canvas>();
-        originalAnchoredPos = target.anchoredPosition;
+        rootCanvas = chatRoot.GetComponentInParent<Canvas>();
+        canvasRect = rootCanvas.GetComponent<RectTransform>();
+
+        // 원래 하단 offset 저장
+        originalOffsetMin = chatRoot.offsetMin;
     }
 
     void Update()
     {
 #if UNITY_ANDROID || UNITY_IOS
-        float keyboardHeight = GetKeyboardHeight();  // px
+        float keyboardHeight = GetKeyboardHeight(); // 화면 픽셀 단위
 
         if (!Mathf.Approximately(currentKeyboardHeight, keyboardHeight))
         {
             currentKeyboardHeight = keyboardHeight;
 
-            // 스크린 픽셀 → UI 픽셀
-            float uiKeyboardHeight = keyboardHeight / rootCanvas.scaleFactor;
+            // ── 화면픽셀 → 캔버스 좌표 변환 ──
+            // (CanvasScaler 설정 상관없이 안전하게 변환)
+            float screenHeight = rootCanvas.pixelRect.height;
+            float canvasHeight = canvasRect.rect.height;
+            float pixelToCanvas = canvasHeight / screenHeight;
 
-            // 추가 보정값을 UI px로 변환(스크린 px이면 곱해야 함)
-            float extra = extraOffset;
+            float uiKeyboardHeight = keyboardHeight * pixelToCanvas;
 
-            // 최종 이동
-            target.anchoredPosition =
-                originalAnchoredPos + new Vector2(0f, uiKeyboardHeight + extra);
+            float bottom = originalOffsetMin.y + uiKeyboardHeight + extraBottomPadding;
+
+            chatRoot.offsetMin = new Vector2(originalOffsetMin.x, bottom);
         }
 #endif
     }
@@ -47,7 +53,39 @@ public class KeyboardAvoider : MonoBehaviour
     {
 #if UNITY_EDITOR
         return 0f;
-#elif UNITY_ANDROID || UNITY_IOS
+#elif UNITY_ANDROID
+        // 1) TouchScreenKeyboard 값이 있으면 그거 사용
+        if (TouchScreenKeyboard.visible && TouchScreenKeyboard.area.height > 0)
+            return TouchScreenKeyboard.area.height;
+
+        // 2) 그래도 0이면, 안드로이드 네이티브로 계산
+        try
+        {
+            using (var unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer"))
+            {
+                var activity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
+                var window = activity.Call<AndroidJavaObject>("getWindow");
+                var decorView = window.Call<AndroidJavaObject>("getDecorView");
+                var rect = new AndroidJavaObject("android.graphics.Rect");
+
+                decorView.Call("getWindowVisibleDisplayFrame", rect);
+
+                int visibleHeight = rect.Call<int>("height");
+                int screenHeight = decorView.Call<int>("getHeight");
+                int keyboardHeight = screenHeight - visibleHeight;
+
+                // 네비게이션바 오인 방지용(너무 작으면 0 처리)
+                if (keyboardHeight < screenHeight * 0.10f)
+                    return 0f;
+
+                return keyboardHeight;
+            }
+        }
+        catch
+        {
+            return 0f;
+        }
+#elif UNITY_IOS
         if (TouchScreenKeyboard.visible)
             return TouchScreenKeyboard.area.height;
         return 0f;
