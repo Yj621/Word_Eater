@@ -5,11 +5,11 @@
 	<application>
 		<!--Used when Application Entry is set to Activity, otherwise remove this activity block-->
 		<activity     android:name="com.unity3d.player.UnityPlayerActivity"
-    android:label="@string/app_name"
-    android:screenOrientation="portrait"
-    android:launchMode="singleTask"
-    android:clearTaskOnLaunch="true"
-    android:windowSoftInputMode="stateHidden|adjustResize">
+						android:label="@string/app_name"
+						android:screenOrientation="portrait"
+						android:launchMode="singleTask"
+						android:clearTaskOnLaunch="true"
+						android:windowSoftInputMode="stateHidden|adjustResize">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />
 				<category android:name="android.intent.category.LAUNCHER" />
