@@ -28550,6 +28550,7 @@ GameObject:
   - component: {fileID: 1000577136}
   - component: {fileID: 1000577138}
   - component: {fileID: 1000577137}
+  - component: {fileID: 1000577139}
   m_Layer: 5
   m_Name: 'Message_Panel '
   m_TagString: Untagged
@@ -28619,6 +28620,27 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1000577135}
   m_CullTransparentMesh: 1
+--- !u!114 &1000577139
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1000577135}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ee1ff7731396f46a6b7c2528e4ea71b1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  inputField: {fileID: 77969608}
+  pythonConnectManager: {fileID: 51999060}
+  inputText: {fileID: 1777265113}
+  resultText: {fileID: 1097319482}
+  resultPanel: {fileID: 2144230655}
+  wordEater: {fileID: 1240265097}
+  batterySystem: {fileID: 1922716698}
+  loading: {fileID: 1097319484}
+  duration: 0.3
 --- !u!1 &1001079235
 GameObject:
   m_ObjectHideFlags: 0
@@ -33501,7 +33523,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1585313998}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: AlgorithmMessage, Assembly-CSharp
         m_MethodName: OnCheckSimilarity
         m_Mode: 1
@@ -44530,7 +44552,6 @@ GameObject:
   - component: {fileID: 1585313995}
   - component: {fileID: 1585313997}
   - component: {fileID: 1585313996}
-  - component: {fileID: 1585313998}
   m_Layer: 5
   m_Name: Message_Panel
   m_TagString: Untagged
@@ -44596,27 +44617,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1585313994}
   m_CullTransparentMesh: 1
---- !u!114 &1585313998
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1585313994}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ee1ff7731396f46a6b7c2528e4ea71b1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  inputField: {fileID: 77969608}
-  pythonConnectManager: {fileID: 51999060}
-  inputText: {fileID: 1777265113}
-  resultText: {fileID: 1097319482}
-  resultPanel: {fileID: 2144230655}
-  wordEater: {fileID: 1240265097}
-  batterySystem: {fileID: 1922716698}
-  loading: {fileID: 1097319484}
-  duration: 0.3
 --- !u!1 &1585831196
 GameObject:
   m_ObjectHideFlags: 0
