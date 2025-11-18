@@ -159,10 +159,10 @@ public static class CanvasUtil
         Camera toCam = (toCanvas != null && toCanvas.renderMode == RenderMode.ScreenSpaceOverlay)
             ? null : toCanvas != null ? toCanvas.worldCamera : null;
 
-        // 1) fromRT의 월드 위치를 스크린 좌표로
+        // fromRT의 월드 위치를 스크린 좌표로
         Vector2 screenPos = RectTransformUtility.WorldToScreenPoint(fromCam, fromRT.position);
 
-        // 2) 스크린 좌표를 toParent 로컬좌표로
+        // 스크린 좌표를 toParent 로컬좌표로
         RectTransformUtility.ScreenPointToLocalPointInRectangle(
             toParent, screenPos, toCam, out var localPoint);
 

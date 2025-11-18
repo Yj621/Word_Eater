@@ -88,6 +88,7 @@ public class ADPopup : MonoBehaviour
         watchAdButton.interactable = false;
         noThanksButton.interactable = false;
 
+
         AdsManager.Instance.ShowRewarded(
             onRewardEarned: () =>
             {
