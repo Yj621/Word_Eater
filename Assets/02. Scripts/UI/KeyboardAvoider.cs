@@ -9,7 +9,7 @@ public class KeyboardAvoider : MonoBehaviour
     [SerializeField] private float heightMultiplier = 1.05f;
 
     [Header("추가 오프셋 (UI px 단위로 조금 더 올리고 싶을 때)")]
-    [SerializeField] private float extraOffset = 20f;
+    [SerializeField] private float extraOffset = -50f;
 
     private Canvas rootCanvas;
     private Vector2 originalAnchoredPos;
