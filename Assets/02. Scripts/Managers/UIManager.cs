@@ -11,7 +11,7 @@ public class UIManager : MonoBehaviour
 
     private bool _isKeyboardOpen = false; // 키보드 상태 추적 변수
     PhoneSwiper phoneSwiper;
-
+    public GameObject PageIcon;
     // 원하는 위치 고정 (anchoredPosition 기준)
     private Vector2 _showPosition = new Vector2(0, 0);       // Y = 0
     private Vector2 _hidePosition = new Vector2(0, -450);    // Y = -480
