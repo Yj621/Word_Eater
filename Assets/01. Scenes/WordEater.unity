@@ -8437,6 +8437,7 @@ GameObject:
   - component: {fileID: 321487231}
   - component: {fileID: 321487235}
   - component: {fileID: 321487236}
+  - component: {fileID: 321487237}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -8574,6 +8575,19 @@ MonoBehaviour:
   snapSpeed: 6
   useUnscaledTime: 1
   isUsingTab: 1
+--- !u!114 &321487237
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 321487230}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 17818284bf84ab2408b8826de11924e4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::KeyboardAvoider
+  chatRoot: {fileID: 1578392072}
 --- !u!1 &322545141
 GameObject:
   m_ObjectHideFlags: 0
@@ -28550,7 +28564,6 @@ GameObject:
   - component: {fileID: 1000577136}
   - component: {fileID: 1000577138}
   - component: {fileID: 1000577137}
-  - component: {fileID: 1000577139}
   m_Layer: 5
   m_Name: 'Message_Panel '
   m_TagString: Untagged
@@ -28620,20 +28633,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1000577135}
   m_CullTransparentMesh: 1
---- !u!114 &1000577139
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1000577135}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 17818284bf84ab2408b8826de11924e4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::KeyboardAvoider
-  chatRoot: {fileID: 1578392072}
-  keyboardHeightRatio: 0.4
 --- !u!1 &1001079235
 GameObject:
   m_ObjectHideFlags: 0
