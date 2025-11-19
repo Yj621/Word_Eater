@@ -24,8 +24,16 @@ public class GameManager : MonoBehaviour
     [SerializeField] private RectTransform FolderPanel;
     [SerializeField] private RectTransform FolderBtn;
 
+    //Gallery Panel
+    [SerializeField] private RectTransform SettingPanel;
+    [SerializeField] private RectTransform SettingBtn;
+
     void Start()
     {
+        //시작 브금 출력
+        SoundManager.Instance.BGMStart(1);
+
+
         //시작 하면 첫 정답 단어 선정
         wordeater.BeginStage(wordeater.ReturnStage(), initial: true);
     }
@@ -139,6 +147,9 @@ public class GameManager : MonoBehaviour
     // 다른 Canvas여도 정확히 버튼 자리에서 시작/복귀
     public void ShowPanel_Folder() => ShowPanelFromButton(FolderPanel, FolderBtn);
     public void HidePanel_Folder() => HidePanelToButton(FolderPanel, FolderBtn);
+
+    public void ShowPanel_Setting() => ShowPanelFromButton(SettingPanel, SettingBtn);
+    public void HidePanel_Setting() => HidePanelToButton(SettingPanel, SettingBtn);
 }
 
 /// <summary>
