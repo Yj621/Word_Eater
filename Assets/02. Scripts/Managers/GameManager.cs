@@ -8,25 +8,30 @@ public class GameManager : MonoBehaviour
 
     //인자가 두개씩 필요한 애들
 
-    //Call Panel
+    [Header("전화 관련")]
     [SerializeField] private RectTransform CallPanel;
     [SerializeField] private RectTransform CallBtn;
 
-    //Message Panel
+    [Header("메세지 관련")]
     [SerializeField] private RectTransform MessagePanel;
     [SerializeField] private RectTransform MessageBtn;
 
-    //Gallery Panel
+    [Header("도감 관련")]
     [SerializeField] private RectTransform GalleryPanel;
     [SerializeField] private RectTransform GalleryBtn;
 
-    //Gallery Panel
+    [Header("인벤 관련")]
     [SerializeField] private RectTransform FolderPanel;
     [SerializeField] private RectTransform FolderBtn;
 
-    //Gallery Panel
+    [Header("설정 관련")]
     [SerializeField] private RectTransform SettingPanel;
     [SerializeField] private RectTransform SettingBtn;
+
+
+    [Header("워드이터(히스토리) 관련")]
+    [SerializeField] private RectTransform WordEaterPanel;
+    [SerializeField] private RectTransform WordEaterBtn;
 
     void Start()
     {
@@ -150,6 +155,9 @@ public class GameManager : MonoBehaviour
 
     public void ShowPanel_Setting() => ShowPanelFromButton(SettingPanel, SettingBtn);
     public void HidePanel_Setting() => HidePanelToButton(SettingPanel, SettingBtn);
+
+    public void ShowPanel_WordEater() => ShowPanelFromButton(WordEaterPanel, WordEaterBtn);
+    public void HidePanel_WordEater() => HidePanelToButton(WordEaterPanel, WordEaterBtn);
 }
 
 /// <summary>

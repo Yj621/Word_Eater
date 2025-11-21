@@ -7,6 +7,7 @@ using WordEater.Systems;
 using UnityEngine.SceneManagement;
 using static UnityEngine.EventSystems.EventTrigger;
 using System.Collections;
+using UnityEngine.UI;
 
 namespace WordEater.Core
 {
@@ -57,7 +58,7 @@ namespace WordEater.Core
             {
                 //BIT상태로 변경
                 stage = GrowthStage.Bit;
-                var sr = GetComponent<SpriteRenderer>();
+                var sr = GetComponent<Image>();
                 if (sr != null)
                 {
                     sr.sprite = BitImg;
@@ -87,7 +88,7 @@ namespace WordEater.Core
             }
             else
             {
-                var sr = GetComponent<SpriteRenderer>();
+                var sr = GetComponent<Image>();
                 if (s == GrowthStage.Byte)
                 {
                     if (sr != null) sr.sprite = ByteImg;
@@ -284,8 +285,7 @@ namespace WordEater.Core
             currentAnswer = answer;
             GameEvents.OnNewWordAssigned?.Invoke(currentAnswer);
 
-            // 스프라이트 동기화
-            var sr = GetComponent<SpriteRenderer>();
+            var sr = GetComponent<Image>();
             if (sr != null)
             {
                 if (stage == GrowthStage.Bit) sr.sprite = BitImg;
@@ -334,9 +334,19 @@ namespace WordEater.Core
             MoveIfExists(tmpS1, finS1);
 
             // Word 썸네일은 최종 키로 저장
-            var sr = GetComponent<SpriteRenderer>();
+            var img = GetComponent<Image>();
+
             string finS2 = Path.Combine(baseDir, $"thumb_{finalId}_s2.png");
-            GalleryCapture.SaveSpriteThumb(sr, $"thumb_{finalId}_s2", 256);
+
+            // Image 컴포넌트를 넘겨서 저장
+            if (img != null)
+            {
+                GalleryCapture.SaveSpriteThumb(img, $"thumb_{finalId}_s2", 256);
+            }
+            else
+            {
+                Debug.LogError("WordEater에 Image 컴포넌트가 없습니다! 저장 실패.");
+            }
 
             // 도감 등록: 대표 썸네일은 Word
             var item = new GalleryItem
