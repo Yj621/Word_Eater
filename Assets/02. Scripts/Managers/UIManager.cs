@@ -129,7 +129,8 @@ public class UIManager : MonoBehaviour
 
         _keyboardRect
             .DOAnchorPos(_hidePosition, _animationDuration)
-            .SetEase(Ease.InCirc);
+            .SetEase(Ease.InCirc)
+            .SetUpdate(true); // 타임 스케일 무시
     }
 
     public void Test_PopUp()

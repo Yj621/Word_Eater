@@ -5857,7 +5857,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a82eea42e722eb44b90dd0c5132ceaf1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AdsManager
-  rewardedAdUnitId: unused
+  rewardedAdRevivalId: ca-app-apub-1881501262849586/3221896109
 --- !u!114 &217426119
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -61245,6 +61245,7 @@ MonoBehaviour:
   canvasGroup: {fileID: 6849912870450057477}
   watchAdButton: {fileID: 1758744491}
   noThanksButton: {fileID: 672622407}
+  blockPanel: {fileID: 1452064428}
   titleText: {fileID: 5119412198258906789}
   watchAdLabel: {fileID: 1498577218}
   noThanksLabel: {fileID: 588511161}

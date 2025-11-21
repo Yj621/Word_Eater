@@ -422,6 +422,7 @@ MonoBehaviour:
   cellPrefab: {fileID: 7452131769231043198, guid: 3d71f3f4c9f42a647b692275d8c49451, type: 3}
   listPanel: {fileID: 102744119}
   detail: {fileID: 578106919}
+  emptyStatePanel: {fileID: 0}
 --- !u!4 &29464939
 Transform:
   m_ObjectHideFlags: 0
@@ -1747,6 +1748,7 @@ MonoBehaviour:
   keyType: 0
   index: 7
   longPressThreshold: 0.35
+  KeyBoardBatterys: []
 --- !u!1 &140845272
 GameObject:
   m_ObjectHideFlags: 0
@@ -2932,6 +2934,7 @@ MonoBehaviour:
   keyType: 0
   index: 8
   longPressThreshold: 0.35
+  KeyBoardBatterys: []
 --- !u!1 &208104591
 GameObject:
   m_ObjectHideFlags: 0
@@ -3206,6 +3209,7 @@ MonoBehaviour:
   keyType: 0
   index: 3
   longPressThreshold: 0.35
+  KeyBoardBatterys: []
 --- !u!1 &217426115
 GameObject:
   m_ObjectHideFlags: 0
@@ -3247,6 +3251,8 @@ MonoBehaviour:
   GalleryBtn: {fileID: 140845273}
   FolderPanel: {fileID: 0}
   FolderBtn: {fileID: 0}
+  SettingPanel: {fileID: 0}
+  SettingBtn: {fileID: 0}
 --- !u!4 &217426117
 Transform:
   m_ObjectHideFlags: 0
@@ -3274,7 +3280,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a82eea42e722eb44b90dd0c5132ceaf1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AdsManager
-  rewardedAdUnitId: unused
+  rewardedAdRevivalId: ca-app-apub-1881501262849586/3221896109
 --- !u!114 &217426119
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3426,6 +3432,7 @@ MonoBehaviour:
   keyType: 0
   index: 2
   longPressThreshold: 0.35
+  KeyBoardBatterys: []
 --- !u!1 &254502862
 GameObject:
   m_ObjectHideFlags: 0
@@ -3798,6 +3805,7 @@ MonoBehaviour:
   - {fileID: 547489764}
   - {fileID: 346582645}
   - {fileID: 959343064}
+  keyboard: {fileID: 0}
   timer: {fileID: 105848414}
   _timeLimitEasy: 5
   _timeLimitHard: 3
@@ -4492,6 +4500,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _keyboardRect: {fileID: 1446860473}
+  PageIcon: {fileID: 0}
+  _damageOverlay: {fileID: 0}
+  _shakeTarget: {fileID: 0}
 --- !u!114 &321487236
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5203,6 +5214,7 @@ MonoBehaviour:
   keyType: 1
   index: 3
   longPressThreshold: 0.35
+  KeyBoardBatterys: []
 --- !u!1 &346582645
 GameObject:
   m_ObjectHideFlags: 0
@@ -6066,6 +6078,7 @@ MonoBehaviour:
   keyType: 1
   index: 0
   longPressThreshold: 0.35
+  KeyBoardBatterys: []
 --- !u!1 &463743171
 GameObject:
   m_ObjectHideFlags: 0
@@ -7508,6 +7521,7 @@ MonoBehaviour:
   keyType: 0
   index: 4
   longPressThreshold: 0.35
+  KeyBoardBatterys: []
 --- !u!1 &555246144
 GameObject:
   m_ObjectHideFlags: 0
@@ -8995,6 +9009,7 @@ MonoBehaviour:
   keyType: 1
   index: 6
   longPressThreshold: 0.35
+  KeyBoardBatterys: []
 --- !u!1 &588511159
 GameObject:
   m_ObjectHideFlags: 0
@@ -9579,6 +9594,7 @@ MonoBehaviour:
   keyType: 0
   index: 1
   longPressThreshold: 0.35
+  KeyBoardBatterys: []
 --- !u!1 &640887060
 GameObject:
   m_ObjectHideFlags: 0
@@ -10747,6 +10763,7 @@ MonoBehaviour:
   keyType: 0
   index: 11
   longPressThreshold: 0.35
+  KeyBoardBatterys: []
 --- !u!1 &734862256
 GameObject:
   m_ObjectHideFlags: 0
@@ -11258,6 +11275,7 @@ MonoBehaviour:
   keyType: 0
   index: 13
   longPressThreshold: 0.35
+  KeyBoardBatterys: []
 --- !u!1 &786972459
 GameObject:
   m_ObjectHideFlags: 0
@@ -12964,6 +12982,7 @@ MonoBehaviour:
   keyType: 1
   index: 5
   longPressThreshold: 0.35
+  KeyBoardBatterys: []
 --- !u!1 &922533119
 GameObject:
   m_ObjectHideFlags: 0
@@ -13102,6 +13121,7 @@ MonoBehaviour:
   keyType: 1
   index: 2
   longPressThreshold: 0.35
+  KeyBoardBatterys: []
 --- !u!1 &922580786
 GameObject:
   m_ObjectHideFlags: 0
@@ -14050,6 +14070,7 @@ MonoBehaviour:
   keyType: 0
   index: 6
   longPressThreshold: 0.35
+  KeyBoardBatterys: []
 --- !u!1 &987722928
 GameObject:
   m_ObjectHideFlags: 0
@@ -14188,6 +14209,7 @@ MonoBehaviour:
   keyType: 1
   index: 1
   longPressThreshold: 0.35
+  KeyBoardBatterys: []
 --- !u!1 &1000577135
 GameObject:
   m_ObjectHideFlags: 0
@@ -14987,6 +15009,7 @@ MonoBehaviour:
   keyType: 0
   index: 10
   longPressThreshold: 0.35
+  KeyBoardBatterys: []
 --- !u!1 &1064505914
 GameObject:
   m_ObjectHideFlags: 0
@@ -15764,6 +15787,7 @@ MonoBehaviour:
   keyType: 0
   index: 14
   longPressThreshold: 0.35
+  KeyBoardBatterys: []
 --- !u!1 &1145227147
 GameObject:
   m_ObjectHideFlags: 0
@@ -15978,6 +16002,7 @@ MonoBehaviour:
   keyType: 0
   index: 16
   longPressThreshold: 0.35
+  KeyBoardBatterys: []
 --- !u!1 &1152248470
 GameObject:
   m_ObjectHideFlags: 0
@@ -16252,6 +16277,7 @@ MonoBehaviour:
   keyType: 0
   index: 0
   longPressThreshold: 0.35
+  KeyBoardBatterys: []
 --- !u!1 &1155597267
 GameObject:
   m_ObjectHideFlags: 0
@@ -16428,6 +16454,7 @@ MonoBehaviour:
   keyType: 1
   index: 4
   longPressThreshold: 0.35
+  KeyBoardBatterys: []
 --- !u!1 &1179798958
 GameObject:
   m_ObjectHideFlags: 0
@@ -18075,6 +18102,7 @@ MonoBehaviour:
   keyType: 0
   index: 17
   longPressThreshold: 0.35
+  KeyBoardBatterys: []
 --- !u!1 &1276992086
 GameObject:
   m_ObjectHideFlags: 0
@@ -19161,6 +19189,7 @@ MonoBehaviour:
   keyType: 0
   index: 18
   longPressThreshold: 0.35
+  KeyBoardBatterys: []
 --- !u!1 &1329773291
 GameObject:
   m_ObjectHideFlags: 0
@@ -20912,6 +20941,9 @@ MonoBehaviour:
   - {fileID: 338045451}
   - {fileID: 208104593}
   isShiftPressed: 0
+  longPressKeys: []
+  DefaultCount: 2
+  maxCount: 5
   targetCanvas: {fileID: 321487233}
   uiSpawnRoot: {fileID: 640887061}
   uiCamera: {fileID: 0}
@@ -24779,6 +24811,7 @@ MonoBehaviour:
   keyType: 0
   index: 9
   longPressThreshold: 0.35
+  KeyBoardBatterys: []
 --- !u!1 &1828967834
 GameObject:
   m_ObjectHideFlags: 0
@@ -25880,6 +25913,7 @@ MonoBehaviour:
   keyType: 0
   index: 15
   longPressThreshold: 0.35
+  KeyBoardBatterys: []
 --- !u!1 &1908230898
 GameObject:
   m_ObjectHideFlags: 0
@@ -26113,6 +26147,7 @@ MonoBehaviour:
   currentBattery: 100
   maxCells: 5
   startCells: 5
+  batteryPopup: {fileID: 0}
 --- !u!4 &1922716699
 Transform:
   m_ObjectHideFlags: 0
@@ -26266,6 +26301,7 @@ MonoBehaviour:
   keyType: 0
   index: 5
   longPressThreshold: 0.35
+  KeyBoardBatterys: []
 --- !u!1 &1932904225
 GameObject:
   m_ObjectHideFlags: 0
@@ -26404,6 +26440,7 @@ MonoBehaviour:
   keyType: 0
   index: 12
   longPressThreshold: 0.35
+  KeyBoardBatterys: []
 --- !u!1 &1939360327
 GameObject:
   m_ObjectHideFlags: 0
@@ -27528,7 +27565,7 @@ GameObject:
   - component: {fileID: 8599983927566112799}
   - component: {fileID: 6849912870450057477}
   m_Layer: 5
-  m_Name: Revive_Popup
+  m_Name: AD_Popup
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -27698,7 +27735,10 @@ MonoBehaviour:
   canvasGroup: {fileID: 6849912870450057477}
   watchAdButton: {fileID: 1758744491}
   noThanksButton: {fileID: 672622407}
-  spinner: {fileID: 0}
+  blockPanel: {fileID: 1452064428}
+  titleText: {fileID: 0}
+  watchAdLabel: {fileID: 0}
+  noThanksLabel: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

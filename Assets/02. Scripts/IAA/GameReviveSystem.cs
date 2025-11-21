@@ -48,8 +48,6 @@ public class GameReviveSystem : MonoBehaviour
             return;
         }
 
-        // 게임 정지 (UI는 UnscaledTime 기준)
-        Time.timeScale = 0f;
 
         // 부활
         revivePopup.Configure(
@@ -57,6 +55,9 @@ public class GameReviveSystem : MonoBehaviour
             watchAdText: "광고 보기",
             noThanksText: "아니오"
         );
+
+        // 게임 정지 (UI는 UnscaledTime 기준)
+        Time.timeScale = 0f;
 
         revivePopup.Show(
             onAccept: () =>
