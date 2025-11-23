@@ -25,6 +25,9 @@ public class JamoMagnet : MonoBehaviour
     public float snapRadius = 80f;
     public Vector2 attachOffset;
 
+    [Header("모음 오프셋(개별 프리팹 전용)")]
+    public Vector2 prefabAttachOffset = Vector2.zero;
+
     [HideInInspector] public JamoMagnet attachedVowel, attachedFinal;
     [HideInInspector] public JamoMagnet attachedVowelSide, attachedVowelBelow;
 
@@ -153,8 +156,13 @@ public class JamoMagnet : MonoBehaviour
         rt.SetParent(socket, false);
         rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
         rt.pivot = new Vector2(0.5f, 0.5f);
-        rt.anchoredPosition = attachOffset;
-        rt.offsetMin = rt.offsetMax = Vector2.zero;
+        rt.anchoredPosition = attachOffset + prefabAttachOffset;
+        bool isStretched = (rt.anchorMin != rt.anchorMax);
+        if (isStretched)
+        {
+            rt.offsetMin = rt.offsetMax = Vector2.zero;
+        }
+
         rt.localScale = Vector3.one;
         rt.localRotation = Quaternion.identity;
         rt.SetAsLastSibling();
@@ -183,16 +191,17 @@ public class JamoMagnet : MonoBehaviour
         // 1) 프리팹 생성
         var fused = Instantiate(rule.fusedPrefab, parent, false);
         var frt   = fused.GetComponent<RectTransform>();
-        if (frt)
+            var fm = fused.GetComponent<JamoMagnet>() ?? fused.AddComponent<JamoMagnet>();
+
+            if (frt)
         {
             frt.anchorMin = frt.anchorMax = new Vector2(0.5f, 0.5f);
             frt.pivot     = new Vector2(0.5f, 0.5f);
-            frt.anchoredPosition = rule.fusedOffset; // 룰에서 미세 보정
-            frt.localScale = Vector3.one;
+                frt.anchoredPosition = rule.fusedOffset + (fm ? fm.prefabAttachOffset : Vector2.zero);
+                frt.localScale = Vector3.one;
         }
 
         // 2) 자석 컴포넌트 보장 + 상태 설정
-        var fm = fused.GetComponent<JamoMagnet>() ?? fused.AddComponent<JamoMagnet>();
         fm.role = JamoRole.Jungseong; // 복합 모음은 '중성' 단일 조각
         fm.SetGlyph(!string.IsNullOrEmpty(rule.fusedGlyph)
                     ? rule.fusedGlyph

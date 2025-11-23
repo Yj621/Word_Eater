@@ -4,6 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using Random = UnityEngine.Random;
 
 public class KeyBoardManager : MonoBehaviour
 {
@@ -21,7 +22,9 @@ public class KeyBoardManager : MonoBehaviour
 
     [Header("입력 상태")]
     public bool isShiftPressed = false;
-
+    public LongPressKey[] longPressKeys; // 입력 기록용 (없어도 됨)
+    public int DefaultCount = 2;
+    public int maxCount = 5;
     [Header("UI/World 스폰 설정")]
     public Canvas targetCanvas;       // UI 드래그용 Canvas (없으면 버튼의 Canvas를 자동 탐색)
     public RectTransform uiSpawnRoot; // UI 프리팹을 붙일 최상위(없으면 캔버스의 root RectTransform)
@@ -40,14 +43,53 @@ public class KeyBoardManager : MonoBehaviour
 
     public TextMeshProUGUI resultText; // 결과 표시용 라벨
 
+
     public void PressSingle(int index) => PressSingle(index, null);
     public void PressDouble(int index) => PressDouble(index, null);
+    public int GetCount(int index) => (KeyCount.isReady ? KeyCount.Get(index) : 0);
+
+    bool InRange(int i) => (longPressKeys != null && i >= 0 && i < longPressKeys.Length);
+    void Awake()
+    {
+        KeyCount.OnChanged -= OnKeyCountChanged;
+        KeyCount.OnChanged += OnKeyCountChanged;
+
+        KeyCount.Init(longPressKeys.Length, DefaultCount, maxCount);
+
+        if (longPressKeys != null)
+        {
+            for (int i = 0; i < longPressKeys.Length; i++)
+                if (longPressKeys[i]) longPressKeys[i].manager = this;
+        }
+    }
+
+    void OnDestroy()
+    {
+        KeyCount.OnChanged -= OnKeyCountChanged;
+    }
+    public void OnPieceDeleted(int invIndex)
+    {
+        KeyCount.AddAt(invIndex, 1);
+    }
+
+    void OnKeyCountChanged(int index, int newCount)
+    {
+        RefreshKeyUI(index);
+    }
+    void RefreshKeyUI(int index)
+    {
+        if (!InRange(index)) return;
+        var k = longPressKeys[index];
+        if (k == null) return;
+        k.RefreshVisuals(KeyCount.Get(index), KeyCount.MaxCount);
+    }
 
     // 롱프레스 + 드래그 시작 (PointerEventData 포함)
     public void PressSingle(int index, PointerEventData ev)
     {
-        if (!IsValidIndex(index, SingleWordButtons, SingleWords)) return;
-        BeginDragSpawn(SingleWordButtons[index], SingleWords[index], ev);
+        if (!IsValidIndex(index, SingleWordButtons, SingleWords)) return; 
+        if (!TryConsumeAndRefresh(index, 1)) return; 
+        BeginDragSpawn(SingleWordButtons[index], SingleWords[index], ev, index);
     }
 
     public void PressDouble(int index, PointerEventData ev)
@@ -58,10 +100,13 @@ public class KeyBoardManager : MonoBehaviour
         var prefab = (!isShiftPressed)
             ? (index < DSWords.Length ? DSWords[index] : null)
             : (index < DDWords.Length ? DDWords[index] : null);
-
         if (prefab == null) return;
-        BeginDragSpawn(btn, prefab, ev);
+
+        int cost = isShiftPressed ? 2 : 1;
+        if (!TryConsumeAndRefresh(index, cost)) { NotEnoughFeedback(index); return; }
+        BeginDragSpawn(btn, prefab, ev, index);
     }
+
 
     public void PressShift()
     {
@@ -73,7 +118,6 @@ public class KeyBoardManager : MonoBehaviour
     {
         if (!TryBuildWord(out var word)) return;
         if (resultText) resultText.text = word;
-        Debug.Log($"[Submit] {word}");
     }
 
     bool CanBuildWord()
@@ -261,36 +305,30 @@ public class KeyBoardManager : MonoBehaviour
         return true;
     }
 
-    
-    void BeginDragSpawn(Button button, GameObject prefab, PointerEventData ev)
+
+    void BeginDragSpawn(Button button, GameObject prefab, PointerEventData ev, int invIndex)
     {
         var buttonRT = button.GetComponent<RectTransform>();
-
-        // UI 프리팹 판정
-        bool isUIPrefab = prefab.GetComponent<RectTransform>() != null
-                       && prefab.GetComponent<CanvasRenderer>() != null;
-
-        // 스크린 좌표 계산 (버튼 위치 기준)
         Vector2 buttonScreen = RectTransformUtility.WorldToScreenPoint(uiCamera, buttonRT.position);
         Vector2 startScreen = ev != null ? ev.position : buttonScreen;
+
+        bool isUIPrefab = prefab.GetComponent<RectTransform>() && prefab.GetComponent<CanvasRenderer>();
 
         if (isUIPrefab)
         {
             var root = ResolveUISpawnRoot();
-
-            // 스크린 -> 로컬
             RectTransformUtility.ScreenPointToLocalPointInRectangle(root, startScreen, uiCamera, out var local);
-
             var go = Instantiate(prefab, root);
             var rt = go.GetComponent<RectTransform>();
-            // 드래그 전용 기본 세팅
             rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
             rt.pivot = new Vector2(0.5f, 0.5f);
             rt.anchoredPosition = local + (Vector2)spawnOffset;
             rt.localScale = Vector3.one;
+
             var drag = go.GetComponent<DraggableWordUI>();
             drag.Init(root, allowedArea, trashArea, uiCamera);
-            // 드래그 상태 진입
+            drag.BindSource(this, invIndex);     // ★ 원본 인덱스 바인딩
+
             dragIsUI = true;
             dragUIRect = rt;
             dragWorldTr = null;
@@ -300,8 +338,15 @@ public class KeyBoardManager : MonoBehaviour
             var cam = Camera.main;
             var sp = new Vector3(startScreen.x, startScreen.y, worldDepth);
             var worldPos = cam ? cam.ScreenToWorldPoint(sp) : buttonRT.position;
-
             var go = Instantiate(prefab, worldPos + spawnOffset, Quaternion.identity);
+
+            var drag = go.GetComponent<DraggableWordUI>();
+            if (drag != null)
+            {
+                // 월드 프리팹이어도 바인딩만은 해둔다(환불용)
+                drag.Init(null, null, null, null);
+                drag.BindSource(this, invIndex);
+            }
 
             dragIsUI = false;
             dragUIRect = null;
@@ -309,7 +354,7 @@ public class KeyBoardManager : MonoBehaviour
         }
 
         dragging = true;
-        activePointerId = ev != null ? ev.pointerId : -1; // 마우스 기본 -1
+        activePointerId = ev != null ? ev.pointerId : -1;
     }
 
     RectTransform ResolveUISpawnRoot()
@@ -333,11 +378,95 @@ public class KeyBoardManager : MonoBehaviour
         dragWorldTr = null;
     }
 
+    public void AddRandomKeys(int amount)
+    {
+        if (!KeyCount.isReady || amount <= 0) return;
+        KeyCount.AddRandom(amount);
+
+    }
+
+    public void AddKeyAt(int index, int add)
+    {
+        if (!InRange(index) || add == 0 || !KeyCount.isReady) return;
+        KeyCount.AddAt(index, add);
+    }
+
+
+    bool TryConsumeAndRefresh(int index, int amount = 1)
+    {
+        if (!InRange(index)) return false;
+        if (!KeyCount.TryConsume(index, amount))
+        {
+            NotEnoughFeedback(index);
+            return false;
+        }
+        return true;
+    }
+
+    public int GrantRandomLetters(int amount, bool singlesOnly = false, bool doublesOnly = false)
+    {
+        if (amount <= 0 || longPressKeys == null || longPressKeys.Length == 0) return 0;
+
+        // 후보 인덱스 수집 (최대치 미만만)
+        var eligible = new List<int>();
+        for (int i = 0; i < longPressKeys.Length; i++)
+        {
+            // 타입 필터 (패딩 null 사용 중이라는 전제)
+            bool isSingleSlot = (SingleWordButtons != null && i < SingleWordButtons.Length && SingleWordButtons[i] != null);
+            bool isDoubleSlot = (DoubleWordButtons != null && i < DoubleWordButtons.Length && DoubleWordButtons[i] != null);
+
+            if (singlesOnly && !isSingleSlot) continue;
+            if (doublesOnly && !isDoubleSlot) continue;
+
+            if (KeyCount.Get(i) < KeyCount.MaxCount)
+                eligible.Add(i);
+        }
+
+        if (eligible.Count == 0) return 0;
+
+        int actuallyAdded = 0;
+
+        for (int n = 0; n < amount; n++)
+        {
+            // 남은 후보가 없으면 중단
+            if (eligible.Count == 0) break;
+
+            // 랜덤 후보 하나 뽑기
+            int pick = Random.Range(0, eligible.Count);
+            int idx = eligible[pick];
+
+            // 한 칸 올리기 (KeyCount가 OnChanged로 UI 자동 갱신)
+            KeyCount.AddAt(idx, 1);
+            actuallyAdded++;
+
+            // 꽉 찼으면 후보에서 제거
+            if (KeyCount.Get(idx) >= KeyCount.MaxCount)
+                eligible.RemoveAt(pick);
+        }
+
+        return actuallyAdded;
+    }
+
+
+    void NotEnoughFeedback(int index)
+    {
+        
+    }
 
     bool TryGetPointerScreenPos(int pointerId, out Vector2 pos)
     {
+#if ENABLE_INPUT_SYSTEM
+        // 새 입력 시스템: Pointer.current가 있으면 그 좌표 사용
+        var pointer = UnityEngine.InputSystem.Pointer.current;
+        if (pointer != null)
+        {
+            pos = pointer.position.ReadValue();
+            return true;
+        }
+#endif
+
+        // 구 입력 시스템: 에디터/PC는 마우스, 모바일은 터치
 #if UNITY_EDITOR || UNITY_STANDALONE
-        // 마우스면 pointerId가 -1이든 0이든 그냥 커서 좌표 반환
         pos = Input.mousePosition;
         return true;
 #else
@@ -346,16 +475,22 @@ public class KeyBoardManager : MonoBehaviour
         var t = Input.GetTouch(i);
         if (t.fingerId == pointerId) { pos = t.position; return true; }
     }
-    pos = default;
-    return false;
+    // 만약 위가 실패하면 마우스 좌표로도 폴백 (일부 기기에서 유효)
+    pos = Input.mousePosition;
+    return true;
 #endif
     }
 
 
     bool IsPointerReleased(int pointerId)
     {
+#if ENABLE_INPUT_SYSTEM
+        var pointer = UnityEngine.InputSystem.Pointer.current;
+        // pointer가 없거나 press가 풀리면 released로 간주
+        return pointer == null || !pointer.press.isPressed;
+#else
 #if UNITY_EDITOR || UNITY_STANDALONE
-        return Input.GetMouseButtonUp(0);     
+    return Input.GetMouseButtonUp(0);
 #else
     for (int i = 0; i < Input.touchCount; i++)
     {
@@ -364,8 +499,8 @@ public class KeyBoardManager : MonoBehaviour
             (t.phase == TouchPhase.Ended || t.phase == TouchPhase.Canceled))
             return true;
     }
-    return false;                           
+    return false;
+#endif
 #endif
     }
-
 }

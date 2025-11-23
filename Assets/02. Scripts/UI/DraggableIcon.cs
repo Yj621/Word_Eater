@@ -57,8 +57,52 @@ public class DraggableIcon : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     {
         _gridRT = gridArea.GetComponent<RectTransform>();
         _parentRT = _rt.parent as RectTransform;
+         // ✅ 그리드 변경 시 자동 재배치 구독
+        if (gridArea != null)
+            gridArea.OnGridRecalculated += HandleGridRecalculated;
+
         RegisterInitialOccupancy();
     }
+
+
+    private void OnDestroy()
+    {
+        if (gridArea != null)
+            gridArea.OnGridRecalculated -= HandleGridRecalculated;
+    }
+
+    private void HandleGridRecalculated()
+    {
+        // 스냅 중이면 끊고 강제 반영
+        StopAllCoroutines();
+        ReflowToOccupiedCell();
+    }
+       /// <summary>
+    /// 현재 '점유 셀' 또는 현재 좌표 기준으로 즉시 스냅 재배치
+    /// (해상도/레이아웃 변경 직후에도 드래그 없이 올바른 칸에 맞춰줌)
+    /// </summary>
+    public void ReflowToOccupiedCell()
+    {
+        Vector2 snappedInGrid;
+
+        // 1) 점유 매니저가 있으면: 기록된 셀로 이동
+        if (GridOccupancy.Instance != null && GridOccupancy.Instance.TryGetCellOfIcon(this, out var occupiedCell))
+        {
+            occupiedCell = gridArea.ClampCell(occupiedCell);
+            snappedInGrid = gridArea.CellToPos(occupiedCell);
+        }
+        else
+        {
+            // 2) 기록 없으면: 현재 위치를 새 그리드에 맞춰 가장 가까운 셀로 계산
+            Vector2 currentInGrid = ParentToGridLocal(_rt.anchoredPosition);
+            var cell = gridArea.ClampCell(gridArea.PosToCell(currentInGrid));
+            snappedInGrid = gridArea.CellToPos(cell);
+        }
+
+        snappedInGrid = gridArea.ClampToArea(snappedInGrid, _rt);
+        _rt.anchoredPosition = GridToParentLocal(snappedInGrid);
+    }
+
     private void RegisterInitialOccupancy()
     {
         if (GridOccupancy.Instance == null || gridArea == null) return;

@@ -1,7 +1,7 @@
 public enum NoticeDismissMode
 {
     Auto,     // 지정 시간 뒤 자동 닫힘
-    Button,   // X 버튼(또는 닫기 버튼)으로만 닫힘
+    Button,   // X 버튼(또는 닫기 버튼)으로만 닫힘 >> 그냥 화면 클릭시 닫힘으로 변경
     Manual    // 외부에서 Dismiss() 호출해야 닫힘
 }
 
