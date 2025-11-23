@@ -135,7 +135,7 @@ WordEater(Word +Eater의 합성어)
 - **메시지 형식**: 단어의 유사도 힌트 제공
 
 
-|전화 버튼을 눌렀을 때|약간의 대기 후 정답 단어와의 관련 단어|메세지를 입력하면 정답 단어와의 유사도| 
+|전화 버튼을 눌렀을 때|대기 후 정답 단어와의 관련 단어|메세지를 입력하면 정답 단어와의 유사도| 
 | :---: | :---: | :---: | 
 |![image](https://github.com/user-attachments/assets/59a13ef2-2192-490e-afdc-43495cb040f7)|![image](https://github.com/user-attachments/assets/757c3d8a-97c4-4516-824c-a946113aa16d)|![image](https://github.com/user-attachments/assets/91054666-9245-4484-ac93-ca379d3bde22) |
 
