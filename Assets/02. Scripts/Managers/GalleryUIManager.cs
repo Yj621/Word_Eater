@@ -1,3 +1,6 @@
+using System.Collections;
+using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class GalleryUIManager : MonoBehaviour
@@ -7,12 +10,15 @@ public class GalleryUIManager : MonoBehaviour
     [SerializeField] private GameObject listPanel;      // 목록 패널(첫 화면)
     [SerializeField] private GalleryDetailView detail;  // 상세 패널(두 번째 화면)
 
+    [Header("비었을 때 표시할 UI")]
+    [SerializeField] private GameObject emptyStatePanel;
+
     void Awake()
     {
         if (detail != null) detail.gameObject.SetActive(false);
         if (listPanel != null) listPanel.SetActive(true);
     }
-    private System.Collections.IEnumerator Start()
+    private IEnumerator Start()
     {
         yield return null; // 1 frame 대기
         Refresh();
@@ -39,20 +45,26 @@ public class GalleryUIManager : MonoBehaviour
 
         if (items.Count == 0)
         {
-            // 비어있을 때 Empty State를 보여주거나, 디버그로 1개 추가해볼 수 있음
-            DebugAddDummy(); // 필요시 테스트용
+            emptyStatePanel?.SetActive(true);
             return;
         }
+        else
+        {
+            emptyStatePanel?.SetActive(false);
+        }
 
+        // 셀 생성
         foreach (var item in items)
         {
             var cell = Instantiate(cellPrefab, content);
             cell.Bind(item);
-            cell.OnClicked += (clicked) => {
+            cell.OnClicked += (clicked) =>
+            {
                 listPanel.SetActive(false);
                 detail.Open(clicked);
             };
         }
+
     }
 
     // 테스트용(선택): 도감 항목 강제 하나 추가

@@ -15,13 +15,13 @@ public class WordEaterCheckpoint
 
 public class GameReviveSystem : MonoBehaviour
 {
-    public static GameReviveSystem I { get; private set; }
-    [SerializeField] private RevivePopup revivePopup;
+    public static GameReviveSystem Instance { get; private set; }
+    [SerializeField] private ADPopup revivePopup;
 
     private WordEaterCheckpoint _cp;
     private bool _reviveOffered;
 
-    void Awake() => I = this;
+    void Awake() => Instance = this;
 
     public void SaveCheckpoint(WordEater.Core.WordEater we, int batteryPercent)
     {
@@ -40,7 +40,6 @@ public class GameReviveSystem : MonoBehaviour
         if (_reviveOffered) return;
         _reviveOffered = true;
 
-
         if (revivePopup == null)
         {
             Debug.LogWarning("[Revive] revivePopup 미할당");
@@ -49,26 +48,32 @@ public class GameReviveSystem : MonoBehaviour
             return;
         }
 
-        // ▶ 게임 정지: UI는 Unscaled로 뜨게
+        // 게임 정지 (UI는 UnscaledTime 기준)
         Time.timeScale = 0f;
+
+        // 부활
+        revivePopup.Configure(
+            title: "광고 보고 부활하기",
+            watchAdText: "광고 보기",
+            noThanksText: "아니오"
+        );
 
         revivePopup.Show(
             onAccept: () =>
             {
                 ReviveFromCheckpoint();
-                Debug.Log("[WordEater] 턴 고갈 → 사망 처리");
+                Debug.Log("[WordEater] 턴 고갈 → 부활");
                 _reviveOffered = false;
-                Time.timeScale = 1f;  // ▶ 재개
+                Time.timeScale = 1f;  // 재개
             },
             onDecline: () =>
             {
                 _reviveOffered = false;
-                Time.timeScale = 1f;  // ▶ 재개
-                onGiveUp?.Invoke();   // ▶ EndingController(1) 호출됨
+                Time.timeScale = 1f;  // 재개
+                onGiveUp?.Invoke();   // → gamemanager.EndingController(1)
             }
         );
     }
-
 
     public void ReviveFromCheckpoint()
     {
