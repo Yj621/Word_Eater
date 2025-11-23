@@ -15,8 +15,14 @@ namespace WordEater.Core
         public static Action<int, int, int> OnBatteryChanged;                // 현재 배터리, 최대 배터리
         public static Action OnBatteryDepleted;                         // 0칸 도달
         public static Action<ActionType> OnActionBlockedLowBattery;     // 배터리 부족으로 액션 불가
+
+        // 남은 오답 수 변경
         public static event Action<int> OnMistakesChanged;
         public static void RaiseMistakesChanged(int value) => OnMistakesChanged?.Invoke(value);
+
+        // 오답 이벤트
+        public static event Action OnMistakeHit;
+        public static void RaiseMistakeHit() => OnMistakeHit?.Invoke();
 
 
     }

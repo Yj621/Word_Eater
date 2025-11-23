@@ -44,7 +44,7 @@ public class TutoMamager : MonoBehaviour
             }
 
             //각 index마다 설명 대사 추가
-            if (stepIndex == 0 || stepIndex == 2 || stepIndex==5 || stepIndex ==8 || stepIndex ==10)
+            if (stepIndex == 0 || stepIndex == 2 || stepIndex==5 || stepIndex ==8 || stepIndex ==10 || stepIndex == 11)
             {
                  string[] messages = null;
                 ExplainImg.SetActive(true);
@@ -69,7 +69,7 @@ public class TutoMamager : MonoBehaviour
                                 "자음과 모음은\n아이템 형식으로\n사용하고 나면\n개수가 차감됩니다.",
                                 "보드에 있는\n자음과 모음을 결합하여\n단어를 완성할 수 있습니다.",
                                 "'제출' 버튼을 누르면\n입력 단어의\n의미적인 유사도를\n알려줍니다.",
-                                "정답을 맞추면\n워드이터가 성장하고\n정답을 틀리면\n목숨이 줄어드니\n신중하게 입력하세요!"
+                                "정답을 맞추면\n워드이터가 성장하고\n정답을 틀리면\n베터리가 줄어드니\n신중하게 입력하세요!"
                             };
                         break;
 
@@ -92,6 +92,16 @@ public class TutoMamager : MonoBehaviour
                             {
                                 "갤러리에서는\n성장을 마친\n워드이터들을\n볼 수 있습니다."
                             };
+
+                        break;
+
+                    case 11:
+                        messages = new string[]
+                                {
+                                "베터리는 워드이터의\n목숨 입니다!",
+                                "베터리가 0이 되면\n워드이터가 죽고\n새로운 워드이터가\n태어납니다.",
+                                "베터리는 시간이 지나면\n천천히 다시 차오릅니다."
+                                };
 
                         break;
                 }

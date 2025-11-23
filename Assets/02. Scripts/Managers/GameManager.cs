@@ -8,24 +8,37 @@ public class GameManager : MonoBehaviour
 
     //인자가 두개씩 필요한 애들
 
-    //Call Panel
+    [Header("전화 관련")]
     [SerializeField] private RectTransform CallPanel;
     [SerializeField] private RectTransform CallBtn;
 
-    //Message Panel
+    [Header("메세지 관련")]
     [SerializeField] private RectTransform MessagePanel;
     [SerializeField] private RectTransform MessageBtn;
 
-    //Gallery Panel
+    [Header("도감 관련")]
     [SerializeField] private RectTransform GalleryPanel;
     [SerializeField] private RectTransform GalleryBtn;
 
-    //Gallery Panel
+    [Header("인벤 관련")]
     [SerializeField] private RectTransform FolderPanel;
     [SerializeField] private RectTransform FolderBtn;
 
+    [Header("설정 관련")]
+    [SerializeField] private RectTransform SettingPanel;
+    [SerializeField] private RectTransform SettingBtn;
+
+
+    [Header("워드이터(히스토리) 관련")]
+    [SerializeField] private RectTransform WordEaterPanel;
+    [SerializeField] private RectTransform WordEaterBtn;
+
     void Start()
     {
+        //시작 브금 출력
+        SoundManager.Instance.BGMStart(1);
+
+
         //시작 하면 첫 정답 단어 선정
         wordeater.BeginStage(wordeater.ReturnStage(), initial: true);
     }
@@ -139,6 +152,12 @@ public class GameManager : MonoBehaviour
     // 다른 Canvas여도 정확히 버튼 자리에서 시작/복귀
     public void ShowPanel_Folder() => ShowPanelFromButton(FolderPanel, FolderBtn);
     public void HidePanel_Folder() => HidePanelToButton(FolderPanel, FolderBtn);
+
+    public void ShowPanel_Setting() => ShowPanelFromButton(SettingPanel, SettingBtn);
+    public void HidePanel_Setting() => HidePanelToButton(SettingPanel, SettingBtn);
+
+    public void ShowPanel_WordEater() => ShowPanelFromButton(WordEaterPanel, WordEaterBtn);
+    public void HidePanel_WordEater() => HidePanelToButton(WordEaterPanel, WordEaterBtn);
 }
 
 /// <summary>
@@ -159,10 +178,10 @@ public static class CanvasUtil
         Camera toCam = (toCanvas != null && toCanvas.renderMode == RenderMode.ScreenSpaceOverlay)
             ? null : toCanvas != null ? toCanvas.worldCamera : null;
 
-        // 1) fromRT의 월드 위치를 스크린 좌표로
+        // fromRT의 월드 위치를 스크린 좌표로
         Vector2 screenPos = RectTransformUtility.WorldToScreenPoint(fromCam, fromRT.position);
 
-        // 2) 스크린 좌표를 toParent 로컬좌표로
+        // 스크린 좌표를 toParent 로컬좌표로
         RectTransformUtility.ScreenPointToLocalPointInRectangle(
             toParent, screenPos, toCam, out var localPoint);
 

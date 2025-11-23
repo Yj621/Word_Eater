@@ -6,6 +6,8 @@ using WordEater.Services;
 using WordEater.Systems;
 using UnityEngine.SceneManagement;
 using static UnityEngine.EventSystems.EventTrigger;
+using System.Collections;
+using UnityEngine.UI;
 
 namespace WordEater.Core
 {
@@ -56,7 +58,7 @@ namespace WordEater.Core
             {
                 //BIT상태로 변경
                 stage = GrowthStage.Bit;
-                var sr = GetComponent<SpriteRenderer>();
+                var sr = GetComponent<Image>();
                 if (sr != null)
                 {
                     sr.sprite = BitImg;
@@ -86,7 +88,7 @@ namespace WordEater.Core
             }
             else
             {
-                var sr = GetComponent<SpriteRenderer>();
+                var sr = GetComponent<Image>();
                 if (s == GrowthStage.Byte)
                 {
                     if (sr != null) sr.sprite = ByteImg;
@@ -123,34 +125,45 @@ namespace WordEater.Core
         public void DoFeedData(string userInput)
         {
 
+            if (isDead) return;
+
+            // 배터리 먼저
             if (!battery.TryConsume(ActionType.FeedData))
-                return; // OnActionBlockedLowBattery 이벤트로 HUD/토스트 띄우기
-
-
-            // 턴 소모(FeedData는 1턴)
-            if (!turn.ConsumeTurn(ActionType.FeedData))
-            {
-                WordEaterDie();
                 return;
-            }
 
-            if (turn.TurnsLeft <= 0) { WordEaterDie(); return; }
-            // 정답 판정(v1 : 완전 일치, v2 : 오타/의미 유사도 확정 예정)
+            // 턴 소모
+            turn.ConsumeTurn(ActionType.FeedData);
+
+            // 정답 판정
             bool ok = IsCorrect(userInput, currentAnswer);
             GameEvents.OnFeedResult?.Invoke(userInput, ok);
 
             if (ok)
             {
+                // 정답인 경우는 원래 흐름대로
                 EvolveOrFinish();
             }
             else
             {
-                if (!turn.RegisterMistake()) {WordEaterDie(); return; }
+                // 오답인 경우 오답 연출 이벤트
+                turn.RegisterMistake();
             }
 
+            // 마지막에 한 번만 죽을지 판단
+            //    - 턴이 다 떨어졌거나
+            //    - 오답 허용치를 넘었거나
+            if (turn.TurnsLeft <= 0 || turn.MistakesLeft < 0)
+            {
+                // FX가 먼저 보이도록 약간 기다렸다가 사망 처리
+                StartCoroutine(DieAfterMistakeFx());
+            }
+        }
+        private IEnumerator DieAfterMistakeFx()
+        {
+            // 오답 FX(DOTween) 한 사이클 정도 보이게 0.3~0.5초 정도 대기
+            yield return new WaitForSeconds(0.35f);
 
-            // 턴 바닥나면 사망
-            if (turn.TurnsLeft <= 0) { WordEaterDie(); return; }
+            WordEaterDie();
         }
 
         /// <summary>
@@ -272,8 +285,7 @@ namespace WordEater.Core
             currentAnswer = answer;
             GameEvents.OnNewWordAssigned?.Invoke(currentAnswer);
 
-            // 스프라이트 동기화
-            var sr = GetComponent<SpriteRenderer>();
+            var sr = GetComponent<Image>();
             if (sr != null)
             {
                 if (stage == GrowthStage.Bit) sr.sprite = BitImg;
@@ -322,9 +334,19 @@ namespace WordEater.Core
             MoveIfExists(tmpS1, finS1);
 
             // Word 썸네일은 최종 키로 저장
-            var sr = GetComponent<SpriteRenderer>();
+            var img = GetComponent<Image>();
+
             string finS2 = Path.Combine(baseDir, $"thumb_{finalId}_s2.png");
-            GalleryCapture.SaveSpriteThumb(sr, $"thumb_{finalId}_s2", 256);
+
+            // Image 컴포넌트를 넘겨서 저장
+            if (img != null)
+            {
+                GalleryCapture.SaveSpriteThumb(img, $"thumb_{finalId}_s2", 256);
+            }
+            else
+            {
+                Debug.LogError("WordEater에 Image 컴포넌트가 없습니다! 저장 실패.");
+            }
 
             // 도감 등록: 대표 썸네일은 Word
             var item = new GalleryItem

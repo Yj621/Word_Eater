@@ -8,6 +8,7 @@ public class ClickIconChoiceJamo : MonoBehaviour, IPointerClickHandler
     [SerializeField] private bool consumeAfterPick = true;
     [SerializeField] private GameObject folderPanel;
     [SerializeField] private GameObject sceneConfirmPanel;
+    [SerializeField] private GameObject closePanel;
 
     public void OnPointerClick(PointerEventData eventData)
     {
@@ -34,9 +35,19 @@ public class ClickIconChoiceJamo : MonoBehaviour, IPointerClickHandler
 
             if (consumeAfterPick)
             {
-                // Destroy(gameObject);
+                closePanel.SetActive(false);
             }
 
         };
+        closePanel.SetActive(true);
+    }
+
+    public void OnCloseChooser()
+    {
+        closePanel.SetActive(false);
+        var chooser = targetPanel.GetComponentInChildren<JamoChooserUI>();
+
+        if (chooser != null)
+            Destroy(chooser.gameObject);
     }
 }
