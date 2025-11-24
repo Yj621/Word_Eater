@@ -11,34 +11,23 @@ namespace WordEater.Core
     public class TurnController
     {
         private readonly GrowthConfig _growth;
-        public int TurnsLeft { get; private set; }
         public int MistakesLeft { get; private set; }
 
         public TurnController(GrowthConfig growth) => _growth = growth;
 
 
         /// <summary>
-        /// 단계 시작 시 규칙 초기화
+        /// 단계 시작 시 초기화
         /// </summary>
         public void StartStage(GrowthStage stage)
         {
             var cfg = _growth.Get(stage);
-            TurnsLeft = cfg.turnsPerStage;
+            // 턴 설정 제거
             MistakesLeft = cfg.maxMistakes;
-            GameEvents.OnStageStarted?.Invoke(stage, TurnsLeft, MistakesLeft);
-        }
 
-        /// <summary>
-        /// 액션 수행 시 턴 차감 (Clean은 2턴)
-        /// </summary>
-        public bool ConsumeTurn(ActionType action)
-        {
-            int cost = action == ActionType.CleanNoise ? 2 : 1;
-            TurnsLeft -= cost;
-
-            // (OnTurnsChanged는 기존대로 두되, 필요시 RaiseTurnsChanged로 교체 가능)
-            GameEvents.OnTurnsChanged?.Invoke(TurnsLeft);
-            return TurnsLeft > 0;
+            // 이벤트 인자 중 TurnsLeft는 의미가 없어졌으므로 -1 혹은 제거된 버전을 사용해야 함
+            // 여기서는 기존 호환성을 위해 -1을 넘기거나, 이벤트 정의 자체를 수정해야 합니다.
+            GameEvents.OnStageStarted?.Invoke(stage, -1, MistakesLeft);
         }
 
         /// <summary>
@@ -48,13 +37,10 @@ namespace WordEater.Core
         {
             MistakesLeft -= 1;
             Debug.Log("Left Mistake : " + MistakesLeft);
-            // 래퍼로 호출
-            GameEvents.RaiseMistakesChanged(MistakesLeft);
 
-            // 오답 연출
-            GameEvents.RaiseMistakeHit();
-            // 진동
-            Handheld.Vibrate();
+            GameEvents.RaiseMistakesChanged(MistakesLeft);
+            GameEvents.RaiseMistakeHit(); // 오답 연출
+            Handheld.Vibrate(); // 진동
 
             return MistakesLeft >= 0;
         }
@@ -68,26 +54,12 @@ namespace WordEater.Core
         /// <summary>
         /// 부활 복원을 위한 강제 복원 API (권장: stage 넘겨서 룰에 맞게 Clamp)
         /// </summary>
-        public void ForceRestore(int turnsLeft, int mistakesLeft, GrowthStage stage)
+        public void ForceRestore(int mistakesLeft, GrowthStage stage)
         {
             var cfg = _growth.Get(stage);
-            TurnsLeft = Mathf.Clamp(turnsLeft, 0, cfg.turnsPerStage);
             MistakesLeft = Mathf.Clamp(mistakesLeft, 0, cfg.maxMistakes);
 
-            GameEvents.OnStageStarted?.Invoke(stage, TurnsLeft, MistakesLeft);
-            GameEvents.OnTurnsChanged?.Invoke(TurnsLeft);
-            GameEvents.RaiseMistakesChanged(MistakesLeft);
-        }
-
-        /// <summary>
-        /// stage 없이 그대로 복원 – 기존 호출부 호환용
-        /// </summary>
-        public void ForceRestore(int turnsLeft, int mistakesLeft)
-        {
-            TurnsLeft = turnsLeft;
-            MistakesLeft = mistakesLeft;
-
-            GameEvents.OnTurnsChanged?.Invoke(TurnsLeft);
+            GameEvents.OnStageStarted?.Invoke(stage, -1, MistakesLeft);
             GameEvents.RaiseMistakesChanged(MistakesLeft);
         }
     }

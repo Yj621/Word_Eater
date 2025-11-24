@@ -92,35 +92,66 @@ namespace WordEater.Systems
         /// 성공적으로 소모되면 true
         /// 배터리가 부족하면 false 반환
         /// </summary>
+        /// <summary>
+        /// 액션 수행 시 배터리 소모 (퍼센트 단위)
+        /// </summary>
         public bool TryConsume(ActionType action)
         {
-            float costInCells = GetCellsCost(action); // float 형태로 비용 가져오기
-            int costInPercent = Mathf.RoundToInt(costInCells * PercentPerCell);
+            // 행동에 따른 퍼센트 비용 가져오기
+            int costPercent = GetPercentCost(action);
 
-            // 현재 퍼센트가 필요한 퍼센트보다 적으면 막기
-            if (currentBattery < costInPercent)
+            // 배터리 부족 체크
+            if (currentBattery < costPercent)
             {
                 GameEvents.OnActionBlockedLowBattery?.Invoke(action);
                 return false;
             }
 
-            // float 비용으로 배터리 소모
-            Consume(costInCells);
+            // 배터리 차감
+            currentBattery -= costPercent;
 
-            if (CurrentCells <= 0 && currentBattery <= 0) // 배터리가 0이 되었는지 명확히 체크
+            // UI 갱신 (퍼센트 -> 칸 환산)
+            SyncCellsFromPercent();
+            RaiseChanged();
+
+            // 배터리 소진 이벤트
+            if (currentBattery <= 0)
+            {
+                // 0%가 되면 게임오버 등의 로직 실행
                 GameEvents.OnBatteryDepleted?.Invoke();
+            }
 
             return true;
         }
 
         /// <summary>
+        /// 행동별 배터리 소모량 (%) 정의
+        /// </summary>
+        private int GetPercentCost(ActionType action)
+        {
+            switch (action)
+            {
+                // [제출 시 소모되는 배터리]
+                case ActionType.SubmitBit: return 20; // 비트
+                case ActionType.SubmitByte: return 15; // 바이트
+                case ActionType.SubmitWord: return 10; // 워드
+
+                // [힌트 요소]
+                case ActionType.OptimizeAlgo: return 20; // 전화
+
+                // [미니게임]
+                case ActionType.CleanNoise: return 20;
+
+                default: return 0; // 정의되지 않은 행동은 소모 없음
+            }
+        }
+
+        /// <summary>
         /// 배터리 회복 (예: 아이템 사용, 광고 보상)
         /// </summary>
-        public void Refill(int cells)
+        public void Refill(int percentAmount)
         {
-            // 칸 → 퍼센트로 환산해서 올림
-            int addPercent = Mathf.RoundToInt(cells * PercentPerCell);
-            currentBattery = Mathf.Clamp(currentBattery + addPercent, 0, 100);
+            currentBattery = Mathf.Clamp(currentBattery + percentAmount, 0, 100);
             SyncCellsFromPercent();
             RaiseChanged();
         }
@@ -139,27 +170,6 @@ namespace WordEater.Systems
         public void SetBatteryPercent(int percent)
         {
             currentBattery = Mathf.Clamp(percent, 0, 100);
-            SyncCellsFromPercent();
-            RaiseChanged();
-        }
-
-        /// <summary>각 액션별 기본 소모량(칸)</summary>
-        private float GetCellsCost(ActionType action)
-        {
-            switch (action)
-            {
-                case ActionType.FeedData: return 0.5f;     // 1회 시 0.5칸(10%) 소모
-                case ActionType.OptimizeAlgo: return 0.5f; // 1회 시 0.5칸(10%) 소모
-                case ActionType.CleanNoise: return 2f;
-                default: return 1f;
-            }
-        }
-        // 내부 유틸
-
-        private void Consume(float cellsToConsume)
-        {
-            int decPercent = Mathf.RoundToInt(cellsToConsume * PercentPerCell);
-            currentBattery = Mathf.Clamp(currentBattery - decPercent, 0, 100);
             SyncCellsFromPercent();
             RaiseChanged();
         }

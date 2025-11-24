@@ -29,7 +29,6 @@ public class GameReviveSystem : MonoBehaviour
         {
             Position = we.transform.position,
             BatteryPercent = Mathf.Clamp(batteryPercent, 0, 100),
-            TurnsLeft = we.GetTurnsLeft(),         //
             MistakesLeft = we.GetMistakesLeft(),
             Stage = we.ReturnStage(),
             CurrentAnswer = we.CurrentAnswer
