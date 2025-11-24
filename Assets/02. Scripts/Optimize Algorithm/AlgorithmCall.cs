@@ -18,6 +18,7 @@ public class AlgorithmCall : MonoBehaviour
     /// </summary>
     public void OnShowSimilarWord()
     {
+        GameManager.Instance.StopRingingEffect();
         // 배터리 부족 시 네트워크 호출 자체를 막음
         if (!AlgoGuards.EnsureBattery(batterySystem, ActionType.OptimizeAlgo, resultText))
             return;

@@ -11,6 +11,8 @@ public class GameManager : MonoBehaviour
     [Header("전화 관련")]
     [SerializeField] private RectTransform CallPanel;
     [SerializeField] private RectTransform CallBtn;
+    // 전화 오는 연출을 제어할 코루틴 변수
+    private Coroutine ringingCoroutine;
 
     [Header("메세지 관련")]
     [SerializeField] private RectTransform MessagePanel;
@@ -33,6 +35,9 @@ public class GameManager : MonoBehaviour
     [SerializeField] private RectTransform WordEaterPanel;
     [SerializeField] private RectTransform WordEaterBtn;
 
+    public static GameManager Instance;
+
+    void Awake() => Instance = this;
     void Start()
     {
         //시작 브금 출력
@@ -140,8 +145,78 @@ public class GameManager : MonoBehaviour
     }
 
     // ---- 패널별 쇼/하이드 ----
-    public void ShowPanel_Call() => ShowPanelFromButton(CallPanel, CallBtn);
-    public void HidePanel_Call() => HidePanelToButton(CallPanel, CallBtn);
+    public void ShowPanel_Call()
+    {
+        // 패널 등장 (기존 함수)
+        ShowPanelFromButton(CallPanel, CallBtn);
+
+        // 전화 오는 연출 시작 (이미 울리고 있다면 중복 방지)
+        if (ringingCoroutine != null) StopCoroutine(ringingCoroutine);
+        ringingCoroutine = StartCoroutine(ProcessIncomingCall());
+    }
+
+    public void HidePanel_Call()
+    {
+        // 1. 연출 중단
+        if (ringingCoroutine != null)
+        {
+            StopCoroutine(ringingCoroutine);
+            ringingCoroutine = null;
+        }
+
+        // 2. 흔들림 때문에 돌아간 회전값/위치값 초기화 (중요!)
+        CallPanel.transform.rotation = Quaternion.identity;
+        // 만약 위치도 흔들었다면 CallPanel.anchoredPosition 도 보정이 필요할 수 있으나, 
+        // HidePanelToButton에서 위치를 덮어쓰므로 회전만 초기화해도 괜찮습니다.
+
+        // 3. 패널 퇴장 (기존 함수)
+        HidePanelToButton(CallPanel, CallBtn);
+    }
+
+    /// <summary>
+    /// 전화 오는 연출
+    /// </summary>
+    private IEnumerator ProcessIncomingCall()
+    {
+        // 패널이 팝업되는 시간(0.3초)만큼 살짝 대기했다가 진동 시작 (선택사항)
+        yield return new WaitForSeconds(0.2f);
+
+        while (true)
+        {
+            // 기기 진동 (모바일 기기에서만 작동)
+            // 기본적으로 0.5~1초 정도 진동합니다.
+            Handheld.Vibrate();
+
+            // DOTween을 이용한 시각적 흔들림
+            // duration: 0.5초 동안, strength: 30도 강도로, vibrato: 10만큼, randomness: 작을수록 덜 흔들림
+            // mode: Rotate (회전하면서 흔들림 - 아이콘이 딸랑거리는 느낌)
+            CallPanel.DOShakeRotation(0.5f, 30f, 10, 10, true);
+
+            // 다음 진동까지 대기 (진동 간격)
+            // 1초 쉬고 다시 울림 (따르릉~ ... 따르릉~ 느낌)
+            yield return new WaitForSeconds(1.2f);
+        }
+    }
+
+    /// <summary>
+    /// 전화 연출 멈추기
+    /// </summary>
+    public void StopRingingEffect()
+    {
+        if (ringingCoroutine != null)
+        {
+            StopCoroutine(ringingCoroutine);
+            ringingCoroutine = null;
+        }
+
+        // 흔들림으로 인해 틀어진 회전값 원상복구
+        if (CallPanel != null)
+        {
+            CallPanel.transform.rotation = Quaternion.identity;
+            // 만약 DOShake 애니메이션이 실행 중이라면 강제로 멈춥니다 (선택사항, 더 확실함)
+            CallPanel.DOKill();
+        }
+    }
 
     public void ShowPanel_Message() => ShowPanelFromButton(MessagePanel, MessageBtn);
     public void HidePanel_Message() => HidePanelToButton(MessagePanel, MessageBtn);
