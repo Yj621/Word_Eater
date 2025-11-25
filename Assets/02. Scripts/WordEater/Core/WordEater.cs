@@ -51,7 +51,7 @@ namespace WordEater.Core
         public void BeginStage(GrowthStage s, bool initial = false)
         {
             turn.StartStage(s);
-
+            gamemanager.HistoryLIne = "";
 
             //처음 (다시시작이나 게임 클리어 포함)
             if (initial)

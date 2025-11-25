@@ -6,6 +6,7 @@ public class SubmitManager : MonoBehaviour
     public UIManager uimanager;
     public KeyBoardManager keyboardmanager;
     public WordEater.Core.WordEater wordeater;
+    public GameManager gamemanager;
     public void OnSubmitButton()
     {
         string word1 = wordeater.returnCurrentEnrty().word; //정답 단어
@@ -28,9 +29,11 @@ public class SubmitManager : MonoBehaviour
                 }
                 else {
                     NoticeManager.Instance.ShowSticky($"유사도 : {result.Value.ToString("F2")}");
-                    }
+                    gamemanager.HistoryLIne += word2 +","+result.Value.ToString("F2") + "|";
+                }
 
                 wordeater.DoFeedData(word2);
+
             }
             else
             {

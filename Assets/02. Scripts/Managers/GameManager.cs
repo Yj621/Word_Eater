@@ -33,6 +33,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] private RectTransform WordEaterPanel;
     [SerializeField] private RectTransform WordEaterBtn;
 
+    public string HistoryLIne = "";
+
     void Start()
     {
         //시작 브금 출력
