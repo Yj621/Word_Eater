@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using DG.Tweening;
+using UnityEngine.UI;
 public class GameManager : MonoBehaviour
 {
     [SerializeField] private WordEater.Core.WordEater wordeater;
@@ -30,6 +31,10 @@ public class GameManager : MonoBehaviour
     [SerializeField] private RectTransform SettingPanel;
     [SerializeField] private RectTransform SettingBtn;
 
+    [Header("게임 오버 연출 (배터리 방전)")]
+    [SerializeField] private CanvasGroup gameOverCanvasGroup; // 검은 배경 전체 (알파값 조절용)
+    [SerializeField] private Image batteryFillImg;            // 빨간색 배터리 게이지
+    [SerializeField] private Image cableIconImg;              // 케이블/번개 아이콘
 
     [Header("워드이터(히스토리) 관련")]
     [SerializeField] private RectTransform WordEaterPanel;
@@ -46,40 +51,82 @@ public class GameManager : MonoBehaviour
 
         //시작 하면 첫 정답 단어 선정
         wordeater.BeginStage(wordeater.ReturnStage(), initial: true);
+
+        // 시작 시 게임오버 패널은 꺼두기
+        if (gameOverCanvasGroup != null)
+        {
+            gameOverCanvasGroup.alpha = 0;
+            gameOverCanvasGroup.gameObject.SetActive(false);
+        }
     }
 
     //type 에 따라 게임이 끝났을 때 행동 변화.
     //type이=1 인 경우 <<< 게임 오버.
     //type이=2 인 경우 <<< 게임 클리어
-    public void EndingController(int type) {
-        //게임 오버
-        if (type == 1) {
-            // 재시작 하는 동안(애니메이션이 나올 예정이라) 일단 터지 방지
+    public void EndingController(int type)
+    {
+        // 게임 오버 (배터리 방전 연출)
+        if (type == 1)
+        {
+            // 터치 방지
             touchblockPanel.SetActive(true);
-            NoticeManager.Instance.ShowTimed("게임 오버!", 3f);
-            //재시작
-            StartCoroutine(RestartWithDelay(3f));
+
+            // 기존 텍스트 알림 대신 방전 연출 코루틴 실행
+            StartCoroutine(ProcessGameOverSequence());
         }
-        //게임 클리어
-        else if (type == 2) {
-            // 재시작 하는 동안(애니메이션이 나올 예정이라) 일단 터지 방지
+        // 게임 클리어
+        else if (type == 2)
+        {
             touchblockPanel.SetActive(true);
             NoticeManager.Instance.ShowTimed("게임 클리어!", 3f);
-            //도감 등록
-
-
-
-            //재시작
             StartCoroutine(RestartWithDelay(3f));
         }
-    
+    }
+
+    // 배터리 방전 연출 코루틴
+    private IEnumerator ProcessGameOverSequence()
+    {
+        // 패널 활성화 및 초기화
+        gameOverCanvasGroup.gameObject.SetActive(true);
+        gameOverCanvasGroup.alpha = 0f;
+
+        // 배터리 빨간색 부분과 케이블 아이콘 초기 상태
+        batteryFillImg.color = Color.white;
+        cableIconImg.color = Color.white;
+
+        // 화면 페이드 인 (검은 화면이 쓱 나타남)
+        gameOverCanvasGroup.DOFade(1f, 0.5f);
+
+        // 연출 시작 (DOTween)
+
+        // 빨간 배터리가 깜빡깜빡 (경고 느낌)
+        // SetLoops(-1, LoopType.Yoyo) : 무한 반복하면서 밝아졌다 어두워졌다 함
+        batteryFillImg.DOFade(0.2f, 0.5f).SetLoops(-1, LoopType.Yoyo);
+
+        // 케이블/번개 아이콘이 나타났다 사라졌다 (충전 필요 알림 느낌)
+        // 약간 엇박자로 깜빡이게 설정
+        cableIconImg.DOFade(0.3f, 0.8f).SetLoops(-1, LoopType.Yoyo);
+
+        // 연출 보여주는 시간 (예: 3초 동안 멍하니 바라보게 함)
+        yield return new WaitForSeconds(3.0f);
+
+        // 트윈 제거 (메모리 누수 방지 및 상태 초기화)
+        batteryFillImg.DOKill();
+        cableIconImg.DOKill();
+        gameOverCanvasGroup.DOKill();
+
+        // 알파값 복구
+        Color tempFill = batteryFillImg.color; tempFill.a = 1f; batteryFillImg.color = tempFill;
+        Color tempIcon = cableIconImg.color; tempIcon.a = 1f; cableIconImg.color = tempIcon;
+
+        // 패널 끄고 재시작
+        gameOverCanvasGroup.gameObject.SetActive(false);
+        Restart();
     }
 
     //일단은 N초뒤 시작이지만, 나중에 애니메이션을 넣으면 애니메이션 쪽에서 restart함수 실행으로 변경
     private IEnumerator RestartWithDelay(float delay)
     {
-
-
         yield return new WaitForSeconds(delay);
         Restart();
     }
