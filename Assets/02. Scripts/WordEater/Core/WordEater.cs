@@ -34,7 +34,6 @@ namespace WordEater.Core
         [SerializeField] private GrowthStage stage = GrowthStage.Bit; // 현재 단계
         [SerializeField] private string currentAnswer;                // 현재 정답(프로토타입용 노출)
 
-        private TurnController turn;   // 턴/오답 관리자
         private WordEntry currentEntry; // 현재 단어 데이터(주제/연관어 포함)
 
         private string pendingEvoId; // Bit/Byte 동안 쓸 임시 키
@@ -42,7 +41,6 @@ namespace WordEater.Core
 
         private void Awake()
         {
-            turn = new TurnController(growthConfig);
         }
 
         /// <summary>
@@ -50,7 +48,6 @@ namespace WordEater.Core
         /// </summary>
         public void BeginStage(GrowthStage s, bool initial = false)
         {
-            turn.StartStage(s);
             gamemanager.HistoryLIne = "";
 
             //처음 (다시시작이나 게임 클리어 포함)
@@ -64,8 +61,6 @@ namespace WordEater.Core
                     sr.sprite = BitImg;
                 }
 
-                //실패 최대 횟수 2로 변경
-                turn.SetMistake(2);
                 // 죽은 상태 해제
                 isDead = false;
 
@@ -121,8 +116,12 @@ namespace WordEater.Core
             if (isDead) return;
 
             ActionType submitAction = GetSubmitAction();
-
-            battery.TryConsume(submitAction);
+            // 배터리가 부족해서 아예 행동을 못하는 경우 -> 즉시 사망 처리
+            if (!battery.TryConsume(submitAction))
+            {
+                StartCoroutine(DieAfterMistakeFx());
+                return;
+            }
 
             // 정답 판정
             bool ok = IsCorrect(userInput, currentAnswer);
@@ -135,27 +134,28 @@ namespace WordEater.Core
             }
             else
             {
-                // 오답인 경우 오답 연출 이벤트
-                turn.RegisterMistake();
+                HandleMistakeFeedback();
             }
-
-            // 마지막에 한 번만 죽을지 판단
-            //    - 턴이 다 떨어졌거나
-            //    - 오답 허용치를 넘었거나
-            if (turn.MistakesLeft <= 0 || turn.MistakesLeft < 0)
+            if (battery.CurrentPercent <= 0)
             {
-                // FX가 먼저 보이도록 약간 기다렸다가 사망 처리
                 StartCoroutine(DieAfterMistakeFx());
             }
+
         }
+        private void HandleMistakeFeedback()
+        {
+            Debug.Log("오답! 배터리만 소모됨.");
+
+            // 기존 TurnController에 있던 기능 이식
+            GameEvents.RaiseMistakeHit(); // 오답 UI 연출 (화면 흔들림 등)
+            Handheld.Vibrate();           // 진동
+        }
+
         private IEnumerator DieAfterMistakeFx()
         {
-            // 오답 FX(DOTween) 한 사이클 정도 보이게 0.3~0.5초 정도 대기
             yield return new WaitForSeconds(0.35f);
-
             WordEaterDie();
         }
-
         // 내부 로직
 
         private bool IsCorrect(string input, string answer)
@@ -246,12 +246,6 @@ namespace WordEater.Core
             }
         }
 
-        public int GetMistakesLeft() => turn.MistakesLeft; // TurnController에 프로퍼티 노출 필요
-
-        public void RestoreTurns(int turnsLeft, int mistakesLeft)
-        {
-            turn.ForceRestore(mistakesLeft, stage);
-        }
 
         public void RestoreAnswer(string answer, GrowthStage s)
         {

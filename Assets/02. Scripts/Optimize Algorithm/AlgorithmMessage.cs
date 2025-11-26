@@ -29,7 +29,10 @@ public class AlgorithmMessage : MonoBehaviour
         resultRect = resultPanel.GetComponent<RectTransform>();
         shownPos = resultRect.anchoredPosition;
         hiddenPos = shownPos + new Vector2(-Screen.width, 0f);
-        resultRect.anchoredPosition = hiddenPos;
+        resultRect = resultPanel.GetComponent<RectTransform>();
+
+        // 초기화: 패널을 끄고 스케일을 0으로 맞춰둡니다.
+        resultRect.localScale = Vector3.zero;
         resultPanel.SetActive(false);
     }
 
@@ -45,12 +48,16 @@ public class AlgorithmMessage : MonoBehaviour
     /// </summary>
     private void ShowResultPanel()
     {
-        if (!resultPanel.activeSelf)
-        {
-            resultPanel.SetActive(true);
-            resultRect.anchoredPosition = hiddenPos;
-            resultRect.DOAnchorPos(shownPos, duration).SetEase(Ease.OutBack);
-        }
+        resultPanel.SetActive(true);
+        //  시작 상태 설정: 크기 0 (보이지 않음)
+        resultRect.localScale = Vector3.zero;
+
+        // 애니메이션 실행
+        // DOScale(1f, duration): 크기를 1(원래크기)로 키움
+        // SetEase(Ease.OutBack): 목표 크기를 살짝 넘어갔다가 돌아오는 '탱~' 하는 탄성 효과
+        resultRect.DOScale(1f, duration).SetEase(Ease.OutBack);
+        Handheld.Vibrate(); // 진동
+
     }
 
     /// <summary>
