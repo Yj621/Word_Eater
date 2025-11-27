@@ -1,4 +1,6 @@
+using System;
 using DG.Tweening;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using WordEater.Core;
@@ -10,18 +12,42 @@ public class UIManager : MonoBehaviour
     private float _animationDuration = 0.5f; // 애니메이션 지속 시간
 
     private bool _isKeyboardOpen = false; // 키보드 상태 추적 변수
-    PhoneSwiper phoneSwiper;
-    public GameObject PageIcon;
     // 원하는 위치 고정 (anchoredPosition 기준)
-    private Vector2 _showPosition = new Vector2(0, 0);       // Y = 0
-    private Vector2 _hidePosition = new Vector2(0, -450);    // Y = -480
 
     [Header("오답 연출")]
     [SerializeField] private Image _damageOverlay;          // 전체 화면 빨간 Image
     [SerializeField] private RectTransform _shakeTarget;    // 흔들 대상 (예: 전체 UI 루트)
 
+    [Header("UI 연결")]
+    [SerializeField] private GameObject contentRoot;    // 팝업 전체 부모 (Panel)
+    [SerializeField] private Transform popupContainer;  // 실제 튀어오를 팝업 창 (배경 제외)
+    [SerializeField] private TextMeshProUGUI messageText; // 메시지 텍스트
+    [SerializeField] private Button confirmButton;      // 확인(닫기) 버튼
+
+    private Action onConfirmCallback; // 확인 버튼 눌렀을 때 실행할 추가 로직(옵션)
+
     private Vector3 _shakeOriginalPos;
 
+    // 외부 참조 컴포넌트
+    PhoneSwiper phoneSwiper;
+    public GameObject PageIcon;
+    private Vector2 _showPosition = new Vector2(0, 0);
+    private Vector2 _hidePosition = new Vector2(0, -450);
+
+    public static UIManager Instance;
+
+
+    private void Awake()
+    {
+        Instance = this;
+        // 씬 시작 시 팝업 숨기기
+        if (contentRoot != null)
+            contentRoot.SetActive(false);
+
+        // 버튼 리스너 연결
+        if (confirmButton != null)
+            confirmButton.onClick.AddListener(OnConfirmClicked);
+    }
     void Start()
     {
         phoneSwiper = GetComponent<PhoneSwiper>();
@@ -37,6 +63,56 @@ public class UIManager : MonoBehaviour
             c.a = 0f;
             _damageOverlay.color = c;
         }
+    }
+
+    /// <summary>
+    /// 팝업 띄우기
+    /// </summary>
+    /// <param name="message">보여줄 메시지</param>
+    /// <param name="onClose">닫힌 뒤 실행할 로직 (없으면 null)</param>
+    public void Show(string message, Action onClose = null)
+    {
+        if (messageText != null) messageText.text = message;
+        onConfirmCallback = onClose;
+
+        if (contentRoot != null)
+        {
+            contentRoot.SetActive(true);
+
+            // 애니메이션 대상 설정 (popupContainer가 없으면 contentRoot 자체를 애니메이션)
+            Transform target = popupContainer != null ? popupContainer : contentRoot.transform;
+
+            // 크기를 0으로 초기화
+            target.localScale = Vector3.zero;
+
+            // 0 -> 1로 커지면서 튀어오르는 연출 (OutBack)
+            target.DOKill();
+            target.DOScale(1f, 0.4f)
+                .SetEase(Ease.OutBack)
+                .SetUpdate(true); // TimeScale이 0이어도 동작하게 함
+        }
+    }
+
+    /// <summary>
+    /// 닫기 버튼 로직
+    /// </summary>
+    private void OnConfirmClicked()
+    {
+        Transform target = popupContainer != null ? popupContainer : contentRoot.transform;
+
+        // 닫을 때는 작아지면서 사라짐 (InBack)
+        target.DOKill();
+        target.DOScale(0f, 0.25f)
+            .SetEase(Ease.InBack)
+            .SetUpdate(true)
+            .OnComplete(() =>
+            {
+                // 애니메이션 끝난 후 비활성화
+                if (contentRoot != null) contentRoot.SetActive(false);
+
+                onConfirmCallback?.Invoke();
+                onConfirmCallback = null;
+            });
     }
 
     private void PlayMistakeFx()
