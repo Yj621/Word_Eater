@@ -40,6 +40,9 @@ namespace WordEater.Systems
         public int MaxCells => maxCells;          // 최대 칸 수 (읽기 전용)
         public int CurrentCells { get; private set; } // 현재 칸 (퍼센트로부터 환산)
         public int CurrentPercent => currentBattery;
+        // 첫 실행 여부 저장 키
+        private const string KEY_FIRST_RUN = "Battery_FirstRun";
+
 
         private void Awake()
         {
@@ -50,18 +53,26 @@ namespace WordEater.Systems
 
         private void Start()
         {
-            // UIManager가 Awake에서 초기화되므로, 
-            // 팝업 로직(오프라인 보상)을 실행
-            CheckOfflineRecharge();
 
-            // 이벤트 전파
+            // ---- 첫 실행인지 확인 ----
+            if (!PlayerPrefs.HasKey(KEY_FIRST_RUN))
+            {
+                // 첫 실행 → 오프라인 보상 X
+                PlayerPrefs.SetInt(KEY_FIRST_RUN, 1);
+
+                // 현재 배터리 상태와 시간 저장해두기
+                SaveBatteryState();
+            }
+            else
+            {
+                // 첫 실행이 아님 → 오프라인 보상 계산
+                CheckOfflineRecharge();
+            }
+
             RaiseChanged();
 
-            // 자동 회복 코루틴
             if (enableAutoRecharge)
-            {
                 StartCoroutine(RuntimeRechargeRoutine());
-            }
         }
 
 
