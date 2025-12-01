@@ -56,13 +56,6 @@ public class UIGridArea : MonoBehaviour
         UpdateGrid();
     }
 
-    /// <summary>
-    /// 해상도(레이아웃) 변경 시 자동으로 호출 → 그리드 정보 재계산
-    /// </summary>
-    void OnRectTransformDimensionsChange()
-    {
-        if (_rt != null) UpdateGrid();
-    }
 
     /// <summary>
     /// 최소 3칸(고정된 칸 수) 아이콘을 수용할 수 있도록 RectTransform의 최소 가로 크기를 보정

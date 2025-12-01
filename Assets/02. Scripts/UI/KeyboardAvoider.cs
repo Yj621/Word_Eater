@@ -59,29 +59,35 @@ public class KeyboardAvoider : MonoBehaviour
         currentKeyboardHeight = 0f;
     }
 
-    void Update()
-    {
+void Update()
+{
 #if UNITY_ANDROID || UNITY_IOS
-        // 네이티브로 실시간 키보드 높이 가져오기 (스크린 px 단위)
-        float keyboardHeight = GetNativeKeyboardHeight();
+    float keyboardHeight = GetNativeKeyboardHeight();
 
-        // 키보드 높이가 변경되었을 때만 UI 갱신
-        if (!Mathf.Approximately(currentKeyboardHeight, keyboardHeight))
+    // 🔹 키보드가 안 떠 있으면: 원위치로 복귀
+    if (keyboardHeight <= 0f)
+    {
+        if (!Mathf.Approximately(currentKeyboardHeight, 0f))
         {
-            currentKeyboardHeight = keyboardHeight;
-
-            // Canvas Scaler 고려 → 스크린 픽셀 → UI 픽셀로 변환
-            float uiKeyboardHeight = keyboardHeight / rootCanvas.scaleFactor;
-
-            // multiplier & 추가 offset 적용
-            float finalY = uiKeyboardHeight * heightMultiplier + extraOffset;
-
-            // Input_Group을 위로 이동
-            target.anchoredPosition =
-                originalAnchoredPos + new Vector2(0f, finalY);
+            currentKeyboardHeight = 0f;
+            target.anchoredPosition = originalAnchoredPos;
         }
-#endif
+        return; // 더 이상 계산 안 함
     }
+    // 🔹 키보드가 떠 있으면: 높이에 맞춰 위치 조정
+    if (!Mathf.Approximately(currentKeyboardHeight, keyboardHeight))
+    {
+        currentKeyboardHeight = keyboardHeight;
+
+        float uiKeyboardHeight = keyboardHeight / rootCanvas.scaleFactor;
+        float finalY = uiKeyboardHeight * heightMultiplier + extraOffset;
+
+        target.anchoredPosition =
+            originalAnchoredPos + new Vector2(0f, finalY);
+    }
+#endif
+}
+
 
     /// <summary>
     /// 실제 모바일 환경에서 "진짜" 키보드 높이를 가져오는 함수

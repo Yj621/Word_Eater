@@ -34,15 +34,13 @@ namespace WordEater.Core
         [SerializeField] private GrowthStage stage = GrowthStage.Bit; // 현재 단계
         [SerializeField] private string currentAnswer;                // 현재 정답(프로토타입용 노출)
 
-        private TurnController turn;   // 턴/오답 관리자
         private WordEntry currentEntry; // 현재 단어 데이터(주제/연관어 포함)
 
         private string pendingEvoId; // Bit/Byte 동안 쓸 임시 키
-
+        private GrowthStage currentStage = GrowthStage.Bit;
 
         private void Awake()
         {
-            turn = new TurnController(growthConfig);
         }
 
         /// <summary>
@@ -50,8 +48,7 @@ namespace WordEater.Core
         /// </summary>
         public void BeginStage(GrowthStage s, bool initial = false)
         {
-            turn.StartStage(s);
-
+            gamemanager.HistoryLIne = "";
 
             //처음 (다시시작이나 게임 클리어 포함)
             if (initial)
@@ -64,8 +61,6 @@ namespace WordEater.Core
                     sr.sprite = BitImg;
                 }
 
-                //실패 최대 횟수 2로 변경
-                turn.SetMistake(2);
                 // 죽은 상태 해제
                 isDead = false;
 
@@ -102,13 +97,6 @@ namespace WordEater.Core
                 }
             }
 
-            // BeginStage 끝부분(초기 진입 포함)
-            if (GameReviveSystem.Instance != null && battery != null)
-            {
-                GameReviveSystem.Instance.SaveCheckpoint(this, battery.CurrentPercent);
-            }
-
-            // EvolveOrFinish에서 다음 단계 단어 배정 직후
             if (GameReviveSystem.Instance != null && battery != null)
             {
                 GameReviveSystem.Instance.SaveCheckpoint(this, battery.CurrentPercent);
@@ -127,12 +115,13 @@ namespace WordEater.Core
 
             if (isDead) return;
 
-            // 배터리 먼저
-            if (!battery.TryConsume(ActionType.FeedData))
+            ActionType submitAction = GetSubmitAction();
+            // 배터리가 부족해서 아예 행동을 못하는 경우 -> 즉시 사망 처리
+            if (!battery.TryConsume(submitAction))
+            {
+                StartCoroutine(DieAfterMistakeFx());
                 return;
-
-            // 턴 소모
-            turn.ConsumeTurn(ActionType.FeedData);
+            }
 
             // 정답 판정
             bool ok = IsCorrect(userInput, currentAnswer);
@@ -145,53 +134,28 @@ namespace WordEater.Core
             }
             else
             {
-                // 오답인 경우 오답 연출 이벤트
-                turn.RegisterMistake();
+                HandleMistakeFeedback();
             }
-
-            // 마지막에 한 번만 죽을지 판단
-            //    - 턴이 다 떨어졌거나
-            //    - 오답 허용치를 넘었거나
-            if (turn.TurnsLeft <= 0 || turn.MistakesLeft < 0)
+            if (battery.CurrentPercent <= 0)
             {
-                // FX가 먼저 보이도록 약간 기다렸다가 사망 처리
                 StartCoroutine(DieAfterMistakeFx());
             }
+
         }
+        private void HandleMistakeFeedback()
+        {
+            Debug.Log("오답! 배터리만 소모됨.");
+
+            // 기존 TurnController에 있던 기능 이식
+            GameEvents.RaiseMistakeHit(); // 오답 UI 연출 (화면 흔들림 등)
+            Handheld.Vibrate();           // 진동
+        }
+
         private IEnumerator DieAfterMistakeFx()
         {
-            // 오답 FX(DOTween) 한 사이클 정도 보이게 0.3~0.5초 정도 대기
             yield return new WaitForSeconds(0.35f);
-
             WordEaterDie();
         }
-
-        /// <summary>
-        /// 미니게임/힌트(턴 1 소모)
-        /// </summary>
-        public void DoOptimizeAlgo() // 미니게임 자리(힌트/버프 지급)
-        {
-            if (isDead) return;
-            if (!turn.ConsumeTurn(ActionType.OptimizeAlgo))
-            {
-                WordEaterDie(); return;
-            }
-            // TODO: 힌트 토큰 +1, 상성 버프 스택 등
-        }
-
-        /// <summary>
-        /// 노이즈 제거(턴 2 소모, 배율/버프 예정)
-        /// </summary>
-        public void DoCleanNoise() // 2턴 소모, 배율/보상 증가 버프
-        {
-            if (isDead) return;
-            if (!turn.ConsumeTurn(ActionType.CleanNoise))
-            {
-                WordEaterDie(); return;
-            }
-            // TODO: 배율 스택 += 1
-        }
-
         // 내부 로직
 
         private bool IsCorrect(string input, string answer)
@@ -271,13 +235,17 @@ namespace WordEater.Core
                                   // 필요하면 무적 타이머/상태 초기화/입력언락 등을 여기서 처리
         }
 
-        public int GetTurnsLeft() => turn.TurnsLeft;
-        public int GetMistakesLeft() => turn.MistakesLeft; // TurnController에 프로퍼티 노출 필요
-
-        public void RestoreTurns(int turnsLeft, int mistakesLeft)
+        // 현재 스테이지에 맞는 제출 액션을 반환하는 함수
+        private ActionType GetSubmitAction()
         {
-            turn.ForceRestore(turnsLeft, mistakesLeft); // TurnController에 강제 복원 API 추가
+            switch (stage)
+            {
+                case GrowthStage.Byte: return ActionType.SubmitByte;
+                case GrowthStage.Word: return ActionType.SubmitWord;
+                default: return ActionType.SubmitBit; // 기본값 Bit
+            }
         }
+
 
         public void RestoreAnswer(string answer, GrowthStage s)
         {
