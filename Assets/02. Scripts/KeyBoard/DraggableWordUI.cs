@@ -13,6 +13,7 @@ public class DraggableWordUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     CanvasGroup cg;                   // 드래그 중 Raycast 막기용(선택)
 
     int sourceInventoryIndex = -1;
+    int consumedAmount = 1;
     KeyBoardManager owner;
 
     public void Init(RectTransform dragRoot, RectTransform allowedArea, RectTransform trashArea, Camera uiCamera)
@@ -23,10 +24,11 @@ public class DraggableWordUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         this.uiCamera = uiCamera;
     }
 
-    public void BindSource(KeyBoardManager _keyboardm, int invIndex)
+    public void BindSource(KeyBoardManager _keyboardm, int invIndex, int amount)
     {
         owner = _keyboardm;
         sourceInventoryIndex = invIndex;
+        consumedAmount = Mathf.Max(1, amount);
     }
 
     void Awake()
@@ -62,7 +64,7 @@ public class DraggableWordUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         if (trashArea && RectTransformUtility.RectangleContainsScreenPoint(trashArea, eventData.position, uiCamera))
         {
             if (owner && sourceInventoryIndex >= 0)
-                owner.OnPieceDeleted(sourceInventoryIndex);
+                owner.OnPieceDeleted(sourceInventoryIndex, consumedAmount);
             Destroy(gameObject);
             return;
         }
@@ -70,6 +72,8 @@ public class DraggableWordUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         // 허용 구역 밖 → 삭제
         if (allowedArea && !RectTransformUtility.RectangleContainsScreenPoint(allowedArea, eventData.position, uiCamera))
         {
+            if (owner && sourceInventoryIndex >= 0)
+                owner.OnPieceDeleted(sourceInventoryIndex, consumedAmount);
             Destroy(gameObject);
             return;
         }

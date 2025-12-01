@@ -42,7 +42,7 @@ public class KeyBoardManager : MonoBehaviour
     public RectTransform trashArea;     // 쓰레기통(여기 놓으면 삭제)
 
     public TextMeshProUGUI resultText; // 결과 표시용 라벨
-
+    Dictionary<int, int> _sessionSpent = new();
 
     public void PressSingle(int index) => PressSingle(index, null);
     public void PressDouble(int index) => PressDouble(index, null);
@@ -63,13 +63,23 @@ public class KeyBoardManager : MonoBehaviour
         }
     }
 
+    private void Start()
+    {
+        _sessionSpent.Clear();
+    }
+
+    void OnEnable()
+    {
+        _sessionSpent.Clear();
+        UpdateDoubleLabels();
+
+
+    }
+
+
     void OnDestroy()
     {
         KeyCount.OnChanged -= OnKeyCountChanged;
-    }
-    public void OnPieceDeleted(int invIndex)
-    {
-        KeyCount.AddAt(invIndex, 1);
     }
 
     void OnKeyCountChanged(int index, int newCount)
@@ -84,12 +94,11 @@ public class KeyBoardManager : MonoBehaviour
         k.RefreshVisuals(KeyCount.Get(index), KeyCount.MaxCount);
     }
 
-    // 롱프레스 + 드래그 시작 (PointerEventData 포함)
     public void PressSingle(int index, PointerEventData ev)
     {
-        if (!IsValidIndex(index, SingleWordButtons, SingleWords)) return; 
-        if (!TryConsumeAndRefresh(index, 1)) return; 
-        BeginDragSpawn(SingleWordButtons[index], SingleWords[index], ev, index);
+        if (!IsValidIndex(index, SingleWordButtons, SingleWords)) return;
+        if (!TryConsumeAndRefresh(index, 1)) return;
+        BeginDragSpawn(SingleWordButtons[index], SingleWords[index], ev, index, 1);
     }
 
     public void PressDouble(int index, PointerEventData ev)
@@ -104,9 +113,8 @@ public class KeyBoardManager : MonoBehaviour
 
         int cost = isShiftPressed ? 2 : 1;
         if (!TryConsumeAndRefresh(index, cost)) { NotEnoughFeedback(index); return; }
-        BeginDragSpawn(btn, prefab, ev, index);
+        BeginDragSpawn(btn, prefab, ev, index, cost);
     }
-
 
     public void PressShift()
     {
@@ -240,8 +248,6 @@ public class KeyBoardManager : MonoBehaviour
         return null;
     }
 
-    void OnEnable() => UpdateDoubleLabels();
-
     void Update()
     {
         if (!dragging) return;
@@ -306,7 +312,7 @@ public class KeyBoardManager : MonoBehaviour
     }
 
 
-    void BeginDragSpawn(Button button, GameObject prefab, PointerEventData ev, int invIndex)
+    void BeginDragSpawn(Button button, GameObject prefab, PointerEventData ev, int invIndex, int amount)
     {
         var buttonRT = button.GetComponent<RectTransform>();
         Vector2 buttonScreen = RectTransformUtility.WorldToScreenPoint(uiCamera, buttonRT.position);
@@ -327,7 +333,7 @@ public class KeyBoardManager : MonoBehaviour
 
             var drag = go.GetComponent<DraggableWordUI>();
             drag.Init(root, allowedArea, trashArea, uiCamera);
-            drag.BindSource(this, invIndex);     // ★ 원본 인덱스 바인딩
+            drag.BindSource(this, invIndex, amount);     // ★ 원본 인덱스 바인딩
 
             dragIsUI = true;
             dragUIRect = rt;
@@ -345,7 +351,7 @@ public class KeyBoardManager : MonoBehaviour
             {
                 // 월드 프리팹이어도 바인딩만은 해둔다(환불용)
                 drag.Init(null, null, null, null);
-                drag.BindSource(this, invIndex);
+                drag.BindSource(this, invIndex, amount);
             }
 
             dragIsUI = false;
@@ -400,7 +406,17 @@ public class KeyBoardManager : MonoBehaviour
             NotEnoughFeedback(index);
             return false;
         }
+        RecordSpend(index, amount);
+
         return true;
+    }
+
+    public void OnPieceDeleted(int invIndex, int amount)
+    {
+        // 수량 환불
+        KeyCount.AddAt(invIndex, amount);
+        // 세션 장부도 감소
+        RecordRefund(invIndex, amount);
     }
 
     public int GrantRandomLetters(int amount, bool singlesOnly = false, bool doublesOnly = false)
@@ -448,9 +464,49 @@ public class KeyBoardManager : MonoBehaviour
     }
 
 
+    public void ClosePanelAndRestore()
+    {
+        foreach (var kv in _sessionSpent)
+        {
+            int index = kv.Key;
+            int amt = kv.Value;
+            if (amt > 0) KeyCount.AddAt(index, amt);
+        }
+        _sessionSpent.Clear();
+        ClearAllSpawnedPieces();
+    }
+
+    void ClearAllSpawnedPieces()
+    {
+        if (!uiSpawnRoot) return;
+
+        // 드래그 프리팹 제거
+        var drags = uiSpawnRoot.GetComponentsInChildren<DraggableWordUI>(true);
+        foreach (var d in drags) if (d) Destroy(d.gameObject);
+
+        // 자모 파츠 제거(합성 포함)
+        var magnets = uiSpawnRoot.GetComponentsInChildren<JamoMagnet>(true);
+        foreach (var m in magnets) if (m) Destroy(m.gameObject);
+
+        EndDrag();
+    }
+
     void NotEnoughFeedback(int index)
     {
         
+    }
+
+    void RecordSpend(int index, int amount)
+    {
+        if (!_sessionSpent.ContainsKey(index)) _sessionSpent[index] = 0;
+        _sessionSpent[index] += Mathf.Max(1, amount);
+    }
+
+    void RecordRefund(int index, int amount)
+    {
+        if (!_sessionSpent.ContainsKey(index)) return;
+        _sessionSpent[index] = Mathf.Max(0, _sessionSpent[index] - Mathf.Max(1, amount));
+        if (_sessionSpent[index] == 0) _sessionSpent.Remove(index);
     }
 
     bool TryGetPointerScreenPos(int pointerId, out Vector2 pos)

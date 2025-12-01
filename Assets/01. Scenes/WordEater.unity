@@ -6047,8 +6047,6 @@ MonoBehaviour:
   SFXiconOff: {fileID: 770748986632407879, guid: 2bdcc5d95ab355841a517577ca0581f4, type: 3}
   Bvalue: 0
   Svalue: 0
-  Bslider: {fileID: 2132194730}
-  Sslider: {fileID: 704072760}
   MainBGM: {fileID: 8300000, guid: bd8537b3c9ec65c44ad763865263f1dc, type: 3}
 --- !u!1 &243567431
 GameObject:
@@ -8724,6 +8722,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _keyboardRect: {fileID: 1992492931}
+  KeyBoardManager: {fileID: 1992492932}
   PageIcon: {fileID: 691318735}
   _damageOverlay: {fileID: 1920472455}
   _shakeTarget: {fileID: 59900012}
