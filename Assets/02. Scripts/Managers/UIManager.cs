@@ -18,9 +18,15 @@ public class UIManager : MonoBehaviour
     [SerializeField] private Image _damageOverlay;          // 전체 화면 빨간 Image
     [SerializeField] private RectTransform _shakeTarget;    // 흔들 대상 (예: 전체 UI 루트)
 
+    [Header("상단 알림")]
+    [SerializeField] private RectTransform alarmPanel;       // 알림창 패널 (상단에 위치)
+    [SerializeField] private TextMeshProUGUI alarmText;      // 알림창 텍스트
+    [SerializeField] private float alarmShowPosY = -150f;    // 화면 안으로 들어왔을 때 Y좌표 (예: -150)
+    [SerializeField] private float alarmHidePosY = 150f;     // 화면 밖으로 나갔을 때 Y좌표 (예: 150)
+
     [Header("UI 연결")]
-    [SerializeField] private GameObject contentRoot;    // 팝업 전체 부모 (Panel)
-    [SerializeField] private Transform popupContainer;  // 실제 튀어오를 팝업 창 (배경 제외)
+    [SerializeField] private GameObject batteryChargePanel;    // 팝업 전체 부모 (Panel)
+    [SerializeField] private Transform t_BatteryCharge;  // 실제 튀어오를 팝업 창 (배경 제외)
     [SerializeField] private TextMeshProUGUI messageText; // 메시지 텍스트
     [SerializeField] private Button confirmButton;      // 확인(닫기) 버튼
 
@@ -41,8 +47,8 @@ public class UIManager : MonoBehaviour
     {
         Instance = this;
         // 씬 시작 시 팝업 숨기기
-        if (contentRoot != null)
-            contentRoot.SetActive(false);
+        if (batteryChargePanel != null)
+            batteryChargePanel.SetActive(false);
 
         // 버튼 리스너 연결
         if (confirmButton != null)
@@ -75,12 +81,12 @@ public class UIManager : MonoBehaviour
         if (messageText != null) messageText.text = message;
         onConfirmCallback = onClose;
 
-        if (contentRoot != null)
+        if (batteryChargePanel != null)
         {
-            contentRoot.SetActive(true);
+            batteryChargePanel.SetActive(true);
 
-            // 애니메이션 대상 설정 (popupContainer가 없으면 contentRoot 자체를 애니메이션)
-            Transform target = popupContainer != null ? popupContainer : contentRoot.transform;
+            // 애니메이션 대상 설정 (popupContainer가 없으면 batteryChargePanel 자체를 애니메이션)
+            Transform target = t_BatteryCharge != null ? t_BatteryCharge : batteryChargePanel.transform;
 
             // 크기를 0으로 초기화
             target.localScale = Vector3.zero;
@@ -94,11 +100,50 @@ public class UIManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 닫기 버튼 로직
+    /// 상단 알림창을 띄웠다가 일정 시간 뒤 사라지게 하고, 끝난 뒤 콜백을 실행
     /// </summary>
-    private void OnConfirmClicked()
+    public void ShowEmergencyAlarm(string message, float duration, Action onComplete = null)
     {
-        Transform target = popupContainer != null ? popupContainer : contentRoot.transform;
+        if (alarmPanel == null)
+        {
+            // 패널이 없으면 바로 다음 단계로
+            onComplete?.Invoke();
+            return;
+        }
+
+        // 텍스트 설정
+        if (alarmText != null) alarmText.text = message;
+
+        // 초기 위치 설정 (화면 위)
+        alarmPanel.anchoredPosition = new Vector2(alarmPanel.anchoredPosition.x, alarmHidePosY);
+        alarmPanel.gameObject.SetActive(true);
+
+        // 시퀀스 생성 (내려옴 -> 대기 -> 올라감 -> 콜백)
+        Sequence seq = DOTween.Sequence();
+
+        // 내려오기 (OutBack으로 튕기듯이)
+        seq.Append(alarmPanel.DOAnchorPosY(alarmShowPosY, 0.5f).SetEase(Ease.OutBack));
+
+        // 보여주는 시간 동안 대기
+        seq.AppendInterval(duration);
+
+        // 다시 올라가기 (InBack)
+        seq.Append(alarmPanel.DOAnchorPosY(alarmHidePosY, 0.3f).SetEase(Ease.InBack));
+
+        // 끝나면 비활성화 및 다음 동작 실행
+        seq.OnComplete(() =>
+        {
+            alarmPanel.gameObject.SetActive(false);
+            onComplete?.Invoke();
+        });
+    }
+
+/// <summary>
+/// 닫기 버튼 로직
+/// </summary>
+private void OnConfirmClicked()
+    {
+        Transform target = t_BatteryCharge != null ? t_BatteryCharge : batteryChargePanel.transform;
 
         // 닫을 때는 작아지면서 사라짐 (InBack)
         target.DOKill();
@@ -108,7 +153,7 @@ public class UIManager : MonoBehaviour
             .OnComplete(() =>
             {
                 // 애니메이션 끝난 후 비활성화
-                if (contentRoot != null) contentRoot.SetActive(false);
+                if (batteryChargePanel != null) batteryChargePanel.SetActive(false);
 
                 onConfirmCallback?.Invoke();
                 onConfirmCallback = null;

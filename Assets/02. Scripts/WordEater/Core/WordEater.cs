@@ -64,6 +64,11 @@ namespace WordEater.Core
                 // 죽은 상태 해제
                 isDead = false;
 
+                if (battery != null)
+                {
+                    battery.RefillToMax(); // 배터리를 최대로 채움
+                }
+
                 // 현재 단어 선택
                 currentEntry = wordService.PickInitialWord();
 
@@ -210,21 +215,25 @@ namespace WordEater.Core
 
             enabled = false;
 
-            // 광고 팝업 띄우고, 거절하면 그때 엔딩
-            if (GameReviveSystem.Instance != null)
+            // 알림창이 다 뜨고 사라진 뒤(콜백) -> 광고 팝업 로직 실행
+            UIManager.Instance.ShowEmergencyAlarm(currentAnswer, 2.0f, () =>
             {
-                Debug.Log("광고 팝업 띄울겨");
-                GameReviveSystem.Instance.OnPlayerDied(onGiveUp: () =>
+                // 알림창 종료 후 광고 팝업 로직
+                if (GameReviveSystem.Instance != null)
                 {
-                    // 정말 포기한 경우에만 게임오버 연출로 이동
+                    Debug.Log("광고 팝업 띄울겨");
+                    GameReviveSystem.Instance.OnPlayerDied(onGiveUp: () =>
+                    {
+                        // 광고 보기를 거절(X버튼)했을 때 -> 게임 오버(배터리 방전) 연출
+                        gamemanager.EndingController(1);
+                    });
+                }
+                else
+                {
+                    // 시스템이 없으면 바로 게임오버
                     gamemanager.EndingController(1);
-                });
-            }
-            else
-            {
-                // 시스템이 없으면 안전하게 기존 흐름 유지
-                gamemanager.EndingController(1);
-            }
+                }
+            });
         }
 
         // 부활시

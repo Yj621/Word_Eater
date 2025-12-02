@@ -272,15 +272,29 @@ namespace WordEater.Systems
 
             if (amountToRecover > 0)
             {
+                // 이전 배터리가 이미 100%라면 팝업을 띄우지 않고 종료 (선택 사항)
+                if (currentBattery >= 100) return;
+
+                // 배터리 갱신
                 currentBattery = Mathf.Clamp(currentBattery + amountToRecover, 0, 100);
                 SyncCellsFromPercent(); // UI 갱신을 위해 호출
 
-                Debug.Log($"[Battery] 부재중 {timePassed.TotalMinutes:F1}분 경과. {amountToRecover}% 회복됨.");
+                Debug.Log($"[Battery] 부재중 {timePassed.TotalMinutes:F1}분 경과. {amountToRecover}% 회복 계산됨.");
 
-                // UIManager를 통해 팝업 호출 (Start에서 호출하므로 안전함)
-                UIManager.Instance.Show(
-                    $"푹 쉬고 오셨군요!\n휴식하는 동안 배터리가 <color=green>{amountToRecover}%</color> 충전되었습니다."
-                );
+                string popupMessage;
+
+                // [수정된 부분] 현재 배터리가 100%에 도달했는지 확인
+                if (currentBattery >= 100)
+                {
+                    popupMessage = "푹 쉬고 오셨군요!\n휴식하는 동안 배터리가 모두 충전되었습니다.";
+                }
+                else
+                {
+                    popupMessage = $"푹 쉬고 오셨군요!\n휴식하는 동안 배터리가 <color=green>{amountToRecover}%</color> 충전되었습니다.";
+                }
+
+                // UIManager를 통해 팝업 호출
+                UIManager.Instance.Show(popupMessage);
             }
         }
 
