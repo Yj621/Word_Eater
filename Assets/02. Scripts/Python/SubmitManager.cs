@@ -28,8 +28,8 @@ public class SubmitManager : MonoBehaviour
                     NoticeManager.Instance.ShowSticky("정답!");
                 }
                 else {
-                    NoticeManager.Instance.ShowSticky($"유사도 : {result.Value.ToString("F2")}");
-                    gamemanager.HistoryLIne += word2 +","+result.Value.ToString("F2") + "|";
+                    NoticeManager.Instance.ShowSticky($"유사도 : {(result.Value * 100f).ToString("F0")}%");
+                    gamemanager.HistoryLIne += word2 +","+ (result.Value * 100f).ToString("F0")+"%" + "|";
                 }
 
                 wordeater.DoFeedData(word2);

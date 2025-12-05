@@ -36,11 +36,18 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Image batteryFillImg;            // 빨간색 배터리 게이지
     [SerializeField] private Image cableIconImg;              // 케이블/번개 아이콘
 
-    [Header("워드이터(히스토리) 관련")]
+    [Header("워드이터 관련")]
     [SerializeField] private RectTransform WordEaterPanel;
     [SerializeField] private RectTransform WordEaterBtn;
 
+    [Header("히스토리 관련")]
+    [SerializeField] private RectTransform HistoryPanel;
+    [SerializeField] private RectTransform HistoryBtn;
+
     public string HistoryLIne = "";
+
+    [Header("슬라이드 메니저")]
+    [SerializeField] private SlideManager smanager;
 
     public static GameManager Instance;
 
@@ -145,6 +152,7 @@ public class GameManager : MonoBehaviour
     {
         if (panel == null || btn == null) return;
 
+        smanager.isOK = false;
         panel.gameObject.SetActive(true);
 
         var parent = panel.parent as RectTransform;
@@ -167,6 +175,8 @@ public class GameManager : MonoBehaviour
     private void HidePanelToButton(RectTransform panel, RectTransform btn)
     {
         if (panel == null || btn == null) return;
+
+        smanager.isOK = true;
 
         var parent = panel.parent as RectTransform;
         Vector2 endLocal = CanvasUtil.ConvertBetweenCanvases(btn, parent);
@@ -282,6 +292,9 @@ public class GameManager : MonoBehaviour
 
     public void ShowPanel_WordEater() => ShowPanelFromButton(WordEaterPanel, WordEaterBtn);
     public void HidePanel_WordEater() => HidePanelToButton(WordEaterPanel, WordEaterBtn);
+
+    public void ShowPanel_History() => ShowPanelFromButton(HistoryPanel, HistoryBtn);
+    public void HidePanel_History() => HidePanelToButton(HistoryPanel, HistoryBtn);
 }
 
 /// <summary>
