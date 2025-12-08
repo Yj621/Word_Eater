@@ -275,6 +275,21 @@ namespace WordEater.Systems
                 // 이전 배터리가 이미 100%라면 팝업을 띄우지 않고 종료 (선택 사항)
                 if (currentBattery >= 100) return;
 
+                if (totalHoursPassed >= 2.0f)
+                {
+                    // 아이템 지급 (UI 팝업은 아래 메시지와 겹칠 수 있으니 여기서 처리하거나 false)
+                    ItemDropManager.Instance.ObtainRandomItem(showUI: false);
+
+                    // 메시지 수정
+                    string itemName = "랜덤 아이템"; // 실제 획득한 아이템 이름을 가져올 수 있으면 더 좋음
+                    UIManager.Instance.Show($"푹 쉬고 오셨군요!\n배터리 {amountToRecover}% 충전 + 워드이터가 {itemName} 1개를 물어왔습니다!");
+                }
+                else
+                {
+                    // 기존 메시지 출력
+                    UIManager.Instance.Show($"푹 쉬고 오셨군요!\n휴식하는 동안 배터리가 {amountToRecover}% 충전되었습니다.");
+                }
+
                 // 배터리 갱신
                 currentBattery = Mathf.Clamp(currentBattery + amountToRecover, 0, 100);
                 SyncCellsFromPercent(); // UI 갱신을 위해 호출

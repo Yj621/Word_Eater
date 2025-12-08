@@ -28,7 +28,7 @@ namespace WordEater.Core
         [SerializeField] private Sprite BitImg;
         [SerializeField] private Sprite ByteImg;
         [SerializeField] private Sprite WordImg;
-        [SerializeField] private bool isDead = false;
+        public bool isDead = false;
 
         [Header("Runtime (read-only)")]
         [SerializeField] private GrowthStage stage = GrowthStage.Bit; // 현재 단계
@@ -184,6 +184,9 @@ namespace WordEater.Core
                 // 성체가 되었으므로 "도감"에 현재 개체를 등록
                 RegisterToGallery();
 
+                // 최종 진화 보상 아이템
+                ItemDropManager.Instance.ObtainRandomItem();
+
                 // 게임 클리어 처리(엔딩 등)
                 gamemanager.EndingController(2);
                 galleryUIManager.Refresh();
@@ -199,6 +202,9 @@ namespace WordEater.Core
             battery.RefillToMax();
 
             stage = (GrowthStage)((int)stage + 1);
+
+            //진화시 아이템
+            ItemDropManager.Instance.ObtainRandomItem();
             GameEvents.OnEvolved?.Invoke(stage);
 
             BeginStage(stage);
@@ -215,25 +221,57 @@ namespace WordEater.Core
 
             enabled = false;
 
-            // 알림창이 다 뜨고 사라진 뒤(콜백) -> 광고 팝업 로직 실행
+            // 알림창이 다 뜨고 사라진 뒤(콜백) -> 부활 로직 실행
             UIManager.Instance.ShowEmergencyAlarm(currentAnswer, 2.0f, () =>
             {
-                // 알림창 종료 후 광고 팝업 로직
-                if (GameReviveSystem.Instance != null)
+                // 1. 부활권 보유 확인
+                if (ItemManager.Instance.GetCount(ItemType.ReviveTicket) > 0)
                 {
-                    Debug.Log("광고 팝업 띄울겨");
-                    GameReviveSystem.Instance.OnPlayerDied(onGiveUp: () =>
-                    {
-                        // 광고 보기를 거절(X버튼)했을 때 -> 게임 오버(배터리 방전) 연출
-                        gamemanager.EndingController(1);
-                    });
+                    // 부활권 사용 여부 팝업 (UIManager에 Confirm 팝업이 있다고 가정)
+                    UIManager.Instance.ShowConfirmPopup(
+                        "부활권 사용",
+                        $"부활권을 사용하여 이어하시겠습니까?\n(남은 개수: {ItemManager.Instance.GetCount(ItemType.ReviveTicket)}개)",
+                        onYes: () =>
+                        {
+                            // 부활권 소모
+                            if (ItemManager.Instance.TryUseItem(ItemType.ReviveTicket))
+                            {
+                                Reactivate();
+                                battery.RefillToMax();
+                                Debug.Log("부활권 사용됨!");
+                            }
+                        },
+                        onNo: () =>
+                        {
+                            // 거절 시 광고 로직으로 이동
+                            CheckAdRevive();
+                        }
+                    );
                 }
                 else
                 {
-                    // 시스템이 없으면 바로 게임오버
-                    gamemanager.EndingController(1);
+                    // 부활권 없으면 바로 광고 로직
+                    CheckAdRevive();
                 }
             });
+        }
+
+        // 광고 부활 로직 분리
+        private void CheckAdRevive()
+        {
+            if (GameReviveSystem.Instance != null)
+            {
+                Debug.Log("광고 팝업 띄울겨");
+                GameReviveSystem.Instance.OnPlayerDied(onGiveUp: () =>
+                {
+                    // 광고 보기를 거절(X버튼)했을 때 -> 게임 오버
+                    gamemanager.EndingController(1);
+                });
+            }
+            else
+            {
+                gamemanager.EndingController(1);
+            }
         }
 
         // 부활시

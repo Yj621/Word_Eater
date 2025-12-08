@@ -30,6 +30,12 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI messageText; // 메시지 텍스트
     [SerializeField] private Button confirmButton;      // 확인(닫기) 버튼
 
+    [Header("아이템 사용 확인 팝업")]
+    [SerializeField] private GameObject confirmPanel;       // 팝업 전체 패널
+    [SerializeField] private TextMeshProUGUI confirmTitle;  // 제목 텍스트
+    [SerializeField] private TextMeshProUGUI confirmMsg;    // 내용 텍스트
+    [SerializeField] private Button btnYes;                 // '네' 버튼
+    [SerializeField] private Button btnNo;                  // '아니오' 버튼
     private Action onConfirmCallback; // 확인 버튼 눌렀을 때 실행할 추가 로직(옵션)
 
     private Vector3 _shakeOriginalPos;
@@ -158,6 +164,49 @@ private void OnConfirmClicked()
                 onConfirmCallback?.Invoke();
                 onConfirmCallback = null;
             });
+    }
+
+    // 아이템 사용 팝업
+    public void ShowConfirmPopup(string title, string message, Action onYes, Action onNo)
+    {
+        if (confirmPanel == null)
+        {
+            Debug.LogError("Confirm Panel이 UIManager에 할당되지 않았습니다!");
+            // UI가 없으면 일단 '아니오' 처리 (게임 진행 막힘 방지)
+            onNo?.Invoke();
+            return;
+        }
+
+        confirmPanel.SetActive(true);
+
+        // 텍스트 세팅
+        if (confirmTitle != null) confirmTitle.text = title;
+        if (confirmMsg != null) confirmMsg.text = message;
+
+        // 기존 연결된 이벤트 제거 (RemoveAllListeners) 후 새 이벤트 연결
+        if (btnYes != null)
+        {
+            btnYes.onClick.RemoveAllListeners();
+            btnYes.onClick.AddListener(() =>
+            {
+                confirmPanel.SetActive(false); // 창 닫기
+                onYes?.Invoke();               // '네' 로직 실행
+            });
+        }
+
+        if (btnNo != null)
+        {
+            btnNo.onClick.RemoveAllListeners();
+            btnNo.onClick.AddListener(() =>
+            {
+                confirmPanel.SetActive(false); // 창 닫기
+                onNo?.Invoke();                // '아니오' 로직 실행
+            });
+        }
+
+        // 등장 연출 (선택사항)
+        confirmPanel.transform.localScale = Vector3.zero;
+        confirmPanel.transform.DOScale(1f, 0.3f).SetEase(Ease.OutBack).SetUpdate(true);
     }
 
     private void PlayMistakeFx()

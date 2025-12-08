@@ -143,9 +143,40 @@ public class MiniGameController : MonoBehaviour
         StopAllGames();
         if (algorithmPanel != null)
         {
+            CheckItemReward();
             // 패널 쪽 애니메이션/상태는 기존 함수 그대로 사용
             algorithmPanel.StartCoroutine(algorithmPanel.CloasePageTab());
             int added = keyboard.GrantRandomLetters(ClearCount);
+        }
+    }
+
+    private void CheckItemReward()
+    {
+        // 보상을 받을지 여부
+        bool getReward = false;
+        bool isHard = (algorithmPanel != null && !algorithmPanel.Mode); // Mode가 true면 Easy, false면 Hard라고 가정
+
+        // 조건 1: 하드모드일 때 (확률적으로 지급)
+        if (isHard && ClearCount > 0) // 최소 1개는 깼어야 함
+        {
+            // 예: 30% 확률
+            if (Random.value <= 0.3f) getReward = true;
+        }
+        // 조건 2: 일반모드인데 많이 깼을 때 (예: 5개 이상)
+        else if (ClearCount >= 5)
+        {
+            getReward = true;
+        }
+
+        // 보상 지급
+        if (getReward)
+        {
+            // 아이템 획득 매니저 호출
+            // (ItemDropManager는 앞서 설명드린 새 스크립트입니다)
+            if (ItemDropManager.Instance != null)
+            {
+                ItemDropManager.Instance.ObtainRandomItem(showUI: true);
+            }
         }
     }
 }

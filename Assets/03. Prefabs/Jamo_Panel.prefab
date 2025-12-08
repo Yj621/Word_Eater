@@ -1055,7 +1055,7 @@ GameObject:
   - component: {fileID: 7890647249016005215}
   - component: {fileID: 3207218371445858608}
   m_Layer: 5
-  m_Name: Inventory_Panel
+  m_Name: Jamo_Panel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

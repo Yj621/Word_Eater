@@ -31,6 +31,10 @@ public class GameManager : MonoBehaviour
     [SerializeField] private RectTransform SettingPanel;
     [SerializeField] private RectTransform SettingBtn;
 
+    [Header("아이템 관련")]
+    [SerializeField] private RectTransform ItemFolderPanel;
+    [SerializeField] private RectTransform ItemFolderBtn;
+
     [Header("게임 오버 연출 (배터리 방전)")]
     [SerializeField] private CanvasGroup gameOverCanvasGroup; // 검은 배경 전체 (알파값 조절용)
     [SerializeField] private Image batteryFillImg;            // 빨간색 배터리 게이지
@@ -43,6 +47,9 @@ public class GameManager : MonoBehaviour
     [Header("히스토리 관련")]
     [SerializeField] private RectTransform HistoryPanel;
     [SerializeField] private RectTransform HistoryBtn;
+
+    [Header("UI 연결")]
+    [SerializeField] private ADPopup sharedAdPopup;
 
     public string HistoryLIne = "";
 
@@ -67,6 +74,36 @@ public class GameManager : MonoBehaviour
             gameOverCanvasGroup.alpha = 0;
             gameOverCanvasGroup.gameObject.SetActive(false);
         }
+    }
+
+    /// <summary>
+    /// [아이템 광고] 버튼 클릭 시
+    /// </summary>
+    public void OnClickGetItemAd()
+    {
+        if (sharedAdPopup == null) return;
+
+        // 1. 팝업 문구 설정 (아이템용 멘트로 변경)
+        sharedAdPopup.Configure(
+            title: "반짝이는 무언가 발견!",
+            watchAdText: "광고보고 줍기",
+            noThanksText: "그냥 가기"
+        );
+
+        // 2. 팝업 띄우기 & 보상 로직 연결
+        sharedAdPopup.Show(
+            onAccept: () =>
+            {
+                // 광고 시청 완료(Yes) 시 실행될 로직
+                Debug.Log("광고 보상: 랜덤 아이템 지급");
+                ItemDropManager.Instance.ObtainRandomItem(); // 아이템 획득 함수 호출
+            },
+            onDecline: () =>
+            {
+                // 거절(No) 시 실행될 로직
+                Debug.Log("아이템 획득 거절");
+            }
+        );
     }
 
     //type 에 따라 게임이 끝났을 때 행동 변화.
@@ -295,6 +332,9 @@ public class GameManager : MonoBehaviour
 
     public void ShowPanel_History() => ShowPanelFromButton(HistoryPanel, HistoryBtn);
     public void HidePanel_History() => HidePanelToButton(HistoryPanel, HistoryBtn);
+
+    public void ShowPanel_Item() => ShowPanelFromButton(ItemFolderPanel, ItemFolderBtn);
+    public void HidePanel_Item() => HidePanelToButton(ItemFolderPanel, ItemFolderBtn);
 }
 
 /// <summary>
