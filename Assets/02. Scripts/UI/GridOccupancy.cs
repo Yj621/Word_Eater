@@ -104,7 +104,7 @@ public class GridOccupancy : MonoBehaviour
         return true;
     }
 
-    /// <summary>아이콘이 현재 점유 중인 셀을 얻습니다.</summary>
+    /// <summary>아이콘이 현재 점유 중인 셀을 얻음</summary>
     public bool TryGetCellOfIcon(DraggableIcon icon, out Vector2Int cell)
         => _iconToCell.TryGetValue(icon, out cell);
 }

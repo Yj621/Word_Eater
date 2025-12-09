@@ -7614,6 +7614,7 @@ GameObject:
   - component: {fileID: 279932162}
   - component: {fileID: 279932161}
   - component: {fileID: 279932160}
+  - component: {fileID: 279932163}
   m_Layer: 5
   m_Name: Icon_GridArea
   m_TagString: Untagged
@@ -7682,12 +7683,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 21af1258a933d774e93f735cd3592d32, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  autoReflowOnGridChange: 1
-  cellSize: {x: 120, y: 150}
-  cellSpacing: {x: 20, y: 20}
-  padding: {x: 20, y: 20}
-  clampToBounds: 1
-  fixedColumns: 3
 --- !u!222 &279932162
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -7696,6 +7691,30 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 279932158}
   m_CullTransparentMesh: 1
+--- !u!114 &279932163
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 279932158}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a8695521f0d02e499659fee002a26c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.GridLayoutGroup
+  m_Padding:
+    m_Left: 0
+    m_Right: 0
+    m_Top: 0
+    m_Bottom: 0
+  m_ChildAlignment: 0
+  m_StartCorner: 0
+  m_StartAxis: 0
+  m_CellSize: {x: 100, y: 100}
+  m_Spacing: {x: 0, y: 0}
+  m_Constraint: 0
+  m_ConstraintCount: 2
 --- !u!1 &282817139
 GameObject:
   m_ObjectHideFlags: 0
@@ -11482,10 +11501,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 417404404}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 150.00008, y: 183.34451}
-  m_SizeDelta: {x: 100, y: 100}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!225 &401721475
 CanvasGroup:
@@ -11513,12 +11532,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gridArea: {fileID: 417404407}
   canvas: {fileID: 321487233}
-  smoothSnap: 1
-  snapLerpSpeed: 20
-  placeholderSprite: {fileID: -9172589643701064520, guid: 23e212a3f01a30043ab6c0cfaee8b44b, type: 3}
-  placeholderColor: {r: 1, g: 1, b: 1, a: 0.25}
-  placeholderAsBorder: 0
-  placeholderBorderThickness: 2
 --- !u!114 &401721477
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12030,6 +12043,7 @@ GameObject:
   - component: {fileID: 417404406}
   - component: {fileID: 417404407}
   - component: {fileID: 417404408}
+  - component: {fileID: 417404409}
   m_Layer: 5
   m_Name: Icon_GridArea
   m_TagString: Untagged
@@ -12084,12 +12098,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 21af1258a933d774e93f735cd3592d32, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  autoReflowOnGridChange: 1
-  cellSize: {x: 130, y: 150}
-  cellSpacing: {x: 20, y: 20}
-  padding: {x: 20, y: 20}
-  clampToBounds: 1
-  fixedColumns: 3
 --- !u!114 &417404408
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12120,6 +12128,30 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &417404409
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 417404403}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a8695521f0d02e499659fee002a26c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.GridLayoutGroup
+  m_Padding:
+    m_Left: 10
+    m_Right: 10
+    m_Top: 10
+    m_Bottom: 10
+  m_ChildAlignment: 4
+  m_StartCorner: 0
+  m_StartAxis: 0
+  m_CellSize: {x: 115, y: 115}
+  m_Spacing: {x: 25, y: 25}
+  m_Constraint: 2
+  m_ConstraintCount: 3
 --- !u!1 &422986165
 GameObject:
   m_ObjectHideFlags: 0
@@ -12668,10 +12700,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 417404404}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -149.99997, y: 183.34451}
-  m_SizeDelta: {x: 100, y: 100}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &459739424
 MonoBehaviour:
@@ -12767,12 +12799,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gridArea: {fileID: 417404407}
   canvas: {fileID: 321487233}
-  smoothSnap: 1
-  snapLerpSpeed: 20
-  placeholderSprite: {fileID: -9172589643701064520, guid: 23e212a3f01a30043ab6c0cfaee8b44b, type: 3}
-  placeholderColor: {r: 1, g: 1, b: 1, a: 0.25}
-  placeholderAsBorder: 0
-  placeholderBorderThickness: 2
 --- !u!114 &459739427
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -28020,10 +28046,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 417404404}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -150.00002, y: 2.7196984}
-  m_SizeDelta: {x: 100, y: 100}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &915886514
 MonoBehaviour:
@@ -28107,12 +28133,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gridArea: {fileID: 417404407}
   canvas: {fileID: 321487233}
-  smoothSnap: 1
-  snapLerpSpeed: 20
-  placeholderSprite: {fileID: -9172589643701064520, guid: 23e212a3f01a30043ab6c0cfaee8b44b, type: 3}
-  placeholderColor: {r: 1, g: 1, b: 1, a: 0.25}
-  placeholderAsBorder: 0
-  placeholderBorderThickness: 2
 --- !u!114 &915886517
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -28226,10 +28246,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 417404404}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0.00006103516, y: 183.34451}
-  m_SizeDelta: {x: 100, y: 100}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &919620393
 MonoBehaviour:
@@ -28325,12 +28345,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gridArea: {fileID: 417404407}
   canvas: {fileID: 321487233}
-  smoothSnap: 1
-  snapLerpSpeed: 20
-  placeholderSprite: {fileID: -9172589643701064520, guid: 23e212a3f01a30043ab6c0cfaee8b44b, type: 3}
-  placeholderColor: {r: 1, g: 1, b: 1, a: 0.25}
-  placeholderAsBorder: 0
-  placeholderBorderThickness: 2
 --- !u!114 &919620396
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -33795,10 +33809,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 417404404}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0.00006103516, y: -166.00002}
-  m_SizeDelta: {x: 100, y: 100}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1130612004
 MonoBehaviour:
@@ -33894,12 +33908,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gridArea: {fileID: 417404407}
   canvas: {fileID: 321487233}
-  smoothSnap: 1
-  snapLerpSpeed: 20
-  placeholderSprite: {fileID: -9172589643701064520, guid: 23e212a3f01a30043ab6c0cfaee8b44b, type: 3}
-  placeholderColor: {r: 1, g: 1, b: 1, a: 0.25}
-  placeholderAsBorder: 0
-  placeholderBorderThickness: 2
 --- !u!114 &1130612007
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -43740,10 +43748,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 417404404}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 2.7196984}
-  m_SizeDelta: {x: 100, y: 100}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1461207458
 MonoBehaviour:
@@ -43815,12 +43823,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gridArea: {fileID: 417404407}
   canvas: {fileID: 321487233}
-  smoothSnap: 1
-  snapLerpSpeed: 20
-  placeholderSprite: {fileID: -9172589643701064520, guid: 23e212a3f01a30043ab6c0cfaee8b44b, type: 3}
-  placeholderColor: {r: 1, g: 1, b: 1, a: 0.25}
-  placeholderAsBorder: 0
-  placeholderBorderThickness: 2
 --- !u!114 &1461207461
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -48213,10 +48215,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 417404404}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 150.00008, y: 13.344616}
-  m_SizeDelta: {x: 100, y: 100}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1597141044
 MonoBehaviour:
@@ -48300,12 +48302,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gridArea: {fileID: 417404407}
   canvas: {fileID: 321487233}
-  smoothSnap: 1
-  snapLerpSpeed: 20
-  placeholderSprite: {fileID: -9172589643701064520, guid: 23e212a3f01a30043ab6c0cfaee8b44b, type: 3}
-  placeholderColor: {r: 1, g: 1, b: 1, a: 0.25}
-  placeholderAsBorder: 0
-  placeholderBorderThickness: 2
 --- !u!114 &1597141047
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -50305,10 +50301,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 417404404}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -149.99997, y: -166.00002}
-  m_SizeDelta: {x: 100, y: 100}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1671799065
 MonoBehaviour:
@@ -50392,12 +50388,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gridArea: {fileID: 417404407}
   canvas: {fileID: 321487233}
-  smoothSnap: 1
-  snapLerpSpeed: 20
-  placeholderSprite: {fileID: -9172589643701064520, guid: 23e212a3f01a30043ab6c0cfaee8b44b, type: 3}
-  placeholderColor: {r: 1, g: 1, b: 1, a: 0.25}
-  placeholderAsBorder: 0
-  placeholderBorderThickness: 2
 --- !u!114 &1671799068
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -51694,6 +51684,7 @@ GameObject:
   - component: {fileID: 1721900345}
   - component: {fileID: 1721900344}
   - component: {fileID: 1721900343}
+  - component: {fileID: 1721900346}
   m_Layer: 5
   m_Name: Icon_GridArea
   m_TagString: Untagged
@@ -51762,12 +51753,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 21af1258a933d774e93f735cd3592d32, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  autoReflowOnGridChange: 1
-  cellSize: {x: 120, y: 150}
-  cellSpacing: {x: 20, y: 20}
-  padding: {x: 20, y: 20}
-  clampToBounds: 1
-  fixedColumns: 3
 --- !u!222 &1721900345
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -51776,6 +51761,30 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1721900341}
   m_CullTransparentMesh: 1
+--- !u!114 &1721900346
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1721900341}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a8695521f0d02e499659fee002a26c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.GridLayoutGroup
+  m_Padding:
+    m_Left: 0
+    m_Right: 0
+    m_Top: 0
+    m_Bottom: 0
+  m_ChildAlignment: 0
+  m_StartCorner: 0
+  m_StartAxis: 0
+  m_CellSize: {x: 100, y: 100}
+  m_Spacing: {x: 0, y: 0}
+  m_Constraint: 0
+  m_ConstraintCount: 2
 --- !u!1 &1725776645
 GameObject:
   m_ObjectHideFlags: 0
