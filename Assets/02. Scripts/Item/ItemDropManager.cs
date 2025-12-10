@@ -26,9 +26,9 @@ public class ItemDropManager : MonoBehaviour
     /// 가중치 기반 랜덤 아이템 획득
     /// </summary>
     /// <param name="showUI">획득 시 UI 팝업 띄울지 여부</param>
-    public void ObtainRandomItem(bool showUI = true)
+    public ItemType ObtainRandomItem(bool showUI = true)
     {
-        if (dropTable == null || dropTable.Count == 0) return;
+        if (dropTable == null || dropTable.Count == 0) return ItemType.BatteryRefill;
 
         // 1. 가중치 총합 계산
         int totalWeight = 0;
@@ -62,5 +62,6 @@ public class ItemDropManager : MonoBehaviour
             // 간단하게는:
             UIManager.Instance.Show($"아이템 획득!\n[{selectedType}]");
         }
+        return selectedType;
     }
 }

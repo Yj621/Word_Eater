@@ -217,9 +217,13 @@ public class GameManager : MonoBehaviour
 
         var parent = panel.parent as RectTransform;
         Vector2 endLocal = CanvasUtil.ConvertBetweenCanvases(btn, parent);
+        panel.DOScale(Vector3.zero, 0.2f)
+                     .SetEase(Ease.InBack)
+                     .SetUpdate(true);
 
-        panel.DOScale(Vector3.zero, 0.2f).SetEase(Ease.InBack);
-        panel.DOAnchorPos(endLocal, 0.2f).SetEase(Ease.InBack)
+        panel.DOAnchorPos(endLocal, 0.2f)
+             .SetEase(Ease.InBack)
+             .SetUpdate(true)
              .OnComplete(() => panel.gameObject.SetActive(false));
     }
 

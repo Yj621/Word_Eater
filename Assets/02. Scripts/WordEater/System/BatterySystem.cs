@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using WordEater.Core;
+using WordEater.Systems;
 
 namespace WordEater.Systems
 {
@@ -239,9 +240,11 @@ namespace WordEater.Systems
             }
             else // 다시 들어올 때 (앱을 완전히 끄지 않고 복귀)
             {
+                Debug.Log("배터리 충전");
                 // 잠시 나갔다 온 시간만큼 또 계산해주고 싶다면 여기서 CheckOfflineRecharge() 호출 가능
                 // 여기서는 간단하게 처리하기 위해 생략하거나 재계산 로직 추가
                 CheckOfflineRecharge();
+                Debug.Log("배터리 충전2");
             }
         }
 
@@ -257,59 +260,76 @@ namespace WordEater.Systems
         {
             if (!PlayerPrefs.HasKey(KEY_EXIT_TIME)) return;
 
-            // 마지막 종료 시간 불러오기
+            // 1. 시간 계산
             string timeStr = PlayerPrefs.GetString(KEY_EXIT_TIME);
             long binaryTime = Convert.ToInt64(timeStr);
             DateTime lastExitTime = DateTime.FromBinary(binaryTime);
-
-            // 시간 차이 계산 (현재 시간 - 마지막 시간)
             TimeSpan timePassed = DateTime.UtcNow - lastExitTime;
-            double totalHoursPassed = timePassed.TotalHours;
 
-            // 회복량 계산 (시간 * 시간당 회복량)
-            // ex) 2.5시간 지남 * 10 = 25% 회복
+            double totalHoursPassed = timePassed.TotalHours;
             int amountToRecover = (int)(totalHoursPassed * rechargeRatePerHour);
 
-            if (amountToRecover > 0)
+            // 회복할 게 없으면 종료 (단, 테스트 중에는 조건에 따라 주석 처리 가능)
+            if (amountToRecover <= 0) return;
+
+            // 만약 나갈 때 이미 100%였다면 종료 (테스트할 땐 주석 처리 가능)
+            // if (currentBattery >= 100) return; 
+
+            // 2. 배터리 실제 갱신
+            int beforeBattery = currentBattery;
+            currentBattery = Mathf.Clamp(currentBattery + amountToRecover, 0, 100);
+            SyncCellsFromPercent(); // UI 갱신
+
+            // 실제 회복된 양 (100% 초과 방지된 값)
+            int actualRecovered = currentBattery - beforeBattery;
+
+            Debug.Log($"[Battery] 부재중 {timePassed.TotalMinutes:F1}분 경과. {amountToRecover}% 회복 계산됨.");
+
+
+            // 3. 메시지 생성 로직 (여기서 한 번만 결정)
+            string finalMessage = "";
+            bool itemAcquired = false;
+
+            ItemType acquiredItemType = ItemType.BatteryRefill;
+
+            // [테스트 조건] 10초 이상 지났을 때 아이템 지급
+            if (timePassed.TotalSeconds >= 10.0f)
             {
-                // 이전 배터리가 이미 100%라면 팝업을 띄우지 않고 종료 (선택 사항)
-                if (currentBattery >= 100) return;
-
-                if (totalHoursPassed >= 2.0f)
+                acquiredItemType = ItemDropManager.Instance.ObtainRandomItem(showUI: false);
+                itemAcquired = true;
+            }
+            // 4. 상황별 메시지 조합
+            if (itemAcquired)
+            {
+                // 한글 이름 변환
+                string itemName = acquiredItemType switch
                 {
-                    // 아이템 지급 (UI 팝업은 아래 메시지와 겹칠 수 있으니 여기서 처리하거나 false)
-                    ItemDropManager.Instance.ObtainRandomItem(showUI: false);
+                    ItemType.BatteryRefill => "배터리 채우기",
+                    ItemType.HintChosung => "초성 힌트권",
+                    ItemType.FillKeyCounts => "자음/모음 채우기",
+                    ItemType.ReviveTicket => "워드이터 1회 부활권",
+                    _ => "알 수 없는 아이템"
+                };
 
-                    // 메시지 수정
-                    string itemName = "랜덤 아이템"; // 실제 획득한 아이템 이름을 가져올 수 있으면 더 좋음
-                    UIManager.Instance.Show($"푹 쉬고 오셨군요!\n배터리 {amountToRecover}% 충전 + 워드이터가 {itemName} 1개를 물어왔습니다!");
-                }
-                else
-                {
-                    // 기존 메시지 출력
-                    UIManager.Instance.Show($"푹 쉬고 오셨군요!\n휴식하는 동안 배터리가 {amountToRecover}% 충전되었습니다.");
-                }
-
-                // 배터리 갱신
-                currentBattery = Mathf.Clamp(currentBattery + amountToRecover, 0, 100);
-                SyncCellsFromPercent(); // UI 갱신을 위해 호출
-
-                Debug.Log($"[Battery] 부재중 {timePassed.TotalMinutes:F1}분 경과. {amountToRecover}% 회복 계산됨.");
-
-                string popupMessage;
-
-                // [수정된 부분] 현재 배터리가 100%에 도달했는지 확인
+                // 수정된 부분: 메시지에 [itemName]을 꼭 포함해야 합니다!
                 if (currentBattery >= 100)
-                {
-                    popupMessage = "푹 쉬고 오셨군요!\n휴식하는 동안 배터리가 모두 충전되었습니다.";
-                }
+                    finalMessage = $"푹 쉬고 오셨군요!\n배터리 완충 + 워드이터가 <color=yellow>[{itemName}]</color> 1개를 물어왔습니다!";
                 else
-                {
-                    popupMessage = $"푹 쉬고 오셨군요!\n휴식하는 동안 배터리가 <color=green>{amountToRecover}%</color> 충전되었습니다.";
-                }
+                    finalMessage = $"푹 쉬고 오셨군요!\n배터리 {actualRecovered}% 충전 + 워드이터가 <color=yellow>[{itemName}]</color> 1개를 물어왔습니다!";
+            }
+            else
+            {
+                // 아이템이 없을 때의 메시지 (else 블록 추가)
+                if (currentBattery >= 100)
+                    finalMessage = "푹 쉬고 오셨군요!\n휴식하는 동안 배터리가 모두 충전되었습니다.";
+                else
+                    finalMessage = $"푹 쉬고 오셨군요!\n휴식하는 동안 배터리가 <color=green>{actualRecovered}%</color> 충전되었습니다.";
+            }
 
-                // UIManager를 통해 팝업 호출
-                UIManager.Instance.Show(popupMessage);
+            // 5. 최종적으로 한 번만 호출
+            if (!string.IsNullOrEmpty(finalMessage))
+            {
+                UIManager.Instance.Show(finalMessage);
             }
         }
 

@@ -32,8 +32,8 @@ public class UIManager : MonoBehaviour
 
     [Header("아이템 사용 확인 팝업")]
     [SerializeField] private GameObject confirmPanel;       // 팝업 전체 패널
-    [SerializeField] private TextMeshProUGUI confirmTitle;  // 제목 텍스트
-    [SerializeField] private TextMeshProUGUI confirmMsg;    // 내용 텍스트
+    [SerializeField] private TextMeshProUGUI titleText;     // 제목 텍스트
+    [SerializeField] private TextMeshProUGUI explanText;    // 내용 텍스트
     [SerializeField] private Button btnYes;                 // '네' 버튼
     [SerializeField] private Button btnNo;                  // '아니오' 버튼
     private Action onConfirmCallback; // 확인 버튼 눌렀을 때 실행할 추가 로직(옵션)
@@ -78,7 +78,7 @@ public class UIManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 팝업 띄우기
+    /// 배터리 충전 팝업 띄우기
     /// </summary>
     /// <param name="message">보여줄 메시지</param>
     /// <param name="onClose">닫힌 뒤 실행할 로직 (없으면 null)</param>
@@ -180,8 +180,8 @@ private void OnConfirmClicked()
         confirmPanel.SetActive(true);
 
         // 텍스트 세팅
-        if (confirmTitle != null) confirmTitle.text = title;
-        if (confirmMsg != null) confirmMsg.text = message;
+        if (titleText != null) titleText.text = title;
+        if (explanText != null) explanText.text = message;
 
         // 기존 연결된 이벤트 제거 (RemoveAllListeners) 후 새 이벤트 연결
         if (btnYes != null)

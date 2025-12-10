@@ -230,7 +230,8 @@ namespace WordEater.Core
                     // 부활권 사용 여부 팝업 (UIManager에 Confirm 팝업이 있다고 가정)
                     UIManager.Instance.ShowConfirmPopup(
                         "부활권 사용",
-                        $"부활권을 사용하여 이어하시겠습니까?\n(남은 개수: {ItemManager.Instance.GetCount(ItemType.ReviveTicket)}개)",
+                        $"부활권을 사용하여 이어하시겠습니까?" +
+                        $"\n(남은 개수: {ItemManager.Instance.GetCount(ItemType.ReviveTicket)}개)",
                         onYes: () =>
                         {
                             // 부활권 소모
