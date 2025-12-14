@@ -12,6 +12,9 @@ public class UIManager : MonoBehaviour
     private float _animationDuration = 0.5f; // 애니메이션 지속 시간
 
     private bool _isKeyboardOpen = false; // 키보드 상태 추적 변수
+    PhoneSwiper phoneSwiper;
+    public KeyBoardManager KeyBoardManager;
+    public GameObject PageIcon;
     // 원하는 위치 고정 (anchoredPosition 기준)
 
     [Header("오답 연출")]
@@ -40,9 +43,6 @@ public class UIManager : MonoBehaviour
 
     private Vector3 _shakeOriginalPos;
 
-    // 외부 참조 컴포넌트
-    PhoneSwiper phoneSwiper;
-    public GameObject PageIcon;
     private Vector2 _showPosition = new Vector2(0, 0);
     private Vector2 _hidePosition = new Vector2(0, -450);
 
@@ -293,6 +293,7 @@ private void OnConfirmClicked()
     /// </summary>
     public void CloseKeyboard()
     {
+        KeyBoardManager.ClosePanelAndRestore();
         PageIcon.SetActive(true);
         if (!_isKeyboardOpen) return;
         _isKeyboardOpen = false;
