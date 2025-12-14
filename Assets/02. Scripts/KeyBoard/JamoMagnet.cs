@@ -12,8 +12,8 @@ public class JamoMagnet : MonoBehaviour
 
     [Header("표시 문자")]
     public string glyph;
-   
-    [Header("초성(베이스) 소켓")]
+
+    [Header("초성(베이스) 소켓 (이제는 거의 사용 안 함)")]
     public RectTransform rightAnchor;        // 옆모음
     public RectTransform bottomAnchor;       // 아래모음
     public RectTransform bottomFinalAnchor;  // 받침
@@ -28,12 +28,14 @@ public class JamoMagnet : MonoBehaviour
     [Header("모음 오프셋(개별 프리팹 전용)")]
     public Vector2 prefabAttachOffset = Vector2.zero;
 
+    // 예전 구조에서 쓰던 필드들 (지금은 안 써도 상관 없음)
     [HideInInspector] public JamoMagnet attachedVowel, attachedFinal;
     [HideInInspector] public JamoMagnet attachedVowelSide, attachedVowelBelow;
 
     RectTransform rt;
     public static readonly HashSet<JamoMagnet> All = new();
 
+    // 받침으로 쓸 수 없는 자모 (예전 구조용, 지금은 사실 의미 거의 없음)
     static readonly HashSet<string> InvalidFinal = new() { "ㄸ", "ㅉ", "ㅃ" };
 
     void Awake()
@@ -41,10 +43,11 @@ public class JamoMagnet : MonoBehaviour
         rt = GetComponent<RectTransform>();
         All.Add(this);
 
-       
+        // 모음 방향 자동 추정 (ㅗ/ㅛ/ㅜ/ㅠ/ㅡ 는 아래로, 나머지는 옆)
         if (role == JamoRole.Jungseong && !string.IsNullOrEmpty(glyph))
             vowelAttach = GuessVowelAttach(glyph);
 
+        // 예전 구조의 초성 소켓들 – 지금은 거의 안 쓰지만, 프리팹 호환용으로 남겨둠
         if (role == JamoRole.Choseong)
         {
             rightAnchor = EnsureChildSocket(rightAnchor, "RightMag");
@@ -58,105 +61,34 @@ public class JamoMagnet : MonoBehaviour
     public static VowelAttach GuessVowelAttach(string g)
         => (g == "ㅗ" || g == "ㅛ" || g == "ㅜ" || g == "ㅠ" || g == "ㅡ") ? VowelAttach.Below : VowelAttach.Side;
 
-    bool HasAnySockets()
-        => (rightAnchor != null) || (bottomAnchor != null) || (bottomFinalAnchor != null);
-
     public void SetGlyph(string g)
     {
         glyph = g;
-       
+        // 필요하면 여기서 TMP에 적용해도 됨
     }
 
     public bool TrySnap(RectTransform dragRoot, Camera uiCamera)
     {
-        bool tryingFinal = (role != JamoRole.Jungseong);
-
-        JamoMagnet best = null;
-        RectTransform targetAnchor = null;
-        float bestDist = float.MaxValue;
-
-        foreach (var m in All)
+        // 1) 완성 글자 블록에 붙이기 시도
+        if (SyllableBlock.TrySnapJamoToAnyBlock(this, uiCamera))
         {
-            if (!m || m.role != JamoRole.Choseong) continue;
-            if (m == this) continue;
-
-            RectTransform cand = null;
-
-            if (!tryingFinal)
-            {
-                if (m.attachedVowel) continue;
-                cand = (vowelAttach == VowelAttach.Side) ? m.rightAnchor : m.bottomAnchor;
-                if (!CanAttachVowelToBase(m, vowelAttach, glyph)) continue;
-            }
-            else
-            {
-               
-                if (InvalidFinal.Contains(glyph)) continue;
-                cand = m.bottomFinalAnchor;
-            }
-
-            if (!cand) continue;
-            if (!cand.transform.IsChildOf(m.transform)) continue;
-
-            var a = RectTransformUtility.WorldToScreenPoint(uiCamera, cand.position);
-            var me = RectTransformUtility.WorldToScreenPoint(uiCamera, rt.position);
-            float d = Vector2.Distance(a, me);
-            if (d < bestDist) { bestDist = d; best = m; targetAnchor = cand; }
-        }
-
-        if (!best || !targetAnchor || bestDist > snapRadius) return false;
-
-        if (tryingFinal)
-        {
-            // 이미 받침이 있으면 -> 겹받침 합성 시도
-            if (best.attachedFinal)
-            {
-                return TryFuseFinal(best, best.attachedFinal, this);
-            }
-
-            AttachTo(targetAnchor);
-            role = JamoRole.Jongseong;
-            best.attachedFinal = this;
             return true;
         }
-        else
-        {
-            // (모음 처리 그대로)
-            AttachTo(targetAnchor);
-            if (vowelAttach == VowelAttach.Side) best.attachedVowelSide = this;
-            else best.attachedVowelBelow = this;
 
-            if (!best.attachedVowel) TryFuseVowel(best);
-            return true;
-        }
+        return false;
     }
 
-    bool CanAttachVowelToBase(JamoMagnet baseCho, VowelAttach incomingType, string incomingGlyph)
-    {
-        var db = JamoVowelFuseDB.Instance;
-        if (!db) return true;
-
-        if (incomingType == VowelAttach.Side && baseCho.attachedVowelBelow != null)
-        {
-            string below = (baseCho.attachedVowelBelow.glyph ?? "").Trim();
-            string side = (incomingGlyph ?? "").Trim();
-            return db.Find(below, side) != null;
-        }
-        if (incomingType == VowelAttach.Below && baseCho.attachedVowelSide != null)
-        {
-            string below = (incomingGlyph ?? "").Trim();
-            string side = (baseCho.attachedVowelSide.glyph ?? "").Trim();
-            return db.Find(below, side) != null;
-        }
-        return true;
-    }
+    bool HasAnySockets()
+        => (rightAnchor != null) || (bottomAnchor != null) || (bottomFinalAnchor != null);
 
     void AttachTo(RectTransform socket)
     {
+        // 지금은 거의 안 쓰지만, 혹시라도 직접 붙여야 할 때를 대비해 유지
         rt.SetParent(socket, false);
         rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
         rt.pivot = new Vector2(0.5f, 0.5f);
         rt.anchoredPosition = attachOffset + prefabAttachOffset;
+
         bool isStretched = (rt.anchorMin != rt.anchorMax);
         if (isStretched)
         {
@@ -173,113 +105,23 @@ public class JamoMagnet : MonoBehaviour
         if (drag) drag.enabled = false;
     }
 
-    void TryFuseVowel(JamoMagnet baseCho)
-{
-    var below = baseCho.attachedVowelBelow;
-    var side  = baseCho.attachedVowelSide;
-    if (!below || !side) return;
-
-    var rule = JamoVowelFuseDB.Instance?.Find((below.glyph ?? "").Trim(), (side.glyph ?? "").Trim());
-    if (rule == null) return;
-
-    // ---- 새 합성 프리팹 소환 경로 ----
-    if (rule.fusedPrefab)
+    bool CanAttachVowelToBase(JamoMagnet baseCho, VowelAttach incomingType, string incomingGlyph)
     {
-        // 보통 복합모음은 오른쪽 소켓 기준으로 붙입니다.
-        var parent = baseCho.rightAnchor ? baseCho.rightAnchor : baseCho.GetComponent<RectTransform>();
-
-        // 1) 프리팹 생성
-        var fused = Instantiate(rule.fusedPrefab, parent, false);
-        var frt   = fused.GetComponent<RectTransform>();
-            var fm = fused.GetComponent<JamoMagnet>() ?? fused.AddComponent<JamoMagnet>();
-
-            if (frt)
-        {
-            frt.anchorMin = frt.anchorMax = new Vector2(0.5f, 0.5f);
-            frt.pivot     = new Vector2(0.5f, 0.5f);
-                frt.anchoredPosition = rule.fusedOffset + (fm ? fm.prefabAttachOffset : Vector2.zero);
-                frt.localScale = Vector3.one;
-        }
-
-        // 2) 자석 컴포넌트 보장 + 상태 설정
-        fm.role = JamoRole.Jungseong; // 복합 모음은 '중성' 단일 조각
-        fm.SetGlyph(!string.IsNullOrEmpty(rule.fusedGlyph)
-                    ? rule.fusedGlyph
-                    : (below.glyph + side.glyph));    // 글리프 동기화
-
-        // 3) 입력 잠금(베이스만 드래그 가능하게 유지)
-        var cg = fused.GetComponent<CanvasGroup>() ?? fused.AddComponent<CanvasGroup>();
-        cg.blocksRaycasts = false;
-        var drag = fused.GetComponent("DraggableWordUI") as Behaviour;
-        if (drag) drag.enabled = false;
-
-        // 4) 기존 파트 제거 + 베이스 상태 갱신
-        Destroy(below.gameObject);
-        Destroy(side.gameObject);
-        baseCho.attachedVowelBelow = null;
-        baseCho.attachedVowelSide  = null;
-        baseCho.attachedVowel      = fm;
-
-        return;
+        // 예전 모음 합성용 – 지금은 사용 안 함.
+        return true;
     }
 
-    // ---- (백업 경로) 새 프리팹이 없으면 호스트 글자만 교체 ----
-    var parent2 = baseCho.rightAnchor ? baseCho.rightAnchor : baseCho.GetComponent<RectTransform>();
-    var host    = side;     // 호스트 유지
-    var remove  = below;    // 아래모음 제거
-
-    host.transform.SetParent(parent2, false);
-    var hrt = host.GetComponent<RectTransform>();
-    if (hrt) hrt.anchoredPosition = rule.fusedOffset;
-
-    host.role = JamoRole.Jungseong;
-    host.SetGlyph(!string.IsNullOrEmpty(rule.fusedGlyph) ? rule.fusedGlyph : (below.glyph + side.glyph));
-
-    Destroy(remove.gameObject);
-    baseCho.attachedVowelBelow = null;
-    baseCho.attachedVowelSide  = null;
-    baseCho.attachedVowel      = host;
-
-    var cg2 = host.GetComponent<CanvasGroup>() ?? host.gameObject.AddComponent<CanvasGroup>();
-    cg2.blocksRaycasts = false;
-    var drag2 = host.GetComponent("DraggableWordUI") as Behaviour;
-    if (drag2) drag2.enabled = false;
-}
+    void TryFuseVowel(JamoMagnet baseCho)
+    {
+        // 예전 복합 모음(ㅘ, ㅝ 등) 합성 로직.
+        // 이제는 SyllableBlock이 단일 glyph만 들고 있으니
+        // 필요하다면 나중에 "SyllableBlock 안에서" 구현하는 게 낫다.
+    }
 
     bool TryFuseFinal(JamoMagnet baseCho, JamoMagnet first, JamoMagnet second)
     {
-        var rule = JamoVowelFuseDB.Instance?.Find(first.glyph, second.glyph);
-        if (rule == null || !rule.fusedPrefab) return false;
-
-        var parent = baseCho.bottomFinalAnchor ? baseCho.bottomFinalAnchor
-                                               : baseCho.GetComponent<RectTransform>();
-        var fused = Instantiate(rule.fusedPrefab, parent, false);
-
-        var frt = fused.GetComponent<RectTransform>();
-        if (frt)
-        {
-            frt.anchorMin = frt.anchorMax = new Vector2(0.5f, 0.5f);
-            frt.pivot = new Vector2(0.5f, 0.5f);
-            frt.anchoredPosition = rule.fusedOffset;
-            frt.localScale = Vector3.one;
-            frt.localRotation = Quaternion.identity;
-            frt.SetAsLastSibling();
-        }
-
-        var fm = fused.GetComponent<JamoMagnet>() ?? fused.AddComponent<JamoMagnet>();
-        fm.role = JamoRole.Jongseong;
-        fm.SetGlyph(string.IsNullOrEmpty(rule.fusedGlyph) ? (first.glyph + second.glyph) : rule.fusedGlyph);
-
-        Destroy(first.gameObject);
-        Destroy(second.gameObject);
-        baseCho.attachedFinal = fm;
-
-        var cg = fused.GetComponent<CanvasGroup>() ?? fused.AddComponent<CanvasGroup>();
-        cg.blocksRaycasts = false;
-        var drag = fused.GetComponent("DraggableWordUI") as Behaviour;
-        if (drag) drag.enabled = false;
-
-        return true;
+        // 예전 겹받침(ㄳ, ㄵ 등) 합성용 – 역시 SyllableBlock 쪽으로 옮기는 게 좋음.
+        return false;
     }
 
     RectTransform EnsureChildSocket(RectTransform socket, string childName)
@@ -289,4 +131,98 @@ public class JamoMagnet : MonoBehaviour
         var rtChild = t ? t.GetComponent<RectTransform>() : null;
         return rtChild;
     }
+
+    public static bool TryFuseWithNearbyJamo(JamoMagnet a, Camera uiCam, RectTransform parent, float radius)
+    {
+        if (!a) return false;
+
+        var art = a.GetComponent<RectTransform>();
+        if (!art) return false;
+
+        Vector2 aScreen = RectTransformUtility.WorldToScreenPoint(uiCam, art.position);
+
+        JamoMagnet best = null;
+        float bestDist = float.MaxValue;
+
+        foreach (var b in JamoMagnet.All)
+        {
+            if (!b || b == a) continue;
+
+            // 허용구역 밖에 있는 자모랑 합쳐지는 걸 막고 싶으면
+            // 여기서 parent(=dragRoot) 안에 있는지 체크해도 됨.
+            // if (b.transform.parent != parent) continue;
+
+            var brt = b.GetComponent<RectTransform>();
+            if (!brt) continue;
+
+            Vector2 bScreen = RectTransformUtility.WorldToScreenPoint(uiCam, brt.position);
+
+            float d = Vector2.Distance(aScreen, bScreen);
+            if (d < radius && d < bestDist)
+            {
+                best = b;
+                bestDist = d;
+            }
+        }
+
+        if (!best) return false;
+
+        // 지금은 "초성+중성"만 합치기
+        JamoMagnet cho = null, jung = null;
+        if (a.role == JamoRole.Choseong && best.role == JamoRole.Jungseong) { cho = a; jung = best; }
+        else if (a.role == JamoRole.Jungseong && best.role == JamoRole.Choseong) { cho = best; jung = a; }
+        else return false;
+
+        // 이미 cho가 다른 중성/종성이 붙은 상태면(침투 방지) 합치기 금지
+        // (니 구조에서 attached*를 거의 안 쓴다고 했지만, 혹시 남아있으면 안전장치)
+        if (cho.attachedVowel || cho.attachedVowelSide || cho.attachedVowelBelow || cho.attachedFinal)
+            return false;
+
+        if (!SyllableBlock.Prefab) return false;
+
+        // 블럭 생성
+        var block = Object.Instantiate(SyllableBlock.Prefab, parent);
+        var blockRT = block.GetComponent<RectTransform>();
+        if (blockRT)
+        {
+            // 생성 위치: 둘의 중간
+            Vector2 bScr = RectTransformUtility.WorldToScreenPoint(uiCam, best.GetComponent<RectTransform>().position);
+            Vector2 midScreen = (aScreen + bScr) * 0.5f;
+
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(parent, midScreen, uiCam, out var local);
+            blockRT.anchoredPosition = local;
+            blockRT.localScale = Vector3.one;
+        }
+
+        // 값 세팅
+        block.choseong = (cho.glyph ?? "").Trim();
+        block.jungseong = (jung.glyph ?? "").Trim();
+        block.jongseong = null;
+        block.SetSyllable(block.choseong, block.jungseong, block.jongseong);
+
+        // 중요: 블럭도 드래그 가능하게 Init 복사
+        var srcDrag = a.GetComponent<DraggableWordUI>();
+        var blockDrag = block.GetComponent<DraggableWordUI>();
+        if (srcDrag && blockDrag)
+        {
+            blockDrag.Init(srcDrag.DragRoot, srcDrag.AllowedArea, srcDrag.TrashArea, srcDrag.UiCamera);
+
+            // (선택) 환불/삭제까지 이어가려면 source도 넘겨줘야 함
+            // 합쳐진 2개의 비용 처리 방식은 정책이 필요하지만,
+            // 일단 "드롭한 쪽"만 넘기면 최소한 삭제시 환불은 됨.
+            // 더 정확히 하려면 아래 "합산 환불" 참고.
+            // blockDrag.BindSource(srcDragOwner, index, amount) → 현재 여기선 owner 접근이 어려움
+        }
+
+        // Raycast 복구
+        var cg = block.GetComponent<CanvasGroup>();
+        if (cg) cg.blocksRaycasts = true;
+
+        // 원본 제거
+        Object.Destroy(cho.gameObject);
+        Object.Destroy(jung.gameObject);
+
+        return true;
+    }
+
 }

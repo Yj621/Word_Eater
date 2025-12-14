@@ -36,11 +36,11 @@ public class KeyBoardManager : MonoBehaviour
     bool dragIsUI;
     RectTransform dragUIRect; // UI 프리팹일 때
     Transform dragWorldTr; // 월드 프리팹일 때
-
+    public SyllableBlock syllablePrefab;
     [Header("드롭/삭제 영역(UI)")]
     public RectTransform allowedArea;   // 허용 구역(이 안에서만 살아남음)
     public RectTransform trashArea;     // 쓰레기통(여기 놓으면 삭제)
-
+  
     public TextMeshProUGUI resultText; // 결과 표시용 라벨
     Dictionary<int, int> _sessionSpent = new();
 
@@ -61,6 +61,7 @@ public class KeyBoardManager : MonoBehaviour
             for (int i = 0; i < longPressKeys.Length; i++)
                 if (longPressKeys[i]) longPressKeys[i].manager = this;
         }
+        SyllableBlock.Prefab = syllablePrefab;
     }
 
     private void Start()

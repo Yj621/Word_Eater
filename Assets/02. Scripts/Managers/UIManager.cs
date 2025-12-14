@@ -31,9 +31,6 @@ public class UIManager : MonoBehaviour
 
     private Vector3 _shakeOriginalPos;
 
-    // 외부 참조 컴포넌트
-    PhoneSwiper phoneSwiper;
-    public GameObject PageIcon;
     private Vector2 _showPosition = new Vector2(0, 0);
     private Vector2 _hidePosition = new Vector2(0, -450);
 
