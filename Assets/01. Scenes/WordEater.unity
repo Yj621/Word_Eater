@@ -1682,7 +1682,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 706506970}
-  - {fileID: 691318736}
   - {fileID: 1335167511}
   - {fileID: 1155597268}
   - {fileID: 267124765}
@@ -1699,7 +1698,6 @@ RectTransform:
   - {fileID: 1253854187952671841}
   - {fileID: 1920472454}
   - {fileID: 869451664}
-  - {fileID: 1555432577}
   m_Father: {fileID: 321487234}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -8985,6 +8983,8 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 59900012}
+  - {fileID: 691318736}
+  - {fileID: 1555432577}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -9005,6 +9005,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _keyboardRect: {fileID: 1992492931}
+  KeyBoardManager: {fileID: 1992492932}
+  PageIcon: {fileID: 691318735}
   _damageOverlay: {fileID: 1920472455}
   _shakeTarget: {fileID: 59900012}
   alarmPanel: {fileID: 1966210758}
@@ -9020,7 +9022,6 @@ MonoBehaviour:
   explanText: {fileID: 1042422140}
   btnYes: {fileID: 527663724}
   btnNo: {fileID: 1738086395}
-  PageIcon: {fileID: 691318735}
 --- !u!114 &321487236
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9034,7 +9035,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   viewport: {fileID: 390379378}
-  content: {fileID: 1335167511}
+  content: {fileID: 59900012}
   pages:
   - {fileID: 1155597268}
   - {fileID: 267124765}
@@ -15645,7 +15646,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 0, y: -4.7775}
+  m_AnchoredPosition: {x: 0, y: -4.777504}
   m_SizeDelta: {x: 300, y: 50}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &548725594
@@ -22172,7 +22173,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1939360328}
-  m_Father: {fileID: 59900012}
+  m_Father: {fileID: 321487234}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -47873,7 +47874,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 59900012}
+  m_Father: {fileID: 321487234}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -61451,6 +61452,7 @@ MonoBehaviour:
   uiCamera: {fileID: 802409968}
   worldDepth: 10
   spawnOffset: {x: 0, y: 0, z: 0}
+  syllablePrefab: {fileID: 2447965610691185843, guid: 71be0837003fa074e9d202c96dfd547c, type: 3}
   allowedArea: {fileID: 1436749898}
   trashArea: {fileID: 754317715}
   resultText: {fileID: 1958081363}
@@ -64532,7 +64534,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a82eea42e722eb44b90dd0c5132ceaf1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AdsManager
-  rewardedAdRevivalId: ca-app-apub-1881501262849586/3221896109
+  rewardedAdUnitId: unused
 --- !u!114 &4841418319224981448
 MonoBehaviour:
   m_ObjectHideFlags: 0
