@@ -222,16 +222,15 @@ namespace WordEater.Core
             enabled = false;
 
             // 알림창이 다 뜨고 사라진 뒤(콜백) -> 부활 로직 실행
-            UIManager.Instance.ShowEmergencyAlarm(currentAnswer, 2.0f, () =>
+            UIManager.Instance.ShowEmergencyAlarm("정답단어", currentAnswer, 2.0f, () =>
             {
                 // 1. 부활권 보유 확인
                 if (ItemManager.Instance.GetCount(ItemType.ReviveTicket) > 0)
                 {
-                    // 부활권 사용 여부 팝업 (UIManager에 Confirm 팝업이 있다고 가정)
+                    // 부활권 사용 팝업 매개변수 정리 (Title, Message, Yes, No)
                     UIManager.Instance.ShowConfirmPopup(
                         "부활권 사용",
-                        $"부활권을 사용하여 이어하시겠습니까?" +
-                        $"\n(남은 개수: {ItemManager.Instance.GetCount(ItemType.ReviveTicket)}개)",
+                        $"부활권을 사용하여 이어하시겠습니까?\n(남은 개수: {ItemManager.Instance.GetCount(ItemType.ReviveTicket)}개)",
                         onYes: () =>
                         {
                             // 부활권 소모

@@ -45,25 +45,36 @@ public class ItemSlotUI : MonoBehaviour
     /// </summary>
     private void OnClickSlot()
     {
-        // 1. 아이템 이름 한글로 변환 (팝업 표시용)
         string itemName = GetItemNameKR(_myType);
 
         GameManager.Instance.HidePanel_Item();
 
-        // 2. UIManager를 통해 확인 팝업 호출
+        // UIManager를 통해 확인 팝업 호출
         UIManager.Instance.ShowConfirmPopup(
             title: "아이템 사용",
             message: $"<color=yellow>{itemName}</color>을(를) 사용하시겠습니까?",
             onYes: () =>
             {
-                // 3. '네' 버튼을 눌렀을 때만 실제 아이템 사용 로직 실행
+                // 실제 아이템 기능 실행 (개수 차감 등)
                 _controller.UseItem(_myType);
-                
+
+                // 상단 알림창 호출 (아이콘 전달)
+                // - message: 표시할 텍스트
+                // - duration: 2.0초 동안 표시
+                // - onComplete: null (알림 끝난 뒤 할 일 없음)
+                // - icon: 현재 슬롯의 iconImage.sprite 전달
+                UIManager.Instance.ShowEmergencyAlarm(
+                    "아이템 사용",
+                    $"{itemName} 사용!",
+                    2.0f,
+                    null,
+                    iconImage.sprite
+                );
+
                 Debug.Log($"아이템 사용 완료: {itemName}");
             },
             onNo: () =>
             {
-                // '아니오' 버튼 눌렀을 때 (아무것도 안 함 or 로그)
                 Debug.Log("아이템 사용 취소");
             }
         );
