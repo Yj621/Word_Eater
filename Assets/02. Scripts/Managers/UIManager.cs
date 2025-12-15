@@ -23,7 +23,9 @@ public class UIManager : MonoBehaviour
 
     [Header("상단 알림")]
     [SerializeField] private RectTransform alarmPanel;       // 알림창 패널 (상단에 위치)
+    [SerializeField] private TextMeshProUGUI alarmTitleText;      // 알림창 텍스트
     [SerializeField] private TextMeshProUGUI alarmText;      // 알림창 텍스트
+    [SerializeField] private Image alarmIconImage;
     [SerializeField] private float alarmShowPosY = -150f;    // 화면 안으로 들어왔을 때 Y좌표 (예: -150)
     [SerializeField] private float alarmHidePosY = 150f;     // 화면 밖으로 나갔을 때 Y좌표 (예: 150)
 
@@ -106,37 +108,54 @@ public class UIManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 상단 알림창을 띄웠다가 일정 시간 뒤 사라지게 하고, 끝난 뒤 콜백을 실행
+    /// 상단 알림창을 띄우는 메서드
+    /// Sprite icon을 전달하면 아이콘을 표시하고, 전달하지 않으면 숨김
     /// </summary>
-    public void ShowEmergencyAlarm(string message, float duration, Action onComplete = null)
+    public void ShowEmergencyAlarm(string title, string message, float duration, Action onComplete = null, Sprite icon = null)
     {
         if (alarmPanel == null)
         {
-            // 패널이 없으면 바로 다음 단계로
             onComplete?.Invoke();
             return;
         }
 
+        //제목 설정
+        if (alarmTitleText != null) alarmTitleText.text = title;
+
         // 텍스트 설정
         if (alarmText != null) alarmText.text = message;
 
-        // 초기 위치 설정 (화면 위)
+        //  아이콘 설정
+        if (alarmIconImage != null)
+        {
+            if (icon != null)
+            {
+                alarmIconImage.sprite = icon;
+                alarmIconImage.gameObject.SetActive(true); // 아이콘이 있으면 켜기
+            }
+            else
+            {
+                // 아이콘이 없으면(null) 끄기 (WordEater 사망 시 등)
+                alarmIconImage.gameObject.SetActive(false);
+            }
+        }
+
+        // 3. 연출 로직 (기존과 동일)
         alarmPanel.anchoredPosition = new Vector2(alarmPanel.anchoredPosition.x, alarmHidePosY);
         alarmPanel.gameObject.SetActive(true);
 
-        // 시퀀스 생성 (내려옴 -> 대기 -> 올라감 -> 콜백)
         Sequence seq = DOTween.Sequence();
 
-        // 내려오기 (OutBack으로 튕기듯이)
+        // 내려오기
         seq.Append(alarmPanel.DOAnchorPosY(alarmShowPosY, 0.5f).SetEase(Ease.OutBack));
 
-        // 보여주는 시간 동안 대기
+        // 대기
         seq.AppendInterval(duration);
 
-        // 다시 올라가기 (InBack)
+        // 올라가기
         seq.Append(alarmPanel.DOAnchorPosY(alarmHidePosY, 0.3f).SetEase(Ease.InBack));
 
-        // 끝나면 비활성화 및 다음 동작 실행
+        // 완료 콜백
         seq.OnComplete(() =>
         {
             alarmPanel.gameObject.SetActive(false);
@@ -144,10 +163,10 @@ public class UIManager : MonoBehaviour
         });
     }
 
-/// <summary>
-/// 닫기 버튼 로직
-/// </summary>
-private void OnConfirmClicked()
+    /// <summary>
+    /// 닫기 버튼 로직
+    /// </summary>
+    private void OnConfirmClicked()
     {
         Transform target = t_BatteryCharge != null ? t_BatteryCharge : batteryChargePanel.transform;
 

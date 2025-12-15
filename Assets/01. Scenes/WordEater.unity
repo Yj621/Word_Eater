@@ -9010,7 +9010,9 @@ MonoBehaviour:
   _damageOverlay: {fileID: 1920472455}
   _shakeTarget: {fileID: 59900012}
   alarmPanel: {fileID: 1966210758}
+  alarmTitleText: {fileID: 475560530}
   alarmText: {fileID: 978170566}
+  alarmIconImage: {fileID: 298204289}
   alarmShowPosY: -100
   alarmHidePosY: 150
   batteryChargePanel: {fileID: 869451663}
@@ -64534,7 +64536,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a82eea42e722eb44b90dd0c5132ceaf1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AdsManager
-  rewardedAdUnitId: unused
+  rewardedAdRevivalId: ca-app-apub-1881501262849586/3221896109
 --- !u!114 &4841418319224981448
 MonoBehaviour:
   m_ObjectHideFlags: 0
