@@ -24,10 +24,10 @@ namespace WordEater.Core
         [SerializeField] private GameManager gamemanager;
         [SerializeField] private GalleryUIManager galleryUIManager;
 
-
         [SerializeField] private Sprite BitImg;
         [SerializeField] private Sprite ByteImg;
         [SerializeField] private Sprite WordImg;
+        [SerializeField] private Sprite reviveTicketSprite;
         public bool isDead = false;
 
         [Header("Runtime (read-only)")]
@@ -245,7 +245,8 @@ namespace WordEater.Core
                         {
                             // 거절 시 광고 로직으로 이동
                             CheckAdRevive();
-                        }
+                        },
+                        itemIcon: reviveTicketSprite
                     );
                 }
                 else

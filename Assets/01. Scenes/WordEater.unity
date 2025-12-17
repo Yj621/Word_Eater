@@ -1248,7 +1248,6 @@ RectTransform:
   - {fileID: 1223463721}
   - {fileID: 1563725930}
   - {fileID: 1452064429}
-  - {fileID: 1136546052}
   - {fileID: 1417901581}
   m_Father: {fileID: 321487234}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -6197,6 +6196,7 @@ RectTransform:
   - {fileID: 691318736}
   - {fileID: 59900012}
   - {fileID: 869451664}
+  - {fileID: 1136546052}
   - {fileID: 1920472454}
   - {fileID: 1253854187952671841}
   - {fileID: 1603091356}
@@ -6227,21 +6227,22 @@ MonoBehaviour:
   PageIcon: {fileID: 691318735}
   _damageOverlay: {fileID: 1920472455}
   _shakeTarget: {fileID: 59900012}
-  alarmPanel: {fileID: 1966210758}
-  alarmTitleText: {fileID: 475560530}
-  alarmText: {fileID: 978170566}
-  alarmIconImage: {fileID: 298204289}
-  alarmShowPosY: -100
-  alarmHidePosY: 150
-  batteryChargePanel: {fileID: 869451663}
-  t_BatteryCharge: {fileID: 1510932195}
-  messageText: {fileID: 1510932196}
-  confirmButton: {fileID: 1747570756}
-  confirmPanel: {fileID: 1136546051}
-  titleText: {fileID: 548725594}
-  explanText: {fileID: 1042422140}
-  btnYes: {fileID: 527663724}
-  btnNo: {fileID: 1738086395}
+  _alarmPanel: {fileID: 1966210758}
+  _alarmTitleText: {fileID: 475560530}
+  _alarmText: {fileID: 978170566}
+  _alarmIconImage: {fileID: 298204289}
+  _alarmShowPosY: -100
+  _alarmHidePosY: 150
+  _batteryChargePanel: {fileID: 869451663}
+  _t_BatteryCharge: {fileID: 1747570753}
+  _messageText: {fileID: 1510932196}
+  _batteryChargeButton: {fileID: 1747570756}
+  _confirmPanel: {fileID: 1136546051}
+  _titleText: {fileID: 548725594}
+  _explanText: {fileID: 1042422140}
+  _btnYes: {fileID: 527663724}
+  _btnNo: {fileID: 1738086395}
+  _itemImg: {fileID: 1704389633}
 --- !u!114 &321487236
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -29910,7 +29911,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 287672780}
-  m_Father: {fileID: 59900012}
+  m_Father: {fileID: 321487234}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -37354,6 +37355,7 @@ MonoBehaviour:
   BitImg: {fileID: 376747241359653198, guid: 74301ebcc5a44c54b95a000ea786ca20, type: 3}
   ByteImg: {fileID: -2307929912617645041, guid: 74301ebcc5a44c54b95a000ea786ca20, type: 3}
   WordImg: {fileID: -5405038573520594224, guid: 74301ebcc5a44c54b95a000ea786ca20, type: 3}
+  reviveTicketSprite: {fileID: -488721925442295091, guid: 4124878fdbab6214f9de16b93ad43e92, type: 3}
   isDead: 0
   stage: 0
   currentAnswer: 
@@ -46690,7 +46692,7 @@ MonoBehaviour:
   startCells: 5
   batteryPopup: {fileID: 8867680863925635572}
   enableAutoRecharge: 1
-  rechargeRatePerHour: 1000
+  rechargeRatePerHour: 100
 --- !u!4 &1922716699
 Transform:
   m_ObjectHideFlags: 0

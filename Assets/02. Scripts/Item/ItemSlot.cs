@@ -12,7 +12,7 @@ public struct ItemInfo
 public class ItemSlot : MonoBehaviour
 {
     [Header("설정")]
-    [SerializeField] private ItemSlotUI slotPrefab; // 슬롯 프리팹
+    [SerializeField] private Item slotPrefab; // 슬롯 프리팹
     [SerializeField] private Transform slotParent;  // 슬롯이 생성될 부모 (Grid/Horizontal Layout)
     [SerializeField] private ItemEffectController effectController; // 효과 발동기 연결
 
@@ -20,11 +20,11 @@ public class ItemSlot : MonoBehaviour
     public List<ItemInfo> itemIcons; // 인스펙터에서 각 타입별 이미지 등록
 
     // 생성된 슬롯들을 관리하는 딕셔너리
-    private Dictionary<ItemType, ItemSlotUI> _spawnedSlots = new Dictionary<ItemType, ItemSlotUI>();
+    private Dictionary<ItemType, Item> _spawnedSlots = new Dictionary<ItemType, Item>();
 
     private void Start()
     {
-        // 1. 슬롯 미리 다 생성하기 (4종류)
+        // 슬롯 미리 다 생성하기 (4종류)
         foreach (var info in itemIcons)
         {
             var newSlot = Instantiate(slotPrefab, slotParent);
@@ -35,7 +35,7 @@ public class ItemSlot : MonoBehaviour
             _spawnedSlots.Add(info.type, newSlot);
         }
 
-        // 2. 인벤토리 변경 이벤트 구독
+        // 인벤토리 변경 이벤트 구독
         ItemManager.Instance.OnInventoryChanged += RefreshUI;
     }
 
@@ -51,7 +51,7 @@ public class ItemSlot : MonoBehaviour
         foreach (var kvp in _spawnedSlots)
         {
             ItemType type = kvp.Key;
-            ItemSlotUI slot = kvp.Value;
+            Item slot = kvp.Value;
 
             int count = ItemManager.Instance.GetCount(type);
             slot.UpdateCount(count);

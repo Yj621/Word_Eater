@@ -16,7 +16,7 @@ namespace WordEater.Systems
         public void UseItem(ItemType type)
         {
             Debug.Log("아이템 사용!");
-            // 1. 아이템 보유 체크 및 소모
+            // 아이템 보유 체크 및 소모
             if (!ItemManager.Instance.TryUseItem(type))
             {
                 Debug.Log("아이템이 부족합니다!");
@@ -24,7 +24,7 @@ namespace WordEater.Systems
                 return;
             }
 
-            // 2. 효과 적용
+            // 효과 적용
             ApplyEffect(type);
         }
 
@@ -33,13 +33,13 @@ namespace WordEater.Systems
             switch (type)
             {
                 case ItemType.BatteryRefill:
-                    // 1) 배터리 채우기
+                    // 배터리 채우기
                     batterySystem.RefillToMax();
                     Debug.Log("배터리 완충 완료!");
                     break;
 
                 case ItemType.HintChosung:
-                    // 2) 단어 초성 주기
+                    // 단어 초성 주기
                     string answer = wordEater.CurrentAnswer;
                     string chosung = KoreanUtils.GetChosungString(answer);
 
@@ -48,7 +48,7 @@ namespace WordEater.Systems
                     break;
 
                 case ItemType.FillKeyCounts:
-                    // 3) 자음/모음 1개씩 채우기
+                    // 자음/모음 1개씩 채우기
                     // KeyCount는 static 클래스이므로 바로 접근 가능
                     // Length만큼 돌면서 1개씩 추가
                     for (int i = 0; i < KeyCount.Length; i++)
@@ -59,9 +59,9 @@ namespace WordEater.Systems
                     break;
 
                 case ItemType.ReviveTicket:
-                    // 4) 부활권 (이건 죽었을 때만 써야 하므로, 여기서 직접 쓰기보단 로직 분리 필요)
+                    // 부활권 (이건 죽었을 때만 써야 하므로, 여기서 직접 쓰기보단 로직 분리 필요)
                     // 만약 "사용하기" 버튼을 눌러서 쓰는게 아니라 죽었을 때 팝업에서 쓴다면
-                    // 아래 로직은 필요 없고 WordEaterDie 수정이 필요함.
+                    // 아래 로직은 필요 없고 WordEaterDie 수정이 필요함
 
                     // 강제로 사용한다면:
                     if (wordEater.isDead)

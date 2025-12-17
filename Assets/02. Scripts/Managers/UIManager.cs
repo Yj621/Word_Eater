@@ -22,26 +22,27 @@ public class UIManager : MonoBehaviour
     [SerializeField] private RectTransform _shakeTarget;    // 흔들 대상 (예: 전체 UI 루트)
 
     [Header("상단 알림")]
-    [SerializeField] private RectTransform alarmPanel;       // 알림창 패널 (상단에 위치)
-    [SerializeField] private TextMeshProUGUI alarmTitleText;      // 알림창 텍스트
-    [SerializeField] private TextMeshProUGUI alarmText;      // 알림창 텍스트
-    [SerializeField] private Image alarmIconImage;
-    [SerializeField] private float alarmShowPosY = -150f;    // 화면 안으로 들어왔을 때 Y좌표 (예: -150)
-    [SerializeField] private float alarmHidePosY = 150f;     // 화면 밖으로 나갔을 때 Y좌표 (예: 150)
+    [SerializeField] private RectTransform _alarmPanel;       // 알림창 패널 (상단에 위치)
+    [SerializeField] private TextMeshProUGUI _alarmTitleText;      // 알림창 텍스트
+    [SerializeField] private TextMeshProUGUI _alarmText;      // 알림창 텍스트
+    [SerializeField] private Image _alarmIconImage;
+    [SerializeField] private float _alarmShowPosY = -150f;    // 화면 안으로 들어왔을 때 Y좌표 (예: -150)
+    [SerializeField] private float _alarmHidePosY = 150f;     // 화면 밖으로 나갔을 때 Y좌표 (예: 150)
 
     [Header("UI 연결")]
-    [SerializeField] private GameObject batteryChargePanel;    // 팝업 전체 부모 (Panel)
-    [SerializeField] private Transform t_BatteryCharge;  // 실제 튀어오를 팝업 창 (배경 제외)
-    [SerializeField] private TextMeshProUGUI messageText; // 메시지 텍스트
-    [SerializeField] private Button confirmButton;      // 확인(닫기) 버튼
+    [SerializeField] private GameObject _batteryChargePanel;    // 팝업 전체 부모 (Panel)
+    [SerializeField] private Transform _t_BatteryCharge;  // 실제 튀어오를 팝업 창 (배경 제외)
+    [SerializeField] private TextMeshProUGUI _messageText; // 메시지 텍스트
+    [SerializeField] private Button _batteryChargeButton;      // 확인(닫기) 버튼
 
     [Header("아이템 사용 확인 팝업")]
-    [SerializeField] private GameObject confirmPanel;       // 팝업 전체 패널
-    [SerializeField] private TextMeshProUGUI titleText;     // 제목 텍스트
-    [SerializeField] private TextMeshProUGUI explanText;    // 내용 텍스트
-    [SerializeField] private Button btnYes;                 // '네' 버튼
-    [SerializeField] private Button btnNo;                  // '아니오' 버튼
-    private Action onConfirmCallback; // 확인 버튼 눌렀을 때 실행할 추가 로직(옵션)
+    [SerializeField] private GameObject _confirmPanel;       // 팝업 전체 패널
+    [SerializeField] private TextMeshProUGUI _titleText;     // 제목 텍스트
+    [SerializeField] private TextMeshProUGUI _explanText;    // 내용 텍스트
+    [SerializeField] private Button _btnYes;                 // '네' 버튼
+    [SerializeField] private Button _btnNo;                  // '아니오' 버튼
+    [SerializeField] private Image _itemImg;
+    private Action _onConfirmCallback; // 확인 버튼 눌렀을 때 실행할 추가 로직(옵션)
 
     private Vector3 _shakeOriginalPos;
 
@@ -55,12 +56,12 @@ public class UIManager : MonoBehaviour
     {
         Instance = this;
         // 씬 시작 시 팝업 숨기기
-        if (batteryChargePanel != null)
-            batteryChargePanel.SetActive(false);
+        if (_batteryChargePanel != null)
+            _batteryChargePanel.SetActive(false);
 
         // 버튼 리스너 연결
-        if (confirmButton != null)
-            confirmButton.onClick.AddListener(OnConfirmClicked);
+        if (_batteryChargeButton != null)
+            _batteryChargeButton.onClick.AddListener(OnConfirmClicked);
     }
     void Start()
     {
@@ -86,15 +87,15 @@ public class UIManager : MonoBehaviour
     /// <param name="onClose">닫힌 뒤 실행할 로직 (없으면 null)</param>
     public void Show(string message, Action onClose = null)
     {
-        if (messageText != null) messageText.text = message;
-        onConfirmCallback = onClose;
+        if (_messageText != null) _messageText.text = message;
+        _onConfirmCallback = onClose;
 
-        if (batteryChargePanel != null)
+        if (_batteryChargePanel != null)
         {
-            batteryChargePanel.SetActive(true);
+            _batteryChargePanel.SetActive(true);
 
-            // 애니메이션 대상 설정 (popupContainer가 없으면 batteryChargePanel 자체를 애니메이션)
-            Transform target = t_BatteryCharge != null ? t_BatteryCharge : batteryChargePanel.transform;
+            // 애니메이션 대상 설정 (popupContainer가 없으면 _batteryChargePanel 자체를 애니메이션)
+            Transform target = _t_BatteryCharge != null ? _t_BatteryCharge : _batteryChargePanel.transform;
 
             // 크기를 0으로 초기화
             target.localScale = Vector3.zero;
@@ -113,62 +114,62 @@ public class UIManager : MonoBehaviour
     /// </summary>
     public void ShowEmergencyAlarm(string title, string message, float duration, Action onComplete = null, Sprite icon = null)
     {
-        if (alarmPanel == null)
+        if (_alarmPanel == null)
         {
             onComplete?.Invoke();
             return;
         }
 
         //제목 설정
-        if (alarmTitleText != null) alarmTitleText.text = title;
+        if (_alarmTitleText != null) _alarmTitleText.text = title;
 
         // 텍스트 설정
-        if (alarmText != null) alarmText.text = message;
+        if (_alarmText != null) _alarmText.text = message;
 
         //  아이콘 설정
-        if (alarmIconImage != null)
+        if (_alarmIconImage != null)
         {
             if (icon != null)
             {
-                alarmIconImage.sprite = icon;
-                alarmIconImage.gameObject.SetActive(true); // 아이콘이 있으면 켜기
+                _alarmIconImage.sprite = icon;
+                _alarmIconImage.gameObject.SetActive(true); // 아이콘이 있으면 켜기
             }
             else
             {
                 // 아이콘이 없으면(null) 끄기 (WordEater 사망 시 등)
-                alarmIconImage.gameObject.SetActive(false);
+                _alarmIconImage.gameObject.SetActive(false);
             }
         }
 
-        // 3. 연출 로직 (기존과 동일)
-        alarmPanel.anchoredPosition = new Vector2(alarmPanel.anchoredPosition.x, alarmHidePosY);
-        alarmPanel.gameObject.SetActive(true);
+        // 연출 로직 (기존과 동일)
+        _alarmPanel.anchoredPosition = new Vector2(_alarmPanel.anchoredPosition.x, _alarmHidePosY);
+        _alarmPanel.gameObject.SetActive(true);
 
         Sequence seq = DOTween.Sequence();
 
         // 내려오기
-        seq.Append(alarmPanel.DOAnchorPosY(alarmShowPosY, 0.5f).SetEase(Ease.OutBack));
+        seq.Append(_alarmPanel.DOAnchorPosY(_alarmShowPosY, 0.5f).SetEase(Ease.OutBack));
 
         // 대기
         seq.AppendInterval(duration);
 
         // 올라가기
-        seq.Append(alarmPanel.DOAnchorPosY(alarmHidePosY, 0.3f).SetEase(Ease.InBack));
+        seq.Append(_alarmPanel.DOAnchorPosY(_alarmHidePosY, 0.3f).SetEase(Ease.InBack));
 
         // 완료 콜백
         seq.OnComplete(() =>
         {
-            alarmPanel.gameObject.SetActive(false);
+            _alarmPanel.gameObject.SetActive(false);
             onComplete?.Invoke();
         });
     }
 
     /// <summary>
-    /// 닫기 버튼 로직
+    /// 오프라인 배터리 충전 팝업 닫기 버튼 로직
     /// </summary>
     private void OnConfirmClicked()
     {
-        Transform target = t_BatteryCharge != null ? t_BatteryCharge : batteryChargePanel.transform;
+        Transform target = _t_BatteryCharge != null ? _t_BatteryCharge : _batteryChargePanel.transform;
 
         // 닫을 때는 작아지면서 사라짐 (InBack)
         target.DOKill();
@@ -178,17 +179,17 @@ public class UIManager : MonoBehaviour
             .OnComplete(() =>
             {
                 // 애니메이션 끝난 후 비활성화
-                if (batteryChargePanel != null) batteryChargePanel.SetActive(false);
+                if (_batteryChargePanel != null) _batteryChargePanel.SetActive(false);
 
-                onConfirmCallback?.Invoke();
-                onConfirmCallback = null;
+                _onConfirmCallback?.Invoke();
+                _onConfirmCallback = null;
             });
     }
 
     // 아이템 사용 팝업
-    public void ShowConfirmPopup(string title, string message, Action onYes, Action onNo)
+    public void ShowConfirmPopup(string title, string message, Action onYes, Action onNo, Sprite itemIcon = null)
     {
-        if (confirmPanel == null)
+        if (_confirmPanel == null)
         {
             Debug.LogError("Confirm Panel이 UIManager에 할당되지 않았습니다!");
             // UI가 없으면 일단 '아니오' 처리 (게임 진행 막힘 방지)
@@ -196,36 +197,49 @@ public class UIManager : MonoBehaviour
             return;
         }
 
-        confirmPanel.SetActive(true);
+        _confirmPanel.SetActive(true);
 
         // 텍스트 세팅
-        if (titleText != null) titleText.text = title;
-        if (explanText != null) explanText.text = message;
+        if (_titleText != null) _titleText.text = title;
+        if (_explanText != null) _explanText.text = message;
 
         // 기존 연결된 이벤트 제거 (RemoveAllListeners) 후 새 이벤트 연결
-        if (btnYes != null)
+        if (_btnYes != null)
         {
-            btnYes.onClick.RemoveAllListeners();
-            btnYes.onClick.AddListener(() =>
+            _btnYes.onClick.RemoveAllListeners();
+            _btnYes.onClick.AddListener(() =>
             {
-                confirmPanel.SetActive(false); // 창 닫기
+                _confirmPanel.SetActive(false); // 창 닫기
                 onYes?.Invoke();               // '네' 로직 실행
             });
         }
 
-        if (btnNo != null)
+        if (_btnNo != null)
         {
-            btnNo.onClick.RemoveAllListeners();
-            btnNo.onClick.AddListener(() =>
+            _btnNo.onClick.RemoveAllListeners();
+            _btnNo.onClick.AddListener(() =>
             {
-                confirmPanel.SetActive(false); // 창 닫기
+                _confirmPanel.SetActive(false); // 창 닫기
                 onNo?.Invoke();                // '아니오' 로직 실행
             });
         }
 
+        if (_itemImg != null)
+        {
+            if (itemIcon != null)
+            {
+                _itemImg.sprite = itemIcon;     // 스프라이트 교체
+                _itemImg.gameObject.SetActive(true); // 이미지 켜기
+            }
+            else
+            {
+                _itemImg.gameObject.SetActive(false); // 이미지가 없으면 끄기
+            }
+        }
+
         // 등장 연출 (선택사항)
-        confirmPanel.transform.localScale = Vector3.zero;
-        confirmPanel.transform.DOScale(1f, 0.3f).SetEase(Ease.OutBack).SetUpdate(true);
+        _confirmPanel.transform.localScale = Vector3.zero;
+        _confirmPanel.transform.DOScale(1f, 0.3f).SetEase(Ease.OutBack).SetUpdate(true);
     }
 
     private void PlayMistakeFx()

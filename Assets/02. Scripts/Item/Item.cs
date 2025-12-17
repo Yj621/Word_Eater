@@ -3,7 +3,7 @@ using UnityEngine.UI;
 using TMPro;
 using WordEater.Systems;
 
-public class ItemSlotUI : MonoBehaviour
+public class Item : MonoBehaviour
 {
     [Header("UI 요소 연결")]
     [SerializeField] private Image iconImage;       // 아이콘 이미지
@@ -76,7 +76,8 @@ public class ItemSlotUI : MonoBehaviour
             onNo: () =>
             {
                 Debug.Log("아이템 사용 취소");
-            }
+            },
+            itemIcon: iconImage.sprite
         );
     }
 

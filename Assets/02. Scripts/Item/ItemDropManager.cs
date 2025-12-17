@@ -30,14 +30,14 @@ public class ItemDropManager : MonoBehaviour
     {
         if (dropTable == null || dropTable.Count == 0) return ItemType.BatteryRefill;
 
-        // 1. 가중치 총합 계산
+        // 가중치 총합 계산
         int totalWeight = 0;
         foreach (var item in dropTable) totalWeight += item.weight;
 
-        // 2. 랜덤 값 뽑기
+        // 랜덤 값 뽑기
         int randomValue = Random.Range(0, totalWeight);
 
-        // 3. 어떤 아이템인지 판별
+        // 어떤 아이템인지 판별
         ItemType selectedType = dropTable[0].type;
         int currentWeight = 0;
 
@@ -51,11 +51,11 @@ public class ItemDropManager : MonoBehaviour
             }
         }
 
-        // 4. 인벤토리에 지급
+        // 인벤토리에 지급
         ItemManager.Instance.AddItem(selectedType, 1);
         Debug.Log($"[Drop] 아이템 획득: {selectedType}");
 
-        // 5. 획득 알림 UI (UIManager에 ShowToast 혹은 ShowGetItemPopup 함수가 있다고 가정)
+        // 획득 알림 UI (UIManager에 ShowToast 혹은 ShowGetItemPopup 함수가 있다고 가정)
         if (showUI)
         {
             // 예: UIManager.Instance.ShowRewardPopup(selectedType);
