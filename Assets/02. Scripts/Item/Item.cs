@@ -45,7 +45,7 @@ public class Item : MonoBehaviour
     /// </summary>
     private void OnClickSlot()
     {
-        string itemName = GetItemNameKR(_myType);
+        string itemName = ItemUtils.GetItemNameKR(_myType);
 
         GameManager.Instance.HidePanel_Item();
 
@@ -81,16 +81,4 @@ public class Item : MonoBehaviour
         );
     }
 
-    // 아이템 타입에 따른 한글 이름 반환 헬퍼 함수
-    private string GetItemNameKR(ItemType type)
-    {
-        return type switch
-        {
-            ItemType.BatteryRefill => "배터리 충전",
-            ItemType.HintChosung => "초성 힌트",
-            ItemType.FillKeyCounts => "자음/모음 채우기",
-            ItemType.ReviveTicket => "부활권",
-            _ => "알 수 없는 아이템"
-        };
-    }
 }

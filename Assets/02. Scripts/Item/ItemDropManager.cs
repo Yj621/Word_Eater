@@ -54,14 +54,19 @@ public class ItemDropManager : MonoBehaviour
         // 인벤토리에 지급
         ItemManager.Instance.AddItem(selectedType, 1);
         Debug.Log($"[Drop] 아이템 획득: {selectedType}");
+        string krName = ItemUtils.GetItemNameKR(selectedType);
 
-        // 획득 알림 UI (UIManager에 ShowToast 혹은 ShowGetItemPopup 함수가 있다고 가정)
+        // 6. 획득 알림 UI
         if (showUI)
         {
-            // 예: UIManager.Instance.ShowRewardPopup(selectedType);
-            // 간단하게는:
-            UIManager.Instance.Show($"아이템 획득!\n[{selectedType}]");
+            // UIManager가 있다는 가정하에 작성
+            // 기존: selectedType (영어) -> 변경: krName (한글)
+            if (UIManager.Instance != null)
+            {
+                UIManager.Instance.Show($"아이템 획득!\n<color=yellow>[{krName}]</color>");
+            }
         }
+
         return selectedType;
     }
 }

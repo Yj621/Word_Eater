@@ -23,7 +23,7 @@ public class UIManager : MonoBehaviour
 
     [Header("상단 알림")]
     [SerializeField] private RectTransform _alarmPanel;       // 알림창 패널 (상단에 위치)
-    [SerializeField] private TextMeshProUGUI _alarmTitleText;      // 알림창 텍스트
+    [SerializeField] private TextMeshProUGUI _alarmTitleText;  
     [SerializeField] private TextMeshProUGUI _alarmText;      // 알림창 텍스트
     [SerializeField] private Image _alarmIconImage;
     [SerializeField] private float _alarmShowPosY = -150f;    // 화면 안으로 들어왔을 때 Y좌표 (예: -150)
