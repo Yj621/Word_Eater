@@ -7,7 +7,15 @@ public class SlideManager : MonoBehaviour
 
     public GameManager gamemanager;
 
+    public RectTransform SettingPanel;
+    Vector2 originPos;
+
+
     public bool isOK = true;
+    void Awake()
+    {
+        originPos = SettingPanel.anchoredPosition;
+    }
     void Update()
     {
             if (Input.GetMouseButtonDown(0))
@@ -44,12 +52,22 @@ public class SlideManager : MonoBehaviour
 
             float swipeThreshold = Screen.height * 0.5f;
 
-            if (swipeY > swipeThreshold)
+        if (swipeY > swipeThreshold)
+        {
+            if (isOK)
             {
-                if (isOK)
-                {
-                    gamemanager.ShowPanel_Setting();
-                }
+                SettingPanel.anchoredPosition = originPos + Vector2.up * Screen.height;
+
+                gamemanager.SlidePanelSetting(SettingPanel, originPos,0);
             }
+        }
+
+        //아래에서 위로 슬라이드
+        else if (endPos.y - startPos.y > swipeThreshold) {
+            if (SettingPanel.gameObject.activeSelf) {
+                gamemanager.SlidePanelSetting(SettingPanel, originPos,1);
+            }
+        }
+
     }
 }

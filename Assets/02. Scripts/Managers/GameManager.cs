@@ -298,6 +298,33 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    //type이 0 -> 위에서 아래로 슬라이드, 1-> 아래에서 위로 슬라이드
+    public void SlidePanelSetting(RectTransform Panel,Vector2 originPos,int type)
+    {
+        float duration = 0.4f;
+
+        if (type == 0)
+        {
+            Panel.transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
+
+            Panel.gameObject.SetActive(true);
+
+            Panel.DOAnchorPos(originPos, duration)
+                .SetEase(Ease.OutCubic);
+        }
+        else if (type == 1) {
+            Panel.DOAnchorPos(originPos + Vector2.up * Screen.height, duration)
+                         .SetEase(Ease.InCubic)
+                     .OnComplete(() =>
+                      {
+                          Panel.gameObject.SetActive(false);
+                      });
+        }
+    }
+
+
+
+
     /// <summary>
     /// 전화 연출 멈추기
     /// </summary>
@@ -369,3 +396,6 @@ public static class CanvasUtil
         return localPoint;
     }
 }
+
+
+
