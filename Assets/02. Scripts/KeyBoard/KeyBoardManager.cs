@@ -49,6 +49,97 @@ public class KeyBoardManager : MonoBehaviour
     public int GetCount(int index) => (KeyCount.isReady ? KeyCount.Get(index) : 0);
 
     bool InRange(int i) => (longPressKeys != null && i >= 0 && i < longPressKeys.Length);
+
+    List<SyllableBlock> GetBlocksInAllowedArea()
+    {
+        var result = new List<SyllableBlock>();
+        if (!uiSpawnRoot || !allowedArea) return result;
+
+        var blocks = uiSpawnRoot.GetComponentsInChildren<SyllableBlock>(includeInactive: false);
+        foreach (var b in blocks)
+        {
+            if (!b) continue;
+            var rt = b.GetComponent<RectTransform>();
+            if (!rt) continue;
+
+            var sp = RectTransformUtility.WorldToScreenPoint(uiCamera, rt.position);
+            if (RectTransformUtility.RectangleContainsScreenPoint(allowedArea, sp, uiCamera))
+                result.Add(b);
+        }
+
+        return result;
+    }
+
+    bool TryBuildFromBlocks(List<SyllableBlock> blocks, out string word)
+    {
+        word = null;
+        if (blocks == null || blocks.Count == 0) return false;
+
+        // 1) 고아 JamoMagnet 검사 (원하면 켜두기)
+        // allowedArea 안에 있는데, 어떤 SyllableBlock의 자식도 아닌 자모가 있으면 실패
+        var magnets = uiSpawnRoot.GetComponentsInChildren<JamoMagnet>(includeInactive: false);
+        foreach (var m in magnets)
+        {
+            if (!m) continue;
+
+            var rt = m.GetComponent<RectTransform>();
+            if (!rt) continue;
+
+            var sp = RectTransformUtility.WorldToScreenPoint(uiCamera, rt.position);
+            if (!RectTransformUtility.RectangleContainsScreenPoint(allowedArea, sp, uiCamera))
+                continue;
+
+            // SyllableBlock의 자식인지 확인
+            var parentBlock = m.GetComponentInParent<SyllableBlock>();
+            if (parentBlock == null)
+            {
+                // allowedArea 안에 떠다니는 자모가 있다 → 아직 완성 안 된 단어
+                Debug.Log("[TryBuildWord] orphan jamo found → invalid word");
+                return false;
+            }
+        }
+        var ordered = new List<(SyllableBlock b, float x)>();
+        foreach (var b in blocks)
+        {
+            // 최소 요건: 초성과 중성이 있어야 음절로 인정
+            if (string.IsNullOrEmpty(b.choseong) || string.IsNullOrEmpty(b.jungseong))
+            {
+                Debug.Log($"[TryBuildWord] invalid block(need L+V): L='{b.choseong}' V='{b.jungseong}'");
+                return false;
+            }
+
+            var brt = b.GetComponent<RectTransform>();
+            Vector2 sp = RectTransformUtility.WorldToScreenPoint(uiCamera, brt.position);
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(allowedArea, sp, uiCamera, out var local);
+            ordered.Add((b, local.x));
+        }
+
+        ordered.Sort((a, b) => a.x.CompareTo(b.x));
+
+        // 3) HangulCompose로 실제 글자 합성
+        var chars = new List<char>();
+        foreach (var (b, _) in ordered)
+        {
+            var L = (b.choseong ?? "").Trim();
+            var V = (b.jungseong ?? "").Trim();
+            var T = string.IsNullOrEmpty(b.jongseong) ? null : b.jongseong.Trim();
+
+            try
+            {
+                char syllable = HangulCompose.ComposeCompat(L, V, T);
+                chars.Add(syllable);
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogWarning($"[Submit] compose fail from block L='{L}' V='{V}' T='{T}': {e.Message}");
+                return false;
+            }
+        }
+
+        word = new string(chars.ToArray());
+        return true;
+    }
+
     void Awake()
     {
         KeyCount.OnChanged -= OnKeyCountChanged;
@@ -139,7 +230,21 @@ public class KeyBoardManager : MonoBehaviour
         word = null;
         if (!uiSpawnRoot || !allowedArea) return false;
 
-        // 1) 유효 영역 안의 모든 Jamo 수집
+        // 0) 먼저 SyllableBlock 기준으로 시도
+        var blocks = GetBlocksInAllowedArea();
+        if (blocks.Count > 0)
+        {
+            var ok = TryBuildFromBlocks(blocks, out word);
+            if (!ok) return false;
+
+            // validateOnly면 여기서 true만 리턴해도 되고,
+            // 어차피 지금은 대부분 실제 word가 필요하니까 그냥 word 세팅 유지
+            return true;
+        }
+
+        // 1) SyllableBlock이 하나도 없으면, 예전 JamoMagnet 방식으로 시도 (호환용)
+        //    만약 완전히 새 구조만 쓴다면 아래를 통째로 지워도 됨.
+        // --- 기존 JamoMagnet 기반 로직 그대로 ---
         var magnets = uiSpawnRoot.GetComponentsInChildren<JamoMagnet>(includeInactive: false);
         var inArea = new List<JamoMagnet>();
         foreach (var m in magnets)
@@ -148,7 +253,6 @@ public class KeyBoardManager : MonoBehaviour
             if (IsInside(allowedArea, m.GetComponent<RectTransform>())) inArea.Add(m);
         }
 
-        // 2) 베이스(초성) 블록 수집
         var bases = new List<JamoMagnet>();
         foreach (var m in inArea)
         {
@@ -156,39 +260,32 @@ public class KeyBoardManager : MonoBehaviour
         }
         if (bases.Count == 0) return false;
 
-        // 3) 고아(싱글) 조각이 존재하면 실패 (베이스의 자식이 아닌 Jamo)
         foreach (var m in inArea)
         {
             if (IsBase(m)) continue;
             if (!IsUnderAnyBase(m, bases)) return false;
         }
 
-        // 4) 베이스 유효성 + 좌표 추출
-        var ordered = new List<(JamoMagnet b, float x)>();
+        var ordered = new List<(JamoMagnet b, float x2)>();
         foreach (var b in bases)
         {
-            // 각 음절은 반드시 모음이 하나 필요
             var V = GetMedialGlyph(b);
             if (string.IsNullOrEmpty(V)) return false;
 
-            // 받침은 없어도 됨
-            // 좌표: validArea 기준 로컬 x
             var brt = b.GetComponent<RectTransform>();
             Vector2 sp = RectTransformUtility.WorldToScreenPoint(uiCamera, brt.position);
             RectTransformUtility.ScreenPointToLocalPointInRectangle(allowedArea, sp, uiCamera, out var local);
             ordered.Add((b, local.x));
         }
 
-        // 5) x 기준 정렬
-        ordered.Sort((a, b) => a.x.CompareTo(b.x));
+        ordered.Sort((a, b) => a.x2.CompareTo(b.x2));
 
-        // 6) 합성하여 문자열 생성
         var chars = new List<char>();
         foreach (var (b, _) in ordered)
         {
-            var L = (b.glyph ?? "").Trim();                           // 초성(호환자모)
-            var V = (GetMedialGlyph(b) ?? "").Trim();                 // 중성(호환자모 또는 복합)
-            var T = b.attachedFinal ? (b.attachedFinal.glyph ?? "").Trim() : null; // 종성(없을 수 있음)
+            var L = (b.glyph ?? "").Trim();
+            var V = (GetMedialGlyph(b) ?? "").Trim();
+            var T = b.attachedFinal ? (b.attachedFinal.glyph ?? "").Trim() : null;
 
             try
             {
@@ -281,6 +378,7 @@ public class KeyBoardManager : MonoBehaviour
         }
         //Debug.Log(dragging);
     }
+
 
     void UpdateDoubleLabels()
     {
