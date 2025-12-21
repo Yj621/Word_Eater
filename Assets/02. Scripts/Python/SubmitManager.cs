@@ -30,6 +30,8 @@ public class SubmitManager : MonoBehaviour
                 else {
                     NoticeManager.Instance.ShowSticky($"유사도 : {(result.Value * 100f).ToString("F0")}%");
                     gamemanager.HistoryLIne += word2 +","+ (result.Value * 100f).ToString("F0")+"%" + "|";
+                    gamemanager.UpdateHistoryLineInFile(gamemanager.HistoryLIne);
+
                 }
 
                 wordeater.DoFeedData(word2);

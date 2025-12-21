@@ -39,9 +39,54 @@ namespace WordEater.Core
         private string pendingEvoId; // Bit/Byte 동안 쓸 임시 키
         private GrowthStage currentStage = GrowthStage.Bit;
 
+
+        public FileManager filemanager;
+
         private void Awake()
         {
         }
+
+        public void SetWordEaterFormFile(int level,string CurAns) {
+            var sr = GetComponent<Image>();
+
+            switch (level)
+            {
+                case 0: // bit
+                    stage = GrowthStage.Bit;
+                    if (sr != null)
+                        sr.sprite = BitImg;
+                    break;
+                case 1: // byte
+                    stage = GrowthStage.Byte;
+                    if (sr != null)
+                        sr.sprite = ByteImg;
+                    break;
+                case 2: // word
+                    stage = GrowthStage.Word;
+                    if (sr != null)
+                        sr.sprite = WordImg;
+                    break;
+
+                default: // 일단은 bit로 할당
+                    stage = GrowthStage.Bit;
+                    if (sr != null)
+                        sr.sprite = BitImg;
+                    break;
+            }
+
+            currentEntry = wordService.PickInitialWord();
+            currentEntry.word = CurAns;
+            currentAnswer = currentEntry.word;
+
+
+            if (GameReviveSystem.Instance != null && battery != null)
+            {
+                GameReviveSystem.Instance.SaveCheckpoint(this, battery.CurrentPercent);
+            }
+            GameEvents.OnNewWordAssigned?.Invoke(currentAnswer);
+
+        }
+
 
         /// <summary>
         /// 단계 시작(턴/오답 초기화 + 단어 배정)
@@ -109,6 +154,17 @@ namespace WordEater.Core
 
             currentAnswer = currentEntry.word;
             GameEvents.OnNewWordAssigned?.Invoke(currentAnswer); // UI: "새 단어 등장" (정답 직접 노출 대신 디버그/프로토타입용)
+
+
+            // 바뀐 내용으로 파일 저장
+            if (stage == GrowthStage.Bit)
+                filemanager.SaveWordEaterInfo(0, currentEntry.word, gamemanager.HistoryLIne);
+            else if (stage == GrowthStage.Byte)
+                filemanager.SaveWordEaterInfo(1, currentEntry.word, gamemanager.HistoryLIne);
+            else
+                filemanager.SaveWordEaterInfo(2, currentEntry.word, gamemanager.HistoryLIne);
+
+
         }
 
 

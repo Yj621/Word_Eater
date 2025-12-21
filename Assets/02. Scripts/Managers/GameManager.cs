@@ -7,6 +7,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] private WordEater.Core.WordEater wordeater;
     [SerializeField] private GameObject touchblockPanel;
 
+    [SerializeField] private FileManager filemanager;
+
     //인자가 두개씩 필요한 애들
 
     [Header("전화 관련")]
@@ -58,15 +60,17 @@ public class GameManager : MonoBehaviour
 
     public static GameManager Instance;
 
-    void Awake() => Instance = this;
+    void Awake() {     
+        Instance = this;
+    }
     void Start()
     {
+        //파일들 먼저 불러오기
+        filemanager.RoadWordEaterInfo();
+        filemanager.RoadSoundInfo();
+
         //시작 브금 출력
         SoundManager.Instance.BGMStart(1);
-
-
-        //시작 하면 첫 정답 단어 선정
-        wordeater.BeginStage(wordeater.ReturnStage(), initial: true);
 
         // 시작 시 게임오버 패널은 꺼두기
         if (gameOverCanvasGroup != null)
@@ -180,6 +184,11 @@ public class GameManager : MonoBehaviour
     private void Restart() {
         touchblockPanel.SetActive(false);
         wordeater.BeginStage(wordeater.ReturnStage(), initial: true);
+    }
+
+
+    public void UpdateHistoryLineInFile(string newHis) {
+        filemanager.SaveHistory(newHis);
     }
 
 

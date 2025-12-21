@@ -4906,6 +4906,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 950a08d029817e743aaf6ced3155db1c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SoundManager
+  filemanager: {fileID: 476206674}
   m_AudioMixer: {fileID: 24100000, guid: 1f5ddf4b28af3094ca5f94818cd22239, type: 2}
   m_MusicBGMSlider: {fileID: 2132194730}
   m_MusicSFXSlider: {fileID: 704072760}
@@ -4921,6 +4922,8 @@ MonoBehaviour:
   SFXiconOff: {fileID: 770748986632407879, guid: 2bdcc5d95ab355841a517577ca0581f4, type: 3}
   Bvalue: 0
   Svalue: 0
+  bgmSlider: {fileID: 2132194730}
+  seSlider: {fileID: 704072760}
   MainBGM: {fileID: 8300000, guid: bd8537b3c9ec65c44ad763865263f1dc, type: 3}
 --- !u!1 &245161494
 GameObject:
@@ -9427,6 +9430,7 @@ GameObject:
   m_Component:
   - component: {fileID: 476206673}
   - component: {fileID: 476206672}
+  - component: {fileID: 476206674}
   m_Layer: 0
   m_Name: FileManager
   m_TagString: Untagged
@@ -9462,6 +9466,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 268467971}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &476206674
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 476206671}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8c1a37f62e8a7cc4f8cc4d9cc6c6ab04, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FileManager
+  wordeater: {fileID: 1461207461}
+  soundmanager: {fileID: 240587560}
+  gamemanager: {fileID: 1076038538945570555}
 --- !u!1 &477274896
 GameObject:
   m_ObjectHideFlags: 0
@@ -37950,6 +37969,7 @@ MonoBehaviour:
   isDead: 0
   stage: 0
   currentAnswer: 
+  filemanager: {fileID: 476206674}
 --- !u!114 &1461207462
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -50224,6 +50244,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   wordeater: {fileID: 1461207461}
   touchblockPanel: {fileID: 1452064428}
+  filemanager: {fileID: 476206674}
   CallPanel: {fileID: 141816755}
   CallBtn: {fileID: 919620392}
   MessagePanel: {fileID: 1585313995}
