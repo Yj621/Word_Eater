@@ -277,42 +277,46 @@ namespace WordEater.Core
 
             enabled = false;
 
-            // 알림창이 다 뜨고 사라진 뒤(콜백) -> 부활 로직 실행
-            UIManager.Instance.ShowEmergencyAlarm("정답단어", currentAnswer, 2.0f, () =>
+            // 1. 부활권 보유 확인을 가장 먼저 수행
+            if (ItemManager.Instance.GetCount(ItemType.ReviveTicket) > 0)
             {
-                // 1. 부활권 보유 확인
-                if (ItemManager.Instance.GetCount(ItemType.ReviveTicket) > 0)
-                {
-                    // 부활권 사용 팝업 매개변수 정리 (Title, Message, Yes, No)
-                    UIManager.Instance.ShowConfirmPopup(
-                        "부활권 사용",
-                        $"부활권을 사용하여 이어하시겠습니까?\n(남은 개수: {ItemManager.Instance.GetCount(ItemType.ReviveTicket)}개)",
-                        onYes: () =>
+                // 부활권이 있으면: 사용 여부를 묻는 팝업 먼저 출력
+                UIManager.Instance.ShowConfirmPopup(
+                    "부활권 사용",
+                    $"부활권을 사용하여 이어하시겠습니까?\n(남은 개수: {ItemManager.Instance.GetCount(ItemType.ReviveTicket)}개)",
+                    onYes: () =>
+                    {
+                        // 예: 부활권 사용 (정답을 보여주지 않고 바로 부활)
+                        if (ItemManager.Instance.TryUseItem(ItemType.ReviveTicket))
                         {
-                            // 부활권 소모
-                            if (ItemManager.Instance.TryUseItem(ItemType.ReviveTicket))
-                            {
-                                Reactivate();
-                                battery.RefillToMax();
-                                Debug.Log("부활권 사용됨!");
-                            }
-                        },
-                        onNo: () =>
-                        {
-                            // 거절 시 광고 로직으로 이동
-                            CheckAdRevive();
-                        },
-                        itemIcon: reviveTicketSprite
-                    );
-                }
-                else
-                {
-                    // 부활권 없으면 바로 광고 로직
-                    CheckAdRevive();
-                }
-            });
+                            Reactivate();
+                            battery.RefillToMax();
+                            Debug.Log("부활권 사용됨!");
+                        }
+                    },
+                    onNo: () =>
+                    {
+                        // 아니오: 사용 거절 -> 정답 단어 공개 -> 광고 부활 로직
+                        ShowAnswerAndCheckAd();
+                    },
+                    itemIcon: reviveTicketSprite
+                );
+            }
+            else
+            {
+                // 부활권이 없으면: 바로 정답 단어 공개 -> 광고 부활 로직
+                ShowAnswerAndCheckAd();
+            }
         }
 
+        // 중복 코드를 줄이기 위한 내부 헬퍼 함수
+        private void ShowAnswerAndCheckAd()
+        {
+            UIManager.Instance.ShowEmergencyAlarm("정답단어", currentAnswer, 2.0f, () =>
+            {
+                CheckAdRevive();
+            });
+        }
         // 광고 부활 로직 분리
         private void CheckAdRevive()
         {

@@ -28,6 +28,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private Image _alarmIconImage;
     [SerializeField] private float _alarmShowPosY = -150f;    // 화면 안으로 들어왔을 때 Y좌표 (예: -150)
     [SerializeField] private float _alarmHidePosY = 150f;     // 화면 밖으로 나갔을 때 Y좌표 (예: 150)
+    private Sprite _defaultAlarmSprite;
 
     [Header("UI 연결")]
     [SerializeField] private GameObject _batteryChargePanel;    // 팝업 전체 부모 (Panel)
@@ -62,6 +63,12 @@ public class UIManager : MonoBehaviour
         // 버튼 리스너 연결
         if (_batteryChargeButton != null)
             _batteryChargeButton.onClick.AddListener(OnConfirmClicked);
+
+        // 게임 시작 시, Inspector에 할당된 이미지를 기본값으로 저장
+        if (_alarmIconImage != null)
+        {
+            _defaultAlarmSprite = _alarmIconImage.sprite;
+        }
     }
     void Start()
     {
@@ -126,19 +133,22 @@ public class UIManager : MonoBehaviour
         // 텍스트 설정
         if (_alarmText != null) _alarmText.text = message;
 
-        //  아이콘 설정
+        // 아이콘 교체 로직 수정
         if (_alarmIconImage != null)
         {
+            // 매개변수로 넘어온 아이콘이 있으면 교체
             if (icon != null)
             {
                 _alarmIconImage.sprite = icon;
-                _alarmIconImage.gameObject.SetActive(true); // 아이콘이 있으면 켜기
             }
+            // 매개변수가 null이면 원래 저장해둔 기본 아이콘으로 복구
             else
             {
-                // 아이콘이 없으면(null) 끄기 (WordEater 사망 시 등)
-                _alarmIconImage.gameObject.SetActive(false);
+                _alarmIconImage.sprite = _defaultAlarmSprite;
             }
+
+            // 아이콘 이미지는 항상 켜둠 (기존에는 껐으나, 이제는 기본 이미지를 보여줘야 하므로)
+            _alarmIconImage.gameObject.SetActive(true);
         }
 
         // 연출 로직 (기존과 동일)
