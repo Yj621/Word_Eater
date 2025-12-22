@@ -54,7 +54,7 @@ public class PythonConnectManager : MonoBehaviour
     //단어와 몇개의 유사한 단어를 가져올 것인지 입력
     public IEnumerator MostSimilarty(string inputWord, int num, Action<List<string>> callback)
     {
-        string url = "http://34.50.17.218:5000/most_similarty";
+        string url = "http://yj.nine9.kr/most_similarty";
 
         var data = new { word = inputWord, num = num };
         string jsonData = JsonConvert.SerializeObject(data);
@@ -94,7 +94,7 @@ public class PythonConnectManager : MonoBehaviour
     //두 단어 사이의 유사도
     public IEnumerator SimilartyTwoWord(string inputWord, string inputWord2, Action<float?> callback)
     {
-        string url = "http://34.50.17.218:5000/similarity";
+        string url = "http://yj.nine9.kr/similarity";
 
         var data = new { word1 = inputWord, word2 = inputWord2 };
         string jsonData = JsonConvert.SerializeObject(data);

@@ -37956,7 +37956,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9a109cdf593d2764d8b2f0b7ec69e98b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  growthConfig: {fileID: 11400000, guid: 059308513756f234789c5f90bfa6a4e9, type: 2}
   wordService: {fileID: 739059911}
   battery: {fileID: 1922716698}
   submitmanager: {fileID: 481052214}
@@ -47378,7 +47377,7 @@ MonoBehaviour:
   startCells: 5
   batteryPopup: {fileID: 8867680863925635572}
   enableAutoRecharge: 1
-  rechargeRatePerHour: 100
+  rechargeRatePerHour: 10
 --- !u!4 &1922716699
 Transform:
   m_ObjectHideFlags: 0

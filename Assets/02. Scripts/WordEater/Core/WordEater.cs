@@ -17,7 +17,6 @@ namespace WordEater.Core
     public class WordEater : MonoBehaviour
     {
         [Header("할당")]
-        [SerializeField] private GrowthConfig growthConfig;          // 단계 규칙 SO
         [SerializeField] private WordAssignmentService wordService;  // 단어 배정 
         [SerializeField] private BatterySystem battery;
         [SerializeField] private SubmitManager submitmanager;
@@ -167,6 +166,54 @@ namespace WordEater.Core
 
         }
 
+        public bool TryPayForSubmit()
+        {
+            if (isDead) return false;
+
+            ActionType submitAction = GetSubmitAction();
+
+            Debug.Log($"[검사] 현재 배터리: {battery.CurrentPercent}%, 필요 비용: {GetCostDebug(submitAction)}%");
+
+            // 1. 배터리 결제 시도
+            if (!battery.TryConsume(submitAction))
+            {
+                // 돈이 모자란 경우 (예: 5% 남았는데 20% 필요) -> 알림만 띄움
+                Debug.Log($"[결제 실패] 배터리가 부족하여 제출 불가.");
+                NoticeManager.Instance.ShowSticky("배터리가 부족합니다");
+                return false;
+            }
+
+            // 2. [추가된 로직] 결제는 성공했지만, 배터리가 0%가 된 경우 (예: 20% - 20% = 0%)
+            if (battery.CurrentPercent <= 0)
+            {
+                Debug.Log("[결제 후 소진] 배터리 0% 도달 -> 사망 처리 (서버 요청 중단)");
+
+                // 오답/충격 연출 (화면 흔들림 등)
+                GameEvents.RaiseMistakeHit();
+                Handheld.Vibrate();
+
+                // 사망 및 부활 팝업 코루틴 실행
+                StartCoroutine(DieAfterMistakeFx());
+
+                // 중요: false를 반환하여 SubmitManager가 서버로 요청을 보내지 않게 막습니다.
+                return false;
+            }
+
+            Debug.Log($"[결제 성공] 잔량 충분, 제출 진행");
+            return true;
+        }
+
+        // 디버깅용 비용 확인 헬퍼 함수 (BatterySystem의 값을 가져올 수 없다면 임시 사용)
+        private int GetCostDebug(ActionType action)
+        {
+            switch (action)
+            {
+                case ActionType.SubmitBit: return 20;
+                case ActionType.SubmitByte: return 15;
+                case ActionType.SubmitWord: return 10;
+                default: return 0;
+            }
+        }
 
         /// <summary>
         /// 데이터 주입(정답/오답 판정, 다음 문제 배정, 진화 체크)
@@ -175,14 +222,6 @@ namespace WordEater.Core
         {
 
             if (isDead) return;
-
-            ActionType submitAction = GetSubmitAction();
-            // 배터리가 부족해서 아예 행동을 못하는 경우 -> 즉시 사망 처리
-            if (!battery.TryConsume(submitAction))
-            {
-                StartCoroutine(DieAfterMistakeFx());
-                return;
-            }
 
             // 정답 판정
             bool ok = IsCorrect(userInput, currentAnswer);
@@ -291,7 +330,7 @@ namespace WordEater.Core
                         {
                             Reactivate();
                             battery.RefillToMax();
-                            Debug.Log("부활권 사용됨!");
+                            NoticeManager.Instance.ShowSticky("부활권 사용! 단어를 다시 맞춰보세요.");
                         }
                     },
                     onNo: () =>

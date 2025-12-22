@@ -66,7 +66,7 @@ public class AlgorithmMessage : MonoBehaviour
     public void OnCheckSimilarity()
     {
         // 먼저 배터리 확인
-        if (!AlgoGuards.EnsureBattery(batterySystem, ActionType.OptimizeAlgo, resultText))
+        if (!AlgoGuards.EnsureBattery(batterySystem, ActionType.OptimizeAlgoMessage, resultText))
             return;
 
         ShowResultPanel();

@@ -168,7 +168,8 @@ namespace WordEater.Systems
                 case ActionType.SubmitWord: return 10; // 워드
 
                 // [힌트 요소]
-                case ActionType.OptimizeAlgo: return 20; // 전화
+                case ActionType.OptimizeAlgoCall: return 20; // 전화
+                case ActionType.OptimizeAlgoMessage: return 15; // 메세지
 
                 // [미니게임]
                 case ActionType.CleanNoise: return 20;
