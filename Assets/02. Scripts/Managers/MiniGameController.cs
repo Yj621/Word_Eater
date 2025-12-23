@@ -157,10 +157,10 @@ public class MiniGameController : MonoBehaviour
         bool isHard = (algorithmPanel != null && !algorithmPanel.Mode); // Mode가 true면 Easy, false면 Hard라고 가정
 
         // 조건 1: 하드모드일 때 (확률적으로 지급)
-        if (isHard && ClearCount > 0) // 최소 1개는 깼어야 함
+        if (isHard && ClearCount > 1) // 최소 2개는 깼어야 함
         {
             // 예: 30% 확률
-            if (Random.value <= 0.3f) getReward = true;
+            if (Random.value <= 0.5f) getReward = true;
         }
         // 조건 2: 일반모드인데 많이 깼을 때 (예: 5개 이상)
         else if (ClearCount >= 5)

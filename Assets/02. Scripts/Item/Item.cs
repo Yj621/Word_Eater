@@ -52,7 +52,7 @@ public class Item : MonoBehaviour
         // UIManager를 통해 확인 팝업 호출
         UIManager.Instance.ShowConfirmPopup(
             title: "아이템 사용",
-            message: $"<color=yellow>{itemName}</color>을(를) 사용하시겠습니까?",
+            message: $"<color=orange>{itemName}</color>을(를) 사용하시겠습니까?",
             onYes: () =>
             {
                 // 실제 아이템 기능 실행 (개수 차감 등)

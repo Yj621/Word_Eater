@@ -1,4 +1,6 @@
 using UnityEngine;
+using WordEater.Systems;
+
 public class SubmitManager : MonoBehaviour
 {
     [Header("연결 스크립트")]
@@ -7,27 +9,26 @@ public class SubmitManager : MonoBehaviour
     public KeyBoardManager keyboardmanager;
     public WordEater.Core.WordEater wordeater;
     public GameManager gamemanager;
+
     public void OnSubmitButton()
     {
         // 1. 단어 조합 확인 (비용 없음)
-        string word1 = wordeater.returnCurrentEnrty().word;
+        // [수정] returnCurrentEnrty().word -> CurrentEntry.word
+        string word1 = wordeater.CurrentEntry.word;
         if (!keyboardmanager.TryBuildWord(out var word2))
         {
-            Debug.Log("TryBuildWord 실패, word2 = " + word2);
             NoticeManager.Instance.ShowTimed("부정확한 단어", 1.3f);
             return;
         }
 
-        // [추가] 2. 배터리 선결제 확인
-        // 여기서 배터리가 부족하면(false), 사망 로직이 WordEater 내부에서 돌고 여기서는 즉시 리턴합니다.
-        // 따라서 서버 통신도 안 하고, 점수도 안 오릅니다.
+        // 2. 배터리 선결제 확인 (WordEater에 복구한 메서드 사용)
         if (!wordeater.TryPayForSubmit())
         {
             uimanager.CloseKeyboard();
             return;
         }
 
-        // 3. 서버 통신 (배터리 지불에 성공했을 때만 실행)
+        // 3. 서버 통신
         StartCoroutine(pythonConnectManager.SimilartyTwoWord(word1, word2, (result) =>
         {
             if (result.HasValue)
@@ -43,7 +44,6 @@ public class SubmitManager : MonoBehaviour
                     gamemanager.UpdateHistoryLineInFile(gamemanager.HistoryLIne);
                 }
 
-                // 이미 위에서 배터리를 냈으므로, 여기서는 그냥 로직만 태움
                 wordeater.DoFeedData(word2);
             }
             else
@@ -54,10 +54,13 @@ public class SubmitManager : MonoBehaviour
 
         uimanager.CloseKeyboard();
     }
-    public void OnRelevantButton() {
-        string word1 = wordeater.returnCurrentEnrty().word; //정답 단어
 
-        StartCoroutine(pythonConnectManager.MostSimilarty(word1,5, (result) =>
+    public void OnRelevantButton()
+    {
+        // [수정] returnCurrentEnrty().word -> CurrentEntry.word
+        string word1 = wordeater.CurrentEntry.word;
+
+        StartCoroutine(pythonConnectManager.MostSimilarty(word1, 5, (result) =>
         {
             if (result.Count == 1 && result[0] == "요청 실패")
             {
@@ -73,6 +76,5 @@ public class SubmitManager : MonoBehaviour
                 NoticeManager.Instance.ShowSticky($"Relevant : {result[randomIndex]}");
             }
         }));
-
     }
 }

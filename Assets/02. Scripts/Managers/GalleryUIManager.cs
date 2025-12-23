@@ -18,30 +18,31 @@ public class GalleryUIManager : MonoBehaviour
         if (detail != null) detail.gameObject.SetActive(false);
         if (listPanel != null) listPanel.SetActive(true);
     }
+
     private IEnumerator Start()
     {
-        yield return null; // 1 frame 대기
+        yield return null; // 1 frame 대기 (FileManager 초기화 대기)
         Refresh();
     }
 
     /// <summary>
     /// 목록 갱신 함수
     /// 1) Content 자식 정리
-    /// 2) gallery.json을 로드한 GalleryStore의 items를 순회
+    /// 2) FileManager의 galleryData를 순회
     /// 3) 셀을 생성하여 Bind 후, 클릭 이벤트로 상세화면 오픈 연결
     /// </summary>
     public void Refresh()
     {
-        if (GalleryStore.Instance == null)
+        if (FileManager.Instance == null)
         {
-            Debug.LogWarning("[GalleryUIManager] GalleryStore가 아직 없습니다.");
+            Debug.LogWarning("[GalleryUIManager] FileManager가 없습니다.");
             return;
         }
 
         foreach (Transform t in content) Destroy(t.gameObject);
 
-        var items = GalleryStore.Instance.Data.items;
-        Debug.Log($"[GalleryUIManager] items: {items.Count}");
+        // FileManager에서 데이터 가져오기
+        var items = FileManager.Instance.galleryData.items;
 
         if (items.Count == 0)
         {
@@ -53,7 +54,7 @@ public class GalleryUIManager : MonoBehaviour
             emptyStatePanel?.SetActive(false);
         }
 
-        // 셀 생성
+        // (이하 동일)
         foreach (var item in items)
         {
             var cell = Instantiate(cellPrefab, content);
@@ -64,33 +65,36 @@ public class GalleryUIManager : MonoBehaviour
                 detail.Open(clicked);
             };
         }
-
     }
 
     // 테스트용(선택): 도감 항목 강제 하나 추가
-    void DebugAddDummy()
+    public void DebugAddDummy()
     {
         var dummy = new GalleryItem
         {
             id = "debug-1",
             displayName = "디버그",
-            desc = "테스트",
-            thumbPath = "",
+            desc = "테스트 설명입니다.",
+            thumbPath = "", // 이미지가 없으므로 회색으로 뜰 것임
             dateCaught = System.DateTime.Now.ToString("yyyy-MM-dd"),
             meetCount = 1
         };
-        GalleryStore.Instance.Upsert(dummy);
-        Debug.Log("[GalleryUIManager] Dummy 추가, 다시 Refresh 호출");
-        Refresh();
-    }
 
+        // [변경점] FileManager의 통합 메서드 호출
+        if (FileManager.Instance != null)
+        {
+            FileManager.Instance.UpsertGalleryItem(dummy);
+            Debug.Log("[GalleryUIManager] Dummy 추가, 다시 Refresh 호출");
+            Refresh();
+        }
+    }
 
     /// <summary>
     /// 뒤로가기(상세 → 목록) 버튼에서 호출
     /// </summary>
     public void BackToList()
     {
-        detail.Close();
-        listPanel.SetActive(true);
+        if (detail != null) detail.Close();
+        if (listPanel != null) listPanel.SetActive(true);
     }
 }

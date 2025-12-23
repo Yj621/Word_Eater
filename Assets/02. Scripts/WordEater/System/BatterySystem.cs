@@ -3,70 +3,53 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using WordEater.Core;
-using WordEater.Systems;
 
 namespace WordEater.Systems
 {
     /// <summary>
-    /// 칸 단위 배터리 시스템.
-    /// - 배터리 = 일정 개수의 칸(maxCells)
-    /// - FeedData(먹이주기) / OptimizeAlgo(최적화) / CleanNoise(노이즈 제거) 액션 시 칸 소모
-    /// - FeedData와 OptimizeAlgo는 2번 시도할 때마다 1칸 차감
-    /// - 배터리 잔량 변경 시 GameEvents.OnBatteryChanged 이벤트
-    /// - 잔량 부족 시 GameEvents.OnActionBlockedLowBattery 이벤트
-    /// - 배터리 완전 소진 시 GameEvents.OnBatteryDepleted 이벤트
+    /// 칸 단위 배터리 시스템 (FileManager 통합 버전)
     /// </summary>
     public class BatterySystem : MonoBehaviour
     {
         [Header("테스트/실사용 겸용: 0~100%")]
         [SerializeField, Range(0, 100)]
-        private int currentBattery = 100; // 퍼센트가 단일 소스
+        private int currentBattery = 100;
 
         [Header("총 배터리 칸 수")]
-        [SerializeField] private int maxCells = 5;   // 전체 칸 개수
-
-        [Header("시작 칸 수")]
-        [SerializeField] private int startCells = 5; // 게임 시작 시 충전 상태 (기본 풀 충전)
+        [SerializeField] private int maxCells = 5;
 
         [Header("광고 충전 팝업")]
-        [SerializeField] private ADPopup batteryPopup; // 같은 프리팹이어도 되고, 다른 오브젝트여도 됨
+        [SerializeField] private ADPopup batteryPopup;
 
         [Header("자동 회복 설정")]
-        [SerializeField] private bool enableAutoRecharge = true; // 자동 회복 켜기/끄기
-        [SerializeField] private int rechargeRatePerHour = 10;   // 1시간당 회복량 (%)
-        // 내부 변수
-        private const string KEY_EXIT_TIME = "Battery_ExitTime";
-        private const string KEY_SAVED_BATTERY = "Battery_SavedPercent";
+        [SerializeField] private bool enableAutoRecharge = true;
+        [SerializeField] private int rechargeRatePerHour = 10;
 
-        public int MaxCells => maxCells;          // 최대 칸 수 (읽기 전용)
-        public int CurrentCells { get; private set; } // 현재 칸 (퍼센트로부터 환산)
+        public int MaxCells => maxCells;
+        public int CurrentCells { get; private set; }
         public int CurrentPercent => currentBattery;
-        // 첫 실행 여부 저장 키
-        private const string KEY_FIRST_RUN = "Battery_FirstRun";
 
-
-        private void Awake()
-        {
-            // 데이터 로드만 수행
-            LoadBatteryState();
-            SyncCellsFromPercent();
-        }
+        // 내부 상태 변수 (파일 매니저와 동기화됨)
+        private bool isFirstRun = true;
 
         private void Start()
         {
+            // 1. FileManager에서 데이터 로드
+            LoadBatteryState();
 
-            // ---- 첫 실행인지 확인 ----
-            if (!PlayerPrefs.HasKey(KEY_FIRST_RUN))
+            // 2. 칸 개수 UI 동기화
+            SyncCellsFromPercent();
+
+            // 3. 첫 실행 여부 확인 로직
+            if (isFirstRun)
             {
-                // 첫 실행 → 오프라인 보상 X
-                PlayerPrefs.SetInt(KEY_FIRST_RUN, 1);
-
-                // 현재 배터리 상태와 시간 저장해두기
+                // 첫 실행 → 오프라인 보상 없음, 플래그 끄고 저장
+                isFirstRun = false;
                 SaveBatteryState();
             }
             else
             {
-                // 첫 실행이 아님 → 오프라인 보상 계산
+                // 재방문 → 오프라인 보상 계산
                 CheckOfflineRecharge();
             }
 
@@ -76,21 +59,14 @@ namespace WordEater.Systems
                 StartCoroutine(RuntimeRechargeRoutine());
         }
 
-
-        // 인스펙터에서 값 바꿀 때 에디터에서도 바로 UI 반영되게(런타임 중에도 동작함)
         private void OnValidate()
         {
-            // maxCells 최소 1 보장
             maxCells = Mathf.Max(1, maxCells);
             currentBattery = Mathf.Clamp(currentBattery, 0, 100);
             SyncCellsFromPercent();
             RaiseChanged();
         }
 
-        /// <summary>
-        /// 광고 보고 배터리 충전 팝업 표시
-        /// - UI 버튼 OnClick에 이 메서드를 연결해서 사용
-        /// </summary>
         public void ShowBatteryAdPopup()
         {
             if (batteryPopup == null)
@@ -106,81 +82,47 @@ namespace WordEater.Systems
             );
 
             batteryPopup.Show(
-                onAccept: () =>
-                {
-                    RefillToMax();
-                },
-                onDecline: () =>
-                {
-                    Debug.Log("[Battery] 광고 충전 거절");
-                }
+                onAccept: () => RefillToMax(),
+                onDecline: () => Debug.Log("[Battery] 광고 충전 거절")
             );
         }
 
-
-        /// <summary>
-        /// 액션 시도 시 배터리를 소모하는 메서드
-        /// 성공적으로 소모되면 true
-        /// 배터리가 부족하면 false 반환
-        /// </summary>
-        /// <summary>
-        /// 액션 수행 시 배터리 소모 (퍼센트 단위)
-        /// </summary>
         public bool TryConsume(ActionType action)
         {
-            // 행동에 따른 퍼센트 비용 가져오기
             int costPercent = GetPercentCost(action);
 
-            // 배터리 부족 체크
             if (currentBattery < costPercent)
             {
                 GameEvents.OnActionBlockedLowBattery?.Invoke(action);
                 return false;
             }
 
-            // 배터리 차감
             currentBattery -= costPercent;
-
-            // UI 갱신 (퍼센트 -> 칸 환산)
             SyncCellsFromPercent();
             RaiseChanged();
 
-            // 배터리 소진 이벤트
             if (currentBattery <= 0)
             {
-                // 0%가 되면 게임오버 등의 로직 실행
                 GameEvents.OnBatteryDepleted?.Invoke();
             }
 
             return true;
         }
 
-        /// <summary>
-        /// 행동별 배터리 소모량 (%) 정의
-        /// </summary>
         private int GetPercentCost(ActionType action)
         {
             switch (action)
             {
-                // [제출 시 소모되는 배터리]
-                case ActionType.SubmitBit: return 20; // 비트
-                case ActionType.SubmitByte: return 15; // 바이트
-                case ActionType.SubmitWord: return 10; // 워드
-
-                // [힌트 요소]
-                case ActionType.OptimizeAlgoCall: return 20; // 전화
-                case ActionType.OptimizeAlgoMessage: return 15; // 메세지
-
-                // [미니게임]
+                case ActionType.SubmitBit: return 20;
+                case ActionType.SubmitByte: return 15;
+                case ActionType.SubmitWord: return 10;
+                case ActionType.OptimizeAlgoCall: return 20;
+                case ActionType.OptimizeAlgoMessage: return 15;
                 case ActionType.CleanNoise: return 20;
-
-                default: return 0; // 정의되지 않은 행동은 소모 없음
+                default: return 0;
             }
         }
 
-        /// <summary>
-        /// 배터리 회복 (예: 아이템 사용, 광고 보상)
-        /// </summary>
         public void Refill(int percentAmount)
         {
             currentBattery = Mathf.Clamp(currentBattery + percentAmount, 0, 100);
@@ -188,17 +130,13 @@ namespace WordEater.Systems
             RaiseChanged();
         }
 
-        /// <summary>
-        /// 배터리를 100%로 완전 회복
-        /// </summary>
         public void RefillToMax()
         {
-            currentBattery = 100;    // 퍼센트 기준
-            SyncCellsFromPercent();  // 칸 환산
-            RaiseChanged();          // UI & 이벤트 반영
+            currentBattery = 100;
+            SyncCellsFromPercent();
+            RaiseChanged();
         }
 
-        /// <summary>외부에서 퍼센트로 직접 세팅(테스트용)</summary>
         public void SetBatteryPercent(int percent)
         {
             currentBattery = Mathf.Clamp(percent, 0, 100);
@@ -206,46 +144,32 @@ namespace WordEater.Systems
             RaiseChanged();
         }
 
-
-        /// <summary>
-        /// currentBattery(%) 값을 기준으로 칸(CurrentCells)을 다시 계산하여 동기화
-        /// - 1%라도 남아 있으면 최소 1칸으로 표시하도록 Ceil 방식 사용
-        /// - 항상 0 ~ MaxCells 범위로 클램프
-        /// </summary>
         private void SyncCellsFromPercent()
         {
             CurrentCells = Mathf.Clamp(
                 Mathf.CeilToInt(maxCells * (currentBattery / 100f)),
-                0,
-                MaxCells
+                0, MaxCells
             );
         }
 
-
-        /// <summary>
-        /// 배터리 상태 변경 이벤트를 호출
-        /// - UI 및 시스템 전반에서 CurrentCells, MaxCells, 퍼센트를 업데이트하는 용도로 사용
-        /// - GameEvents.OnBatteryChanged(CurrentCells, MaxCells, currentBattery) 호출
-        /// </summary>
         private void RaiseChanged()
         {
             GameEvents.OnBatteryChanged?.Invoke(CurrentCells, MaxCells, currentBattery);
         }
 
-        // 앱이 일시정지(홈 화면으로 나감)되거나 종료될 때 저장
+        // ---------------- 앱 생명주기 저장 로직 ---------------- //
+
         private void OnApplicationPause(bool pauseStatus)
         {
-            if (pauseStatus) // 나갈 때
+            if (pauseStatus) // 나갈 때: 저장
             {
                 SaveBatteryState();
             }
-            else // 다시 들어올 때 (앱을 완전히 끄지 않고 복귀)
+            else // 들어올 때: 오프라인 보상 계산
             {
-                Debug.Log("배터리 충전");
-                // 잠시 나갔다 온 시간만큼 또 계산해주고 싶다면 여기서 CheckOfflineRecharge() 호출 가능
-                // 여기서는 간단하게 처리하기 위해 생략하거나 재계산 로직 추가
+                // 잠시 나갔다 온 경우 데이터 다시 로드 후 보상 계산
+                // (FileManager 데이터가 이미 최신이겠지만, 시간 계산을 위해 로직 수행)
                 CheckOfflineRecharge();
-                Debug.Log("배터리 충전2");
             }
         }
 
@@ -254,15 +178,41 @@ namespace WordEater.Systems
             SaveBatteryState();
         }
 
-        /// <summary>
-        /// 꺼져있던 시간을 계산해서 배터리를 채워주는 로직 (방치형 보상)
-        /// </summary>
+        // ---------------- FileManager 연동 로직 ---------------- //
+
+        private void SaveBatteryState()
+        {
+            if (FileManager.Instance == null) return;
+
+            // 현재 시간 (Binary String)
+            string currentTime = DateTime.UtcNow.ToBinary().ToString();
+
+            // FileManager에게 저장 요청
+            FileManager.Instance.SaveBatteryInfo(currentBattery, currentTime, isFirstRun);
+        }
+
+        private void LoadBatteryState()
+        {
+            if (FileManager.Instance == null) return;
+
+            // FileManager의 메모리 데이터 가져오기
+            var data = FileManager.Instance.batteryData;
+
+            this.currentBattery = data.SavedBattery;
+            this.isFirstRun = data.IsFirstRun;
+        }
+
+        // ---------------- 오프라인 보상 로직 ---------------- //
+
         private void CheckOfflineRecharge()
         {
-            if (!PlayerPrefs.HasKey(KEY_EXIT_TIME)) return;
+            if (FileManager.Instance == null) return;
 
-            // 1. 시간 계산
-            string timeStr = PlayerPrefs.GetString(KEY_EXIT_TIME);
+            string timeStr = FileManager.Instance.batteryData.ExitTime;
+
+            // 저장된 시간이 없으면 패스
+            if (string.IsNullOrEmpty(timeStr)) return;
+
             long binaryTime = Convert.ToInt64(timeStr);
             DateTime lastExitTime = DateTime.FromBinary(binaryTime);
             TimeSpan timePassed = DateTime.UtcNow - lastExitTime;
@@ -270,39 +220,29 @@ namespace WordEater.Systems
             double totalHoursPassed = timePassed.TotalHours;
             int amountToRecover = (int)(totalHoursPassed * rechargeRatePerHour);
 
-            // 회복할 게 없으면 종료 (단, 테스트 중에는 조건에 따라 주석 처리 가능)
             if (amountToRecover <= 0) return;
 
-            // 만약 나갈 때 이미 100%였다면 종료 (테스트할 땐 주석 처리 가능)
-            // if (currentBattery >= 100) return; 
-
-            // 2. 배터리 실제 갱신
+            // 배터리 갱신
             int beforeBattery = currentBattery;
             currentBattery = Mathf.Clamp(currentBattery + amountToRecover, 0, 100);
-            SyncCellsFromPercent(); // UI 갱신
+            SyncCellsFromPercent();
 
-            // 실제 회복된 양 (100% 초과 방지된 값)
             int actualRecovered = currentBattery - beforeBattery;
+            Debug.Log($"[Battery] 부재중 {timePassed.TotalMinutes:F1}분 경과. {actualRecovered}% 회복.");
 
-            Debug.Log($"[Battery] 부재중 {timePassed.TotalMinutes:F1}분 경과. {amountToRecover}% 회복 계산됨.");
-
-
-            // 3. 메시지 생성 로직 (여기서 한 번만 결정)
+            // 메시지 및 아이템 처리
             string finalMessage = "";
             bool itemAcquired = false;
-
             ItemType acquiredItemType = ItemType.BatteryRefill;
 
-            // [테스트 조건] 10초 이상 지났을 때 아이템 지급
             if (timePassed.TotalSeconds >= 10.0f)
             {
                 acquiredItemType = ItemDropManager.Instance.ObtainRandomItem(showUI: false);
                 itemAcquired = true;
             }
-            // 4. 상황별 메시지 조합
+
             if (itemAcquired)
             {
-                // 한글 이름 변환
                 string itemName = acquiredItemType switch
                 {
                     ItemType.BatteryRefill => "배터리 채우기",
@@ -312,7 +252,6 @@ namespace WordEater.Systems
                     _ => "알 수 없는 아이템"
                 };
 
-                // 수정된 부분: 메시지에 [itemName]을 꼭 포함해야 합니다!
                 if (currentBattery >= 100)
                     finalMessage = $"푹 쉬고 오셨군요!\n배터리 완충 + 워드이터가 <color=yellow>[{itemName}]</color> 1개를 물어왔습니다!";
                 else
@@ -320,64 +259,32 @@ namespace WordEater.Systems
             }
             else
             {
-                // 아이템이 없을 때의 메시지 (else 블록 추가)
                 if (currentBattery >= 100)
                     finalMessage = "푹 쉬고 오셨군요!\n휴식하는 동안 배터리가 모두 충전되었습니다.";
                 else
                     finalMessage = $"푹 쉬고 오셨군요!\n휴식하는 동안 배터리가 <color=green>{actualRecovered}%</color> 충전되었습니다.";
             }
 
-            // 5. 최종적으로 한 번만 호출
             if (!string.IsNullOrEmpty(finalMessage))
             {
                 UIManager.Instance.Show(finalMessage);
             }
         }
 
-        /// <summary>
-        /// 게임 플레이 중 실시간으로 배터리가 차오르는 코루틴
-        /// </summary>
         private IEnumerator RuntimeRechargeRoutine()
         {
             while (true)
             {
-                // 배터리가 꽉 찼으면 대기
                 if (currentBattery >= 100)
                 {
                     yield return null;
                     continue;
                 }
 
-                // 1시간에 10% -> 1% 차는데 걸리는 시간 계산
-                // 10% = 3600초(1시간)
-                // 1% = 360초 (6분)
                 float secondsForOnePercent = 3600f / rechargeRatePerHour;
-
-                // 해당 시간만큼 대기
                 yield return new WaitForSeconds(secondsForOnePercent);
-
-                // 1% 증가
                 Refill(1);
             }
         }
-
-        // ---------------- 데이터 저장/로드 ---------------- //
-        private void SaveBatteryState()
-        {
-            // 현재 시간 저장 (UTC 기준 권장)
-            PlayerPrefs.SetString(KEY_EXIT_TIME, DateTime.UtcNow.ToBinary().ToString());
-            // 현재 배터리량도 저장해야 정확함 (아니면 켤 때마다 100%나 초기값으로 될 수 있음)
-            PlayerPrefs.SetInt(KEY_SAVED_BATTERY, currentBattery);
-            PlayerPrefs.Save();
-        }
-
-        private void LoadBatteryState()
-        {
-            if (PlayerPrefs.HasKey(KEY_SAVED_BATTERY))
-            {
-                currentBattery = PlayerPrefs.GetInt(KEY_SAVED_BATTERY);
-            }
-        }
     }
-
 }

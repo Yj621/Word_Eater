@@ -39,12 +39,19 @@ namespace WordEater.Systems
                     break;
 
                 case ItemType.HintChosung:
-                    // 단어 초성 주기
-                    string answer = wordEater.CurrentAnswer;
+                    // [수정] wordEater.CurrentAnswer -> wordEater.Answer
+                    string answer = wordEater.Answer;
                     string chosung = KoreanUtils.GetChosungString(answer);
-
-                    // UI에 표시 (예: 팝업이나 토스트 메시지)
                     UIManager.Instance.Show($"정답의 초성은 [{chosung}] 입니다!");
+                    break;
+
+                case ItemType.ReviveTicket:
+                    if (wordEater.isDead)
+                    {
+                        // [수정] Reactivate -> RevivePlayer
+                        wordEater.RevivePlayer();
+                        batterySystem.RefillToMax();
+                    }
                     break;
 
                 case ItemType.FillKeyCounts:
@@ -56,19 +63,6 @@ namespace WordEater.Systems
                         KeyCount.AddAt(i, 1);
                     }
                     Debug.Log("모든 자판 카운트 +1 완료");
-                    break;
-
-                case ItemType.ReviveTicket:
-                    // 부활권 (이건 죽었을 때만 써야 하므로, 여기서 직접 쓰기보단 로직 분리 필요)
-                    // 만약 "사용하기" 버튼을 눌러서 쓰는게 아니라 죽었을 때 팝업에서 쓴다면
-                    // 아래 로직은 필요 없고 WordEaterDie 수정이 필요함
-
-                    // 강제로 사용한다면:
-                    if (wordEater.isDead)
-                    {
-                        wordEater.Reactivate();
-                        batterySystem.RefillToMax(); // 부활 시 혜택 (선택사항)
-                    }
                     break;
             }
         }

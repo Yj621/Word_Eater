@@ -25,7 +25,7 @@ public class AlgorithmCall : MonoBehaviour
 
         loading?.StartAnim("관련 단어 찾는 중");
 
-        string answerWord = wordEater ? wordEater.CurrentAnswer : string.Empty;
+        string answerWord = wordEater ? wordEater.Answer : string.Empty;
 
         StartCoroutine(pythonConnectManager.MostSimilarty(answerWord, 5, (result) =>
         {

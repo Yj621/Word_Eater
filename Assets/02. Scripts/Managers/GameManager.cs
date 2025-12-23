@@ -66,8 +66,8 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         //파일들 먼저 불러오기
-        filemanager.RoadWordEaterInfo();
-        filemanager.RoadSoundInfo();
+        filemanager.LoadWordEaterInfo();
+        filemanager.LoadSoundInfo();
 
         //시작 브금 출력
         SoundManager.Instance.BGMStart(1);
@@ -87,14 +87,14 @@ public class GameManager : MonoBehaviour
     {
         if (sharedAdPopup == null) return;
 
-        // 1. 팝업 문구 설정 (아이템용 멘트로 변경)
+        // 팝업 문구 설정 (아이템용 멘트로 변경)
         sharedAdPopup.Configure(
             title: "반짝이는 무언가 발견!",
             watchAdText: "광고보고 줍기",
             noThanksText: "그냥 가기"
         );
 
-        // 2. 팝업 띄우기 & 보상 로직 연결
+        // 팝업 띄우기 & 보상 로직 연결
         sharedAdPopup.Show(
             onAccept: () =>
             {
@@ -183,7 +183,7 @@ public class GameManager : MonoBehaviour
 
     private void Restart() {
         touchblockPanel.SetActive(false);
-        wordeater.BeginStage(wordeater.ReturnStage(), initial: true);
+        wordeater.BeginStage(wordeater.CurrentStage, initial: true);
     }
 
 
@@ -266,19 +266,17 @@ public class GameManager : MonoBehaviour
 
     public void HidePanel_Call()
     {
-        // 1. 연출 중단
+        // 연출 중단
         if (ringingCoroutine != null)
         {
             StopCoroutine(ringingCoroutine);
             ringingCoroutine = null;
         }
 
-        // 2. 흔들림 때문에 돌아간 회전값/위치값 초기화 (중요!)
+        // 흔들림 때문에 돌아간 회전값/위치값 초기화
         CallPanel.transform.rotation = Quaternion.identity;
-        // 만약 위치도 흔들었다면 CallPanel.anchoredPosition 도 보정이 필요할 수 있으나, 
-        // HidePanelToButton에서 위치를 덮어쓰므로 회전만 초기화해도 괜찮습니다.
 
-        // 3. 패널 퇴장 (기존 함수)
+        // 패널 퇴장 (기존 함수)
         HidePanelToButton(CallPanel, CallBtn);
     }
 
