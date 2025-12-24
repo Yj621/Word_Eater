@@ -12,8 +12,6 @@ namespace WordEater.Services
     {
         [SerializeField][Tooltip("단어 생성")] private WordBank wordBank;
 
-        // TODO: 추후 GPT 연동 시 여기서 프롬프트 생성/후처리
-
         /// <summary>
         /// 단계 난이도에 맞는 초기 단어 선택
         /// </summary>

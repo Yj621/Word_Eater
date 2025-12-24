@@ -5,6 +5,9 @@ public class SoundManager : MonoBehaviour
 {
     public static SoundManager Instance; // 싱글톤 인스턴스
 
+    public FileManager filemanager;
+
+
     [SerializeField] private AudioMixer m_AudioMixer;
     [SerializeField] private Slider m_MusicBGMSlider;
     [SerializeField] private Slider m_MusicSFXSlider;
@@ -15,12 +18,25 @@ public class SoundManager : MonoBehaviour
     public AudioSource bgmSource;
     public AudioSource SFXSource;
 
+    public Image BGMicon;
+    public Image SFXicon;
+
+    public Sprite BGMiconOn;
+    public Sprite BGMiconOff;
+    public Sprite SFXiconOn;
+    public Sprite SFXiconOff;
+
+    public float Bvalue;
+    public float Svalue;
+
+    public Slider bgmSlider;
+    public Slider seSlider;
+
     // 브금
-    public AudioClip MainBGM;
-
-
+    public AudioClip MainBGM; 
 
     //효과음
+
 
     private void Awake()
     {
@@ -54,6 +70,16 @@ public class SoundManager : MonoBehaviour
         }
 
         BGMFillImg.color = c;
+
+        if (volume <= 0.01f)
+            BGMicon.sprite = BGMiconOff;
+        else
+            BGMicon.sprite = BGMiconOn;
+            
+        Bvalue = volume;
+
+        filemanager.SaveSoundInfo(volume, Svalue);
+
     }
 
     public void SetSFXVolume(float volume)
@@ -73,7 +99,35 @@ public class SoundManager : MonoBehaviour
         }
 
         SFXFillImg.color = c;
+
+        if (volume <= 0.01f)
+            SFXicon.sprite = SFXiconOff;
+        else
+            SFXicon.sprite = SFXiconOn;
+
+        Svalue = volume;
+
+        filemanager.SaveSoundInfo(Bvalue, volume);
     }
+
+
+    public void Bbtn() {
+        // 꺼져 있었을 때
+        if (m_MusicBGMSlider.value <= 0.01f) m_MusicBGMSlider.value = Bvalue;
+
+        // 안꺼져 있었을 때
+        else m_MusicBGMSlider.value = 0.01f;
+    }
+
+    public void Sbtn()
+    {
+        // 꺼져 있었을 때
+        if (m_MusicSFXSlider.value <= 0.01f) m_MusicSFXSlider.value = Svalue;
+
+        // 안꺼져 있었을 때
+        else m_MusicSFXSlider.value = 0.01f;
+    }
+
 
     public void BGMStart(int BGMType) {
         switch (BGMType)
