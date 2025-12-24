@@ -36,19 +36,110 @@ public class KeyBoardManager : MonoBehaviour
     bool dragIsUI;
     RectTransform dragUIRect; // UI 프리팹일 때
     Transform dragWorldTr; // 월드 프리팹일 때
-
+    public SyllableBlock syllablePrefab;
     [Header("드롭/삭제 영역(UI)")]
     public RectTransform allowedArea;   // 허용 구역(이 안에서만 살아남음)
     public RectTransform trashArea;     // 쓰레기통(여기 놓으면 삭제)
-
+  
     public TextMeshProUGUI resultText; // 결과 표시용 라벨
-
+    Dictionary<int, int> _sessionSpent = new();
 
     public void PressSingle(int index) => PressSingle(index, null);
     public void PressDouble(int index) => PressDouble(index, null);
     public int GetCount(int index) => (KeyCount.isReady ? KeyCount.Get(index) : 0);
 
     bool InRange(int i) => (longPressKeys != null && i >= 0 && i < longPressKeys.Length);
+
+    List<SyllableBlock> GetBlocksInAllowedArea()
+    {
+        var result = new List<SyllableBlock>();
+        if (!uiSpawnRoot || !allowedArea) return result;
+
+        var blocks = uiSpawnRoot.GetComponentsInChildren<SyllableBlock>(includeInactive: false);
+        foreach (var b in blocks)
+        {
+            if (!b) continue;
+            var rt = b.GetComponent<RectTransform>();
+            if (!rt) continue;
+
+            var sp = RectTransformUtility.WorldToScreenPoint(uiCamera, rt.position);
+            if (RectTransformUtility.RectangleContainsScreenPoint(allowedArea, sp, uiCamera))
+                result.Add(b);
+        }
+
+        return result;
+    }
+
+    bool TryBuildFromBlocks(List<SyllableBlock> blocks, out string word)
+    {
+        word = null;
+        if (blocks == null || blocks.Count == 0) return false;
+
+        // 1) 고아 JamoMagnet 검사 (원하면 켜두기)
+        // allowedArea 안에 있는데, 어떤 SyllableBlock의 자식도 아닌 자모가 있으면 실패
+        var magnets = uiSpawnRoot.GetComponentsInChildren<JamoMagnet>(includeInactive: false);
+        foreach (var m in magnets)
+        {
+            if (!m) continue;
+
+            var rt = m.GetComponent<RectTransform>();
+            if (!rt) continue;
+
+            var sp = RectTransformUtility.WorldToScreenPoint(uiCamera, rt.position);
+            if (!RectTransformUtility.RectangleContainsScreenPoint(allowedArea, sp, uiCamera))
+                continue;
+
+            // SyllableBlock의 자식인지 확인
+            var parentBlock = m.GetComponentInParent<SyllableBlock>();
+            if (parentBlock == null)
+            {
+                // allowedArea 안에 떠다니는 자모가 있다 → 아직 완성 안 된 단어
+                Debug.Log("[TryBuildWord] orphan jamo found → invalid word");
+                return false;
+            }
+        }
+        var ordered = new List<(SyllableBlock b, float x)>();
+        foreach (var b in blocks)
+        {
+            // 최소 요건: 초성과 중성이 있어야 음절로 인정
+            if (string.IsNullOrEmpty(b.choseong) || string.IsNullOrEmpty(b.jungseong))
+            {
+                Debug.Log($"[TryBuildWord] invalid block(need L+V): L='{b.choseong}' V='{b.jungseong}'");
+                return false;
+            }
+
+            var brt = b.GetComponent<RectTransform>();
+            Vector2 sp = RectTransformUtility.WorldToScreenPoint(uiCamera, brt.position);
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(allowedArea, sp, uiCamera, out var local);
+            ordered.Add((b, local.x));
+        }
+
+        ordered.Sort((a, b) => a.x.CompareTo(b.x));
+
+        // 3) HangulCompose로 실제 글자 합성
+        var chars = new List<char>();
+        foreach (var (b, _) in ordered)
+        {
+            var L = (b.choseong ?? "").Trim();
+            var V = (b.jungseong ?? "").Trim();
+            var T = string.IsNullOrEmpty(b.jongseong) ? null : b.jongseong.Trim();
+
+            try
+            {
+                char syllable = HangulCompose.ComposeCompat(L, V, T);
+                chars.Add(syllable);
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogWarning($"[Submit] compose fail from block L='{L}' V='{V}' T='{T}': {e.Message}");
+                return false;
+            }
+        }
+
+        word = new string(chars.ToArray());
+        return true;
+    }
+
     void Awake()
     {
         KeyCount.OnChanged -= OnKeyCountChanged;
@@ -61,15 +152,26 @@ public class KeyBoardManager : MonoBehaviour
             for (int i = 0; i < longPressKeys.Length; i++)
                 if (longPressKeys[i]) longPressKeys[i].manager = this;
         }
+        SyllableBlock.Prefab = syllablePrefab;
     }
+
+    private void Start()
+    {
+        _sessionSpent.Clear();
+    }
+
+    void OnEnable()
+    {
+        _sessionSpent.Clear();
+        UpdateDoubleLabels();
+
+
+    }
+
 
     void OnDestroy()
     {
         KeyCount.OnChanged -= OnKeyCountChanged;
-    }
-    public void OnPieceDeleted(int invIndex)
-    {
-        KeyCount.AddAt(invIndex, 1);
     }
 
     void OnKeyCountChanged(int index, int newCount)
@@ -84,12 +186,11 @@ public class KeyBoardManager : MonoBehaviour
         k.RefreshVisuals(KeyCount.Get(index), KeyCount.MaxCount);
     }
 
-    // 롱프레스 + 드래그 시작 (PointerEventData 포함)
     public void PressSingle(int index, PointerEventData ev)
     {
-        if (!IsValidIndex(index, SingleWordButtons, SingleWords)) return; 
-        if (!TryConsumeAndRefresh(index, 1)) return; 
-        BeginDragSpawn(SingleWordButtons[index], SingleWords[index], ev, index);
+        if (!IsValidIndex(index, SingleWordButtons, SingleWords)) return;
+        if (!TryConsumeAndRefresh(index, 1)) return;
+        BeginDragSpawn(SingleWordButtons[index], SingleWords[index], ev, index, 1);
     }
 
     public void PressDouble(int index, PointerEventData ev)
@@ -104,9 +205,8 @@ public class KeyBoardManager : MonoBehaviour
 
         int cost = isShiftPressed ? 2 : 1;
         if (!TryConsumeAndRefresh(index, cost)) { NotEnoughFeedback(index); return; }
-        BeginDragSpawn(btn, prefab, ev, index);
+        BeginDragSpawn(btn, prefab, ev, index, cost);
     }
-
 
     public void PressShift()
     {
@@ -130,7 +230,21 @@ public class KeyBoardManager : MonoBehaviour
         word = null;
         if (!uiSpawnRoot || !allowedArea) return false;
 
-        // 1) 유효 영역 안의 모든 Jamo 수집
+        // 0) 먼저 SyllableBlock 기준으로 시도
+        var blocks = GetBlocksInAllowedArea();
+        if (blocks.Count > 0)
+        {
+            var ok = TryBuildFromBlocks(blocks, out word);
+            if (!ok) return false;
+
+            // validateOnly면 여기서 true만 리턴해도 되고,
+            // 어차피 지금은 대부분 실제 word가 필요하니까 그냥 word 세팅 유지
+            return true;
+        }
+
+        // 1) SyllableBlock이 하나도 없으면, 예전 JamoMagnet 방식으로 시도 (호환용)
+        //    만약 완전히 새 구조만 쓴다면 아래를 통째로 지워도 됨.
+        // --- 기존 JamoMagnet 기반 로직 그대로 ---
         var magnets = uiSpawnRoot.GetComponentsInChildren<JamoMagnet>(includeInactive: false);
         var inArea = new List<JamoMagnet>();
         foreach (var m in magnets)
@@ -139,7 +253,6 @@ public class KeyBoardManager : MonoBehaviour
             if (IsInside(allowedArea, m.GetComponent<RectTransform>())) inArea.Add(m);
         }
 
-        // 2) 베이스(초성) 블록 수집
         var bases = new List<JamoMagnet>();
         foreach (var m in inArea)
         {
@@ -147,39 +260,32 @@ public class KeyBoardManager : MonoBehaviour
         }
         if (bases.Count == 0) return false;
 
-        // 3) 고아(싱글) 조각이 존재하면 실패 (베이스의 자식이 아닌 Jamo)
         foreach (var m in inArea)
         {
             if (IsBase(m)) continue;
             if (!IsUnderAnyBase(m, bases)) return false;
         }
 
-        // 4) 베이스 유효성 + 좌표 추출
-        var ordered = new List<(JamoMagnet b, float x)>();
+        var ordered = new List<(JamoMagnet b, float x2)>();
         foreach (var b in bases)
         {
-            // 각 음절은 반드시 모음이 하나 필요
             var V = GetMedialGlyph(b);
             if (string.IsNullOrEmpty(V)) return false;
 
-            // 받침은 없어도 됨
-            // 좌표: validArea 기준 로컬 x
             var brt = b.GetComponent<RectTransform>();
             Vector2 sp = RectTransformUtility.WorldToScreenPoint(uiCamera, brt.position);
             RectTransformUtility.ScreenPointToLocalPointInRectangle(allowedArea, sp, uiCamera, out var local);
             ordered.Add((b, local.x));
         }
 
-        // 5) x 기준 정렬
-        ordered.Sort((a, b) => a.x.CompareTo(b.x));
+        ordered.Sort((a, b) => a.x2.CompareTo(b.x2));
 
-        // 6) 합성하여 문자열 생성
         var chars = new List<char>();
         foreach (var (b, _) in ordered)
         {
-            var L = (b.glyph ?? "").Trim();                           // 초성(호환자모)
-            var V = (GetMedialGlyph(b) ?? "").Trim();                 // 중성(호환자모 또는 복합)
-            var T = b.attachedFinal ? (b.attachedFinal.glyph ?? "").Trim() : null; // 종성(없을 수 있음)
+            var L = (b.glyph ?? "").Trim();
+            var V = (GetMedialGlyph(b) ?? "").Trim();
+            var T = b.attachedFinal ? (b.attachedFinal.glyph ?? "").Trim() : null;
 
             try
             {
@@ -240,8 +346,6 @@ public class KeyBoardManager : MonoBehaviour
         return null;
     }
 
-    void OnEnable() => UpdateDoubleLabels();
-
     void Update()
     {
         if (!dragging) return;
@@ -275,6 +379,7 @@ public class KeyBoardManager : MonoBehaviour
         //Debug.Log(dragging);
     }
 
+
     void UpdateDoubleLabels()
     {
         if (DoubleText == null) return;
@@ -306,7 +411,7 @@ public class KeyBoardManager : MonoBehaviour
     }
 
 
-    void BeginDragSpawn(Button button, GameObject prefab, PointerEventData ev, int invIndex)
+    void BeginDragSpawn(Button button, GameObject prefab, PointerEventData ev, int invIndex, int amount)
     {
         var buttonRT = button.GetComponent<RectTransform>();
         Vector2 buttonScreen = RectTransformUtility.WorldToScreenPoint(uiCamera, buttonRT.position);
@@ -327,7 +432,7 @@ public class KeyBoardManager : MonoBehaviour
 
             var drag = go.GetComponent<DraggableWordUI>();
             drag.Init(root, allowedArea, trashArea, uiCamera);
-            drag.BindSource(this, invIndex);     // ★ 원본 인덱스 바인딩
+            drag.BindSource(this, invIndex, amount);     // ★ 원본 인덱스 바인딩
 
             dragIsUI = true;
             dragUIRect = rt;
@@ -345,7 +450,7 @@ public class KeyBoardManager : MonoBehaviour
             {
                 // 월드 프리팹이어도 바인딩만은 해둔다(환불용)
                 drag.Init(null, null, null, null);
-                drag.BindSource(this, invIndex);
+                drag.BindSource(this, invIndex, amount);
             }
 
             dragIsUI = false;
@@ -400,7 +505,17 @@ public class KeyBoardManager : MonoBehaviour
             NotEnoughFeedback(index);
             return false;
         }
+        RecordSpend(index, amount);
+
         return true;
+    }
+
+    public void OnPieceDeleted(int invIndex, int amount)
+    {
+        // 수량 환불
+        KeyCount.AddAt(invIndex, amount);
+        // 세션 장부도 감소
+        RecordRefund(invIndex, amount);
     }
 
     public int GrantRandomLetters(int amount, bool singlesOnly = false, bool doublesOnly = false)
@@ -448,9 +563,49 @@ public class KeyBoardManager : MonoBehaviour
     }
 
 
+    public void ClosePanelAndRestore()
+    {
+        foreach (var kv in _sessionSpent)
+        {
+            int index = kv.Key;
+            int amt = kv.Value;
+            if (amt > 0) KeyCount.AddAt(index, amt);
+        }
+        _sessionSpent.Clear();
+        ClearAllSpawnedPieces();
+    }
+
+    void ClearAllSpawnedPieces()
+    {
+        if (!uiSpawnRoot) return;
+
+        // 드래그 프리팹 제거
+        var drags = uiSpawnRoot.GetComponentsInChildren<DraggableWordUI>(true);
+        foreach (var d in drags) if (d) Destroy(d.gameObject);
+
+        // 자모 파츠 제거(합성 포함)
+        var magnets = uiSpawnRoot.GetComponentsInChildren<JamoMagnet>(true);
+        foreach (var m in magnets) if (m) Destroy(m.gameObject);
+
+        EndDrag();
+    }
+
     void NotEnoughFeedback(int index)
     {
         
+    }
+
+    void RecordSpend(int index, int amount)
+    {
+        if (!_sessionSpent.ContainsKey(index)) _sessionSpent[index] = 0;
+        _sessionSpent[index] += Mathf.Max(1, amount);
+    }
+
+    void RecordRefund(int index, int amount)
+    {
+        if (!_sessionSpent.ContainsKey(index)) return;
+        _sessionSpent[index] = Mathf.Max(0, _sessionSpent[index] - Mathf.Max(1, amount));
+        if (_sessionSpent[index] == 0) _sessionSpent.Remove(index);
     }
 
     bool TryGetPointerScreenPos(int pointerId, out Vector2 pos)

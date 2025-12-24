@@ -5,6 +5,9 @@ public class SoundManager : MonoBehaviour
 {
     public static SoundManager Instance; // 싱글톤 인스턴스
 
+    public FileManager filemanager;
+
+
     [SerializeField] private AudioMixer m_AudioMixer;
     [SerializeField] private Slider m_MusicBGMSlider;
     [SerializeField] private Slider m_MusicSFXSlider;
@@ -26,10 +29,14 @@ public class SoundManager : MonoBehaviour
     public float Bvalue;
     public float Svalue;
 
+    public Slider bgmSlider;
+    public Slider seSlider;
+
     // 브금
     public AudioClip MainBGM; 
 
     //효과음
+
 
     private void Awake()
     {
@@ -46,10 +53,6 @@ public class SoundManager : MonoBehaviour
 
         m_MusicBGMSlider.onValueChanged.AddListener(SetBGMVolume);
         m_MusicSFXSlider.onValueChanged.AddListener(SetSFXVolume);
-
-
-        Bvalue = m_MusicBGMSlider.value;
-        Svalue = m_MusicSFXSlider.value;
     }
 
     public void SetBGMVolume(float volume) {
@@ -72,8 +75,11 @@ public class SoundManager : MonoBehaviour
             BGMicon.sprite = BGMiconOff;
         else
             BGMicon.sprite = BGMiconOn;
+            
+        Bvalue = volume;
 
-        if(volume > 0.01f) Bvalue = volume;
+        filemanager.SaveSoundInfo(volume, Svalue);
+
     }
 
     public void SetSFXVolume(float volume)
@@ -99,7 +105,9 @@ public class SoundManager : MonoBehaviour
         else
             SFXicon.sprite = SFXiconOn;
 
-        if (volume > 0.01f) Svalue = volume;
+        Svalue = volume;
+
+        filemanager.SaveSoundInfo(Bvalue, volume);
     }
 
 

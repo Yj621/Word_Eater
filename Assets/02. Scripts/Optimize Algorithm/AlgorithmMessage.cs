@@ -66,14 +66,14 @@ public class AlgorithmMessage : MonoBehaviour
     public void OnCheckSimilarity()
     {
         // 먼저 배터리 확인
-        if (!AlgoGuards.EnsureBattery(batterySystem, ActionType.OptimizeAlgo, resultText))
+        if (!AlgoGuards.EnsureBattery(batterySystem, ActionType.OptimizeAlgoMessage, resultText))
             return;
 
         ShowResultPanel();
         loading?.StartAnim("유사도 계산 중");
 
         string userInput = inputField ? inputField.text : string.Empty;
-        string answerWord = wordEater ? wordEater.CurrentAnswer : string.Empty;
+        string answerWord = wordEater ? wordEater.Answer : string.Empty;
 
         StartCoroutine(pythonConnectManager.SimilartyTwoWord(answerWord, userInput, (similarity) =>
         {

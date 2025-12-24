@@ -7,6 +7,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] private WordEater.Core.WordEater wordeater;
     [SerializeField] private GameObject touchblockPanel;
 
+    [SerializeField] private FileManager filemanager;
+
     //인자가 두개씩 필요한 애들
 
     [Header("전화 관련")]
@@ -31,28 +33,44 @@ public class GameManager : MonoBehaviour
     [SerializeField] private RectTransform SettingPanel;
     [SerializeField] private RectTransform SettingBtn;
 
+    [Header("아이템 관련")]
+    [SerializeField] private RectTransform ItemFolderPanel;
+    [SerializeField] private RectTransform ItemFolderBtn;
+
     [Header("게임 오버 연출 (배터리 방전)")]
     [SerializeField] private CanvasGroup gameOverCanvasGroup; // 검은 배경 전체 (알파값 조절용)
     [SerializeField] private Image batteryFillImg;            // 빨간색 배터리 게이지
     [SerializeField] private Image cableIconImg;              // 케이블/번개 아이콘
 
-    [Header("워드이터(히스토리) 관련")]
+    [Header("워드이터 관련")]
     [SerializeField] private RectTransform WordEaterPanel;
     [SerializeField] private RectTransform WordEaterBtn;
 
+    [Header("히스토리 관련")]
+    [SerializeField] private RectTransform HistoryPanel;
+    [SerializeField] private RectTransform HistoryBtn;
+
+    [Header("UI 연결")]
+    [SerializeField] private ADPopup sharedAdPopup;
+
     public string HistoryLIne = "";
+
+    [Header("슬라이드 메니저")]
+    [SerializeField] private SlideManager smanager;
 
     public static GameManager Instance;
 
-    void Awake() => Instance = this;
+    void Awake() {     
+        Instance = this;
+    }
     void Start()
     {
+        //파일들 먼저 불러오기
+        filemanager.LoadWordEaterInfo();
+        filemanager.LoadSoundInfo();
+
         //시작 브금 출력
         SoundManager.Instance.BGMStart(1);
-
-
-        //시작 하면 첫 정답 단어 선정
-        wordeater.BeginStage(wordeater.ReturnStage(), initial: true);
 
         // 시작 시 게임오버 패널은 꺼두기
         if (gameOverCanvasGroup != null)
@@ -60,6 +78,36 @@ public class GameManager : MonoBehaviour
             gameOverCanvasGroup.alpha = 0;
             gameOverCanvasGroup.gameObject.SetActive(false);
         }
+    }
+
+    /// <summary>
+    /// [아이템 광고] 버튼 클릭 시
+    /// </summary>
+    public void OnClickGetItemAd()
+    {
+        if (sharedAdPopup == null) return;
+
+        // 팝업 문구 설정 (아이템용 멘트로 변경)
+        sharedAdPopup.Configure(
+            title: "반짝이는 무언가 발견!",
+            watchAdText: "광고보고 줍기",
+            noThanksText: "그냥 가기"
+        );
+
+        // 팝업 띄우기 & 보상 로직 연결
+        sharedAdPopup.Show(
+            onAccept: () =>
+            {
+                // 광고 시청 완료(Yes) 시 실행될 로직
+                Debug.Log("광고 보상: 랜덤 아이템 지급");
+                ItemDropManager.Instance.ObtainRandomItem(); // 아이템 획득 함수 호출
+            },
+            onDecline: () =>
+            {
+                // 거절(No) 시 실행될 로직
+                Debug.Log("아이템 획득 거절");
+            }
+        );
     }
 
     //type 에 따라 게임이 끝났을 때 행동 변화.
@@ -135,7 +183,12 @@ public class GameManager : MonoBehaviour
 
     private void Restart() {
         touchblockPanel.SetActive(false);
-        wordeater.BeginStage(wordeater.ReturnStage(), initial: true);
+        wordeater.BeginStage(wordeater.CurrentStage, initial: true);
+    }
+
+
+    public void UpdateHistoryLineInFile(string newHis) {
+        filemanager.SaveHistory(newHis);
     }
 
 
@@ -145,6 +198,7 @@ public class GameManager : MonoBehaviour
     {
         if (panel == null || btn == null) return;
 
+        smanager.isOK = false;
         panel.gameObject.SetActive(true);
 
         var parent = panel.parent as RectTransform;
@@ -168,11 +222,17 @@ public class GameManager : MonoBehaviour
     {
         if (panel == null || btn == null) return;
 
+        smanager.isOK = true;
+
         var parent = panel.parent as RectTransform;
         Vector2 endLocal = CanvasUtil.ConvertBetweenCanvases(btn, parent);
+        panel.DOScale(Vector3.zero, 0.2f)
+                     .SetEase(Ease.InBack)
+                     .SetUpdate(true);
 
-        panel.DOScale(Vector3.zero, 0.2f).SetEase(Ease.InBack);
-        panel.DOAnchorPos(endLocal, 0.2f).SetEase(Ease.InBack)
+        panel.DOAnchorPos(endLocal, 0.2f)
+             .SetEase(Ease.InBack)
+             .SetUpdate(true)
              .OnComplete(() => panel.gameObject.SetActive(false));
     }
 
@@ -206,19 +266,17 @@ public class GameManager : MonoBehaviour
 
     public void HidePanel_Call()
     {
-        // 1. 연출 중단
+        // 연출 중단
         if (ringingCoroutine != null)
         {
             StopCoroutine(ringingCoroutine);
             ringingCoroutine = null;
         }
 
-        // 2. 흔들림 때문에 돌아간 회전값/위치값 초기화 (중요!)
+        // 흔들림 때문에 돌아간 회전값/위치값 초기화
         CallPanel.transform.rotation = Quaternion.identity;
-        // 만약 위치도 흔들었다면 CallPanel.anchoredPosition 도 보정이 필요할 수 있으나, 
-        // HidePanelToButton에서 위치를 덮어쓰므로 회전만 초기화해도 괜찮습니다.
 
-        // 3. 패널 퇴장 (기존 함수)
+        // 패널 퇴장 (기존 함수)
         HidePanelToButton(CallPanel, CallBtn);
     }
 
@@ -246,6 +304,33 @@ public class GameManager : MonoBehaviour
             yield return new WaitForSeconds(1.2f);
         }
     }
+
+    //type이 0 -> 위에서 아래로 슬라이드, 1-> 아래에서 위로 슬라이드
+    public void SlidePanelSetting(RectTransform Panel,Vector2 originPos,int type)
+    {
+        float duration = 0.4f;
+
+        if (type == 0)
+        {
+            Panel.transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
+
+            Panel.gameObject.SetActive(true);
+
+            Panel.DOAnchorPos(originPos, duration)
+                .SetEase(Ease.OutCubic);
+        }
+        else if (type == 1) {
+            Panel.DOAnchorPos(originPos + Vector2.up * Screen.height, duration)
+                         .SetEase(Ease.InCubic)
+                     .OnComplete(() =>
+                      {
+                          Panel.gameObject.SetActive(false);
+                      });
+        }
+    }
+
+
+
 
     /// <summary>
     /// 전화 연출 멈추기
@@ -282,6 +367,12 @@ public class GameManager : MonoBehaviour
 
     public void ShowPanel_WordEater() => ShowPanelFromButton(WordEaterPanel, WordEaterBtn);
     public void HidePanel_WordEater() => HidePanelToButton(WordEaterPanel, WordEaterBtn);
+
+    public void ShowPanel_History() => ShowPanelFromButton(HistoryPanel, HistoryBtn);
+    public void HidePanel_History() => HidePanelToButton(HistoryPanel, HistoryBtn);
+
+    public void ShowPanel_Item() => ShowPanelFromButton(ItemFolderPanel, ItemFolderBtn);
+    public void HidePanel_Item() => HidePanelToButton(ItemFolderPanel, ItemFolderBtn);
 }
 
 /// <summary>
@@ -312,3 +403,6 @@ public static class CanvasUtil
         return localPoint;
     }
 }
+
+
+

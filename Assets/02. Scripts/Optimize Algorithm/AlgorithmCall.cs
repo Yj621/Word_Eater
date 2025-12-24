@@ -20,12 +20,12 @@ public class AlgorithmCall : MonoBehaviour
     {
         GameManager.Instance.StopRingingEffect();
         // 배터리 부족 시 네트워크 호출 자체를 막음
-        if (!AlgoGuards.EnsureBattery(batterySystem, ActionType.OptimizeAlgo, resultText))
+        if (!AlgoGuards.EnsureBattery(batterySystem, ActionType.OptimizeAlgoCall, resultText))
             return;
 
         loading?.StartAnim("관련 단어 찾는 중");
 
-        string answerWord = wordEater ? wordEater.CurrentAnswer : string.Empty;
+        string answerWord = wordEater ? wordEater.Answer : string.Empty;
 
         StartCoroutine(pythonConnectManager.MostSimilarty(answerWord, 5, (result) =>
         {

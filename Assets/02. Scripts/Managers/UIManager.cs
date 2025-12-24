@@ -5,64 +5,82 @@ using UnityEngine;
 using UnityEngine.UI;
 using WordEater.Core;
 
+/// <summary>
+/// 게임 내 모든 UI(팝업, 알림, 키보드 패널 등)를 총괄하는 매니저임
+/// </summary>
 public class UIManager : MonoBehaviour
 {
     [Header("Keyborad UI")]
-    [SerializeField] private RectTransform _keyboardRect; // 키보드 UI의 RectTransform
-    private float _animationDuration = 0.5f; // 애니메이션 지속 시간
+    [SerializeField] private RectTransform _keyboardRect; // 키보드 UI 패널
+    private float _animationDuration = 0.5f;              // 애니메이션 시간
 
-    private bool _isKeyboardOpen = false; // 키보드 상태 추적 변수
-    // 원하는 위치 고정 (anchoredPosition 기준)
+    private bool _isKeyboardOpen = false;                 // 키보드 열림 상태 플래그
+    PhoneSwiper phoneSwiper;
+    public KeyBoardManager KeyBoardManager;
+    public GameObject PageIcon;                           // 페이지 아이콘 (키보드 열리면 숨김)
 
     [Header("오답 연출")]
-    [SerializeField] private Image _damageOverlay;          // 전체 화면 빨간 Image
-    [SerializeField] private RectTransform _shakeTarget;    // 흔들 대상 (예: 전체 UI 루트)
+    [SerializeField] private Image _damageOverlay;        // 화면 붉어짐 효과 이미지
+    [SerializeField] private RectTransform _shakeTarget;  // 흔들림 효과 대상
 
     [Header("상단 알림")]
-    [SerializeField] private RectTransform alarmPanel;       // 알림창 패널 (상단에 위치)
-    [SerializeField] private TextMeshProUGUI alarmText;      // 알림창 텍스트
-    [SerializeField] private float alarmShowPosY = -150f;    // 화면 안으로 들어왔을 때 Y좌표 (예: -150)
-    [SerializeField] private float alarmHidePosY = 150f;     // 화면 밖으로 나갔을 때 Y좌표 (예: 150)
+    [SerializeField] private RectTransform _alarmPanel;       // 알림창 패널
+    [SerializeField] private TextMeshProUGUI _alarmTitleText; // 알림 제목
+    [SerializeField] private TextMeshProUGUI _alarmText;      // 알림 내용
+    [SerializeField] private Image _alarmIconImage;           // 알림 아이콘
+    [SerializeField] private float _alarmShowPosY = -150f;    // 알림 표시 Y좌표
+    [SerializeField] private float _alarmHidePosY = 150f;     // 알림 숨김 Y좌표
+    private Sprite _defaultAlarmSprite;                       // 기본 아이콘 저장용
 
     [Header("UI 연결")]
-    [SerializeField] private GameObject batteryChargePanel;    // 팝업 전체 부모 (Panel)
-    [SerializeField] private Transform t_BatteryCharge;  // 실제 튀어오를 팝업 창 (배경 제외)
-    [SerializeField] private TextMeshProUGUI messageText; // 메시지 텍스트
-    [SerializeField] private Button confirmButton;      // 확인(닫기) 버튼
+    [SerializeField] private GameObject _batteryChargePanel;   // 배터리 팝업 부모 패널
+    [SerializeField] private Transform _t_BatteryCharge;       // 팝업 본체 (애니메이션용)
+    [SerializeField] private TextMeshProUGUI _messageText;     // 메시지 표시 텍스트
+    [SerializeField] private Button _batteryChargeButton;      // 확인 버튼
 
-    private Action onConfirmCallback; // 확인 버튼 눌렀을 때 실행할 추가 로직(옵션)
+    [Header("아이템 사용 확인 팝업")]
+    [SerializeField] private GameObject _confirmPanel;         // 확인 팝업 패널
+    [SerializeField] private TextMeshProUGUI _titleText;       // 팝업 제목
+    [SerializeField] private TextMeshProUGUI _explanText;      // 팝업 설명
+    [SerializeField] private Button _btnYes;                   // 예 버튼
+    [SerializeField] private Button _btnNo;                    // 아니오 버튼
+    [SerializeField] private Image _itemImg;                   // 아이콘 이미지
+    private Action _onConfirmCallback;                         // 팝업 닫힘 콜백
 
-    private Vector3 _shakeOriginalPos;
+    private Vector3 _shakeOriginalPos;                         // 흔들림 원위치 저장용
 
-    // 외부 참조 컴포넌트
-    PhoneSwiper phoneSwiper;
-    public GameObject PageIcon;
-    private Vector2 _showPosition = new Vector2(0, 0);
-    private Vector2 _hidePosition = new Vector2(0, -450);
+    private Vector2 _showPosition = new Vector2(0, 0);         // 키보드 보임 위치
+    private Vector2 _hidePosition = new Vector2(0, -450);      // 키보드 숨김 위치
 
     public static UIManager Instance;
-
 
     private void Awake()
     {
         Instance = this;
-        // 씬 시작 시 팝업 숨기기
-        if (batteryChargePanel != null)
-            batteryChargePanel.SetActive(false);
+        // 씬 시작 시 배터리 팝업 숨김 처리함
+        if (_batteryChargePanel != null)
+            _batteryChargePanel.SetActive(false);
 
-        // 버튼 리스너 연결
-        if (confirmButton != null)
-            confirmButton.onClick.AddListener(OnConfirmClicked);
+        // 배터리 팝업 버튼 리스너 연결함
+        if (_batteryChargeButton != null)
+            _batteryChargeButton.onClick.AddListener(OnConfirmClicked);
+
+        // 기본 알림 아이콘 저장함
+        if (_alarmIconImage != null)
+        {
+            _defaultAlarmSprite = _alarmIconImage.sprite;
+        }
     }
+
     void Start()
     {
         phoneSwiper = GetComponent<PhoneSwiper>();
 
-        // 흔들 기준 위치 저장
+        // 흔들림 효과 기준 위치 저장함
         if (_shakeTarget != null)
             _shakeOriginalPos = _shakeTarget.localPosition;
 
-        // 오버레이 알파 0으로 초기화
+        // 데미지 오버레이 투명하게 초기화함
         if (_damageOverlay != null)
         {
             var c = _damageOverlay.color;
@@ -72,97 +90,167 @@ public class UIManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 팝업 띄우기
+    /// 배터리 충전 팝업을 애니메이션과 함께 띄움
     /// </summary>
-    /// <param name="message">보여줄 메시지</param>
-    /// <param name="onClose">닫힌 뒤 실행할 로직 (없으면 null)</param>
+    /// <param name="message">표시할 메시지</param>
+    /// <param name="onClose">닫힐 때 실행할 콜백</param>
     public void Show(string message, Action onClose = null)
     {
-        if (messageText != null) messageText.text = message;
-        onConfirmCallback = onClose;
+        if (_messageText != null) _messageText.text = message;
+        _onConfirmCallback = onClose;
 
-        if (batteryChargePanel != null)
+        if (_batteryChargePanel != null)
         {
-            batteryChargePanel.SetActive(true);
+            _batteryChargePanel.SetActive(true);
 
-            // 애니메이션 대상 설정 (popupContainer가 없으면 batteryChargePanel 자체를 애니메이션)
-            Transform target = t_BatteryCharge != null ? t_BatteryCharge : batteryChargePanel.transform;
+            Transform target = _t_BatteryCharge != null ? _t_BatteryCharge : _batteryChargePanel.transform;
 
-            // 크기를 0으로 초기화
+            // 크기 0에서 시작해 튀어오르는 연출 적용함
             target.localScale = Vector3.zero;
-
-            // 0 -> 1로 커지면서 튀어오르는 연출 (OutBack)
             target.DOKill();
             target.DOScale(1f, 0.4f)
                 .SetEase(Ease.OutBack)
-                .SetUpdate(true); // TimeScale이 0이어도 동작하게 함
+                .SetUpdate(true); // 일시정지 상태에서도 동작하게 함
         }
     }
 
     /// <summary>
-    /// 상단 알림창을 띄웠다가 일정 시간 뒤 사라지게 하고, 끝난 뒤 콜백을 실행
+    /// 상단 긴급 알림창을 표시함 아이콘 지정 가능함
     /// </summary>
-    public void ShowEmergencyAlarm(string message, float duration, Action onComplete = null)
+    public void ShowEmergencyAlarm(string title, string message, float duration, Action onComplete = null, Sprite icon = null)
     {
-        if (alarmPanel == null)
+        if (_alarmPanel == null)
         {
-            // 패널이 없으면 바로 다음 단계로
             onComplete?.Invoke();
             return;
         }
 
-        // 텍스트 설정
-        if (alarmText != null) alarmText.text = message;
+        // 제목 및 내용 설정함
+        if (_alarmTitleText != null) _alarmTitleText.text = title;
+        if (_alarmText != null) _alarmText.text = message;
 
-        // 초기 위치 설정 (화면 위)
-        alarmPanel.anchoredPosition = new Vector2(alarmPanel.anchoredPosition.x, alarmHidePosY);
-        alarmPanel.gameObject.SetActive(true);
+        // 아이콘 교체 로직임
+        if (_alarmIconImage != null)
+        {
+            if (icon != null)
+            {
+                _alarmIconImage.sprite = icon;
+            }
+            else
+            {
+                _alarmIconImage.sprite = _defaultAlarmSprite;
+            }
+            _alarmIconImage.gameObject.SetActive(true);
+        }
 
-        // 시퀀스 생성 (내려옴 -> 대기 -> 올라감 -> 콜백)
+        // 알림창 등장 및 퇴장 애니메이션 시퀀스 실행함
+        _alarmPanel.anchoredPosition = new Vector2(_alarmPanel.anchoredPosition.x, _alarmHidePosY);
+        _alarmPanel.gameObject.SetActive(true);
+
         Sequence seq = DOTween.Sequence();
 
-        // 내려오기 (OutBack으로 튕기듯이)
-        seq.Append(alarmPanel.DOAnchorPosY(alarmShowPosY, 0.5f).SetEase(Ease.OutBack));
+        // 내려옴
+        seq.Append(_alarmPanel.DOAnchorPosY(_alarmShowPosY, 0.5f).SetEase(Ease.OutBack));
 
-        // 보여주는 시간 동안 대기
+        // 대기함
         seq.AppendInterval(duration);
 
-        // 다시 올라가기 (InBack)
-        seq.Append(alarmPanel.DOAnchorPosY(alarmHidePosY, 0.3f).SetEase(Ease.InBack));
+        // 올라감
+        seq.Append(_alarmPanel.DOAnchorPosY(_alarmHidePosY, 0.3f).SetEase(Ease.InBack));
 
-        // 끝나면 비활성화 및 다음 동작 실행
+        // 완료 후 비활성화함
         seq.OnComplete(() =>
         {
-            alarmPanel.gameObject.SetActive(false);
+            _alarmPanel.gameObject.SetActive(false);
             onComplete?.Invoke();
         });
     }
 
-/// <summary>
-/// 닫기 버튼 로직
-/// </summary>
-private void OnConfirmClicked()
+    /// <summary>
+    /// 배터리 팝업 닫기 버튼 클릭 시 애니메이션 처리함
+    /// </summary>
+    private void OnConfirmClicked()
     {
-        Transform target = t_BatteryCharge != null ? t_BatteryCharge : batteryChargePanel.transform;
+        Transform target = _t_BatteryCharge != null ? _t_BatteryCharge : _batteryChargePanel.transform;
 
-        // 닫을 때는 작아지면서 사라짐 (InBack)
+        // 작아지면서 사라지는 연출 실행함
         target.DOKill();
         target.DOScale(0f, 0.25f)
             .SetEase(Ease.InBack)
             .SetUpdate(true)
             .OnComplete(() =>
             {
-                // 애니메이션 끝난 후 비활성화
-                if (batteryChargePanel != null) batteryChargePanel.SetActive(false);
+                if (_batteryChargePanel != null) _batteryChargePanel.SetActive(false);
 
-                onConfirmCallback?.Invoke();
-                onConfirmCallback = null;
+                _onConfirmCallback?.Invoke();
+                _onConfirmCallback = null;
             });
     }
 
+    /// <summary>
+    /// 아이템 사용 여부를 묻는 확인 팝업을 띄움
+    /// </summary>
+    public void ShowConfirmPopup(string title, string message, Action onYes, Action onNo, Sprite itemIcon = null)
+    {
+        if (_confirmPanel == null)
+        {
+            Debug.LogError("Confirm Panel 미할당됨");
+            onNo?.Invoke();
+            return;
+        }
+
+        _confirmPanel.SetActive(true);
+
+        if (_titleText != null) _titleText.text = title;
+        if (_explanText != null) _explanText.text = message;
+
+        // 예 버튼 이벤트 연결함
+        if (_btnYes != null)
+        {
+            _btnYes.onClick.RemoveAllListeners();
+            _btnYes.onClick.AddListener(() =>
+            {
+                _confirmPanel.SetActive(false);
+                onYes?.Invoke();
+            });
+        }
+
+        // 아니오 버튼 이벤트 연결함
+        if (_btnNo != null)
+        {
+            _btnNo.onClick.RemoveAllListeners();
+            _btnNo.onClick.AddListener(() =>
+            {
+                _confirmPanel.SetActive(false);
+                onNo?.Invoke();
+            });
+        }
+
+        // 아이템 아이콘 표시 여부 처리함
+        if (_itemImg != null)
+        {
+            if (itemIcon != null)
+            {
+                _itemImg.sprite = itemIcon;
+                _itemImg.gameObject.SetActive(true);
+            }
+            else
+            {
+                _itemImg.gameObject.SetActive(false);
+            }
+        }
+
+        // 팝업 등장 애니메이션 실행함
+        _confirmPanel.transform.localScale = Vector3.zero;
+        _confirmPanel.transform.DOScale(1f, 0.3f).SetEase(Ease.OutBack).SetUpdate(true);
+    }
+
+    /// <summary>
+    /// 오답 시 화면 붉어짐 및 흔들림 효과를 재생함
+    /// </summary>
     private void PlayMistakeFx()
     {
-        // 빨간 플래시
+        // 붉은색 플래시 효과 줌
         if (_damageOverlay != null)
         {
             _damageOverlay.DOKill();
@@ -171,14 +259,14 @@ private void OnConfirmClicked()
             _damageOverlay.color = c;
 
             _damageOverlay
-                .DOFade(0.5f, 0.08f)   // 빠르게 반투명 빨강
+                .DOFade(0.5f, 0.08f)
                 .OnComplete(() =>
                 {
-                    _damageOverlay.DOFade(0f, 0.25f); // 부드럽게 사라짐
+                    _damageOverlay.DOFade(0f, 0.25f);
                 });
         }
 
-        // 화면 흔들기
+        // 화면 흔들기 효과 줌
         if (_shakeTarget != null)
         {
             _shakeTarget.DOKill();
@@ -197,6 +285,8 @@ private void OnConfirmClicked()
                 });
         }
     }
+
+    // 이벤트 구독 및 해제함
     private void OnEnable()
     {
         GameEvents.OnMistakeHit += PlayMistakeFx;
@@ -209,7 +299,7 @@ private void OnConfirmClicked()
 
 
     /// <summary>
-    /// 키보드 상태를 토글하는 함수
+    /// 키보드 패널을 열거나 닫음
     /// </summary>
     public void ToggleKeyboard()
     {
@@ -226,7 +316,7 @@ private void OnConfirmClicked()
     }
 
     /// <summary>
-    /// 키보드를 펴는 함수
+    /// 키보드 패널을 애니메이션과 함께 엶
     /// </summary>
     public void OpenKeyboard()
     {
@@ -240,10 +330,11 @@ private void OnConfirmClicked()
     }
 
     /// <summary>
-    /// 키보드를 접는 함수
+    /// 키보드 패널을 애니메이션과 함께 닫음
     /// </summary>
     public void CloseKeyboard()
     {
+        KeyBoardManager.ClosePanelAndRestore();
         PageIcon.SetActive(true);
         if (!_isKeyboardOpen) return;
         _isKeyboardOpen = false;
@@ -251,21 +342,15 @@ private void OnConfirmClicked()
         _keyboardRect
             .DOAnchorPos(_hidePosition, _animationDuration)
             .SetEase(Ease.InCirc)
-            .SetUpdate(true); // 타임 스케일 무시
+            .SetUpdate(true);
     }
 
-    public void Test_PopUp()
+
+    public void OnClickResetButton()
     {
-        NoticeManager.Instance.ShowTimed("3초뒤 닫힘", 3f);
-    }
-    public void Test_PopUp2()
-    {
-        NoticeManager.Instance.ShowSticky("X버튼을 눌러야 닫힘");
-    }
-    public void Test_PopUp3()
-    {
-        var handle = NoticeManager.Instance.ShowManual("사용자가 임의로 닫으면 안됨");
-        // 작업 진행 후 닫는 요청 보내기 (현재는 바로 닫아서 실행이 안 되는것 처럼 보임)
-        handle.Dismiss();
+        FileManager.Instance.ClearAllData();
+
+        // 배터리 시스템 등 Start()에서 초기화되는 녀석들을 위해 씬을 새로고침 해주는 것이 좋습니다.
+        UnityEngine.SceneManagement.SceneManager.LoadScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene().name);
     }
 }

@@ -1,381 +1,479 @@
 using System;
 using System.IO;
 using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
+using System.Collections;
 using WordEater.Data;
 using WordEater.Services;
 using WordEater.Systems;
-using UnityEngine.SceneManagement;
-using static UnityEngine.EventSystems.EventTrigger;
-using System.Collections;
-using UnityEngine.UI;
 
 namespace WordEater.Core
 {
     /// <summary>
-    /// 한 마리 워드 이터의 생애 주기를 관리하는 상태 머신
+    /// 워드 이터의 생애 주기와 상태를 관리하는 메인 클래스임
     /// </summary>
     public class WordEater : MonoBehaviour
     {
-        [Header("할당")]
-        [SerializeField] private GrowthConfig growthConfig;          // 단계 규칙 SO
-        [SerializeField] private WordAssignmentService wordService;  // 단어 배정 
-        [SerializeField] private BatterySystem battery;
-        [SerializeField] private SubmitManager submitmanager;
-        [SerializeField] private GameManager gamemanager;
-        [SerializeField] private GalleryUIManager galleryUIManager;
+        #region [Dependencies & Config]
+        [Header("시스템 연결")]
+        [SerializeField] private WordAssignmentService wordService;  // 단어 배정 서비스
+        [SerializeField] private BatterySystem battery;              // 배터리 시스템
+        [SerializeField] private SubmitManager submitmanager;        // 제출 관리자
+        [SerializeField] private GameManager gamemanager;            // 게임 매니저
+        [SerializeField] private GalleryUIManager galleryUIManager;  // 도감 UI
+        [SerializeField] private FileManager filemanager;            // 파일 관리자
 
+        [Header("에셋 연결")]
+        [SerializeField] private Sprite[] stageSprites;      // 0:Bit, 1:Byte, 2:Word 단계별 이미지
+        [SerializeField] private Sprite reviveTicketSprite;  // 부활권 아이콘
+        #endregion
 
-        [SerializeField] private Sprite BitImg;
-        [SerializeField] private Sprite ByteImg;
-        [SerializeField] private Sprite WordImg;
-        [SerializeField] private bool isDead = false;
+        #region [State Data]
+        [Header("런타임 상태")]
+        [SerializeField] private GrowthStage stage = GrowthStage.Bit; // 현재 성장 단계
+        [SerializeField] private string currentAnswer;                // 현재 정답 단어
+        private WordEntry currentEntry;                               // 현재 단어 데이터 (연관어 포함)
+        private string pendingEvoId;                                  // 진화 전까지 사용할 임시 ID
 
-        [Header("Runtime (read-only)")]
-        [SerializeField] private GrowthStage stage = GrowthStage.Bit; // 현재 단계
-        [SerializeField] private string currentAnswer;                // 현재 정답(프로토타입용 노출)
+        /// <summary>
+        /// 현재 사망 상태인지 확인하는 프로퍼티임
+        /// </summary>
+        public bool isDead { get; private set; } = false;
 
-        private WordEntry currentEntry; // 현재 단어 데이터(주제/연관어 포함)
+        // 이미지 컴포넌트 캐싱용 변수임
+        private Image _targetImage;
+        private Image TargetImage => _targetImage ? _targetImage : (_targetImage = GetComponent<Image>());
+        #endregion
 
-        private string pendingEvoId; // Bit/Byte 동안 쓸 임시 키
-        private GrowthStage currentStage = GrowthStage.Bit;
+        // [외부 접근용 프로퍼티]
+        public WordEntry CurrentEntry => currentEntry;
+        public GrowthStage CurrentStage => stage;
+        public string Answer => currentAnswer;
 
         private void Awake()
         {
         }
 
+        #region [Initialization & Stage Management]
+
         /// <summary>
-        /// 단계 시작(턴/오답 초기화 + 단어 배정)
+        /// 저장된 파일 데이터를 기반으로 워드이터 상태를 복구함
         /// </summary>
-        public void BeginStage(GrowthStage s, bool initial = false)
+        public void LoadFromSaveData(int level, string savedAnswer)
         {
+            // 레벨 범위 벗어나지 않게 클램핑함
+            stage = (GrowthStage)Mathf.Clamp(level, 0, 2);
+
+            // 초기 단어 데이터 로드하고 저장된 정답으로 덮어씌움
+            currentEntry = wordService.PickInitialWord();
+            currentEntry.word = savedAnswer;
+            currentAnswer = currentEntry.word;
+
+            // 외형 업데이트하고 이벤트 알림
+            UpdateVisuals();
+            NotifyNewWordAssigned();
+            SaveCheckpoint();
+        }
+
+        /// <summary>
+        /// 단계를 시작하거나 초기화함
+        /// </summary>
+        public void BeginStage(GrowthStage nextStage, bool initial = false)
+        {
+            // 히스토리 초기화함
             gamemanager.HistoryLIne = "";
 
-            //처음 (다시시작이나 게임 클리어 포함)
             if (initial)
             {
-                //BIT상태로 변경
-                stage = GrowthStage.Bit;
-                var sr = GetComponent<Image>();
-                if (sr != null)
-                {
-                    sr.sprite = BitImg;
-                }
-
-                // 죽은 상태 해제
-                isDead = false;
-
-                if (battery != null)
-                {
-                    battery.RefillToMax(); // 배터리를 최대로 채움
-                }
-
-                // 현재 단어 선택
-                currentEntry = wordService.PickInitialWord();
-
-                //  임시 키 생성 (한 생애 내내 고정)
-                pendingEvoId = $"evo_{System.DateTime.UtcNow.Ticks}";
-
-                //  Bit 썸네일을 임시 키로 저장
-                if (sr != null)
-                    GalleryCapture.SaveSpriteThumb(sr, $"thumb_{pendingEvoId}_s0", 256);
-
-                string currentScene = SceneManager.GetActiveScene().name;
-
-                if (currentScene != "TutoScene")
-                {
-                    submitmanager.OnRelevantButton();
-                }
+                // 완전 초기화일 경우 Bit 상태로 리셋함
+                ResetToBitConfig();
             }
             else
             {
-                var sr = GetComponent<Image>();
-                if (s == GrowthStage.Byte)
-                {
-                    if (sr != null) sr.sprite = ByteImg;
-                    //  Byte 썸네일을 임시 키로 저장
-                    if (sr != null)
-                        GalleryCapture.SaveSpriteThumb(sr, $"thumb_{pendingEvoId}_s1", 256);
-                }
-                else if (s == GrowthStage.Word)
-                {
-                    if (sr != null) sr.sprite = WordImg;
-                }
+                // 다음 단계로 설정함
+                stage = nextStage;
             }
 
-            if (GameReviveSystem.Instance != null && battery != null)
-            {
-                GameReviveSystem.Instance.SaveCheckpoint(this, battery.CurrentPercent);
-            }
+            UpdateVisuals();
+            SaveCheckpoint();
 
-            currentAnswer = currentEntry.word;
-            GameEvents.OnNewWordAssigned?.Invoke(currentAnswer); // UI: "새 단어 등장" (정답 직접 노출 대신 디버그/프로토타입용)
+            // 현재 상태를 파일에 저장함
+            filemanager.SaveWordEaterInfo((int)stage, currentAnswer, gamemanager.HistoryLIne);
+            NotifyNewWordAssigned();
         }
 
+        /// <summary>
+        /// Bit 단계(새 게임)로 모든 상태를 리셋함
+        /// </summary>
+        private void ResetToBitConfig()
+        {
+            stage = GrowthStage.Bit;
+            isDead = false;
+            enabled = true;
+
+            // 배터리 가득 채움
+            if (battery != null) battery.RefillToMax();
+
+            // 새 단어 뽑고 이번 생애의 고유 ID 생성함
+            currentEntry = wordService.PickInitialWord();
+            currentAnswer = currentEntry.word;
+            pendingEvoId = $"evo_{System.DateTime.UtcNow.Ticks}";
+
+            // 초기 썸네일 캡처함
+            CaptureThumbnail($"thumb_{pendingEvoId}_s0");
+
+            // 튜토리얼 씬이 아니면 관련 단어 버튼 활성화함
+            if (SceneManager.GetActiveScene().name != "TutoScene")
+            {
+                submitmanager.OnRelevantButton();
+            }
+        }
 
         /// <summary>
-        /// 데이터 주입(정답/오답 판정, 다음 문제 배정, 진화 체크)
+        /// 현재 단계에 맞는 스프라이트로 교체하고 썸네일을 캡처함
+        /// </summary>
+        private void UpdateVisuals()
+        {
+            if (TargetImage == null) return;
+
+            // 단계에 맞는 스프라이트 적용함
+            int index = (int)stage;
+            if (stageSprites != null && index >= 0 && index < stageSprites.Length)
+            {
+                TargetImage.sprite = stageSprites[index];
+            }
+
+            // 살아있을 때만 썸네일 저장함
+            if (!isDead)
+            {
+                string suffix = stage == GrowthStage.Bit ? "s0" : (stage == GrowthStage.Byte ? "s1" : "s2");
+                CaptureThumbnail($"thumb_{pendingEvoId}_{suffix}");
+            }
+        }
+        #endregion
+
+        #region [Game Loop]
+
+        /// <summary>
+        /// 제출 전 배터리 비용을 지불할 수 있는지 확인함
+        /// </summary>
+        public bool TryPayForSubmit()
+        {
+            if (isDead) return false;
+
+            ActionType costType = GetSubmitAction();
+
+            // 1 배터리 소모 시도함
+            if (!battery.TryConsume(costType))
+            {
+                // 배터리 부족하면 알림 띄우고 실패 처리함
+                NoticeManager.Instance.ShowSticky("배터리가 부족합니다");
+                return false;
+            }
+
+            // 2 소모 후 배터리가 0 이하가 되었는지 체크함
+            if (battery.CurrentPercent <= 0)
+            {
+                Debug.Log("[결제 후 소진] 사망 처리");
+                StartCoroutine(DieSequenceRoutine());
+                return false; // 사망했으므로 로직 중단함
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// 유저 입력을 받아 정답 여부를 판정하고 결과를 처리함
         /// </summary>
         public void DoFeedData(string userInput)
         {
-
             if (isDead) return;
 
-            ActionType submitAction = GetSubmitAction();
-            // 배터리가 부족해서 아예 행동을 못하는 경우 -> 즉시 사망 처리
-            if (!battery.TryConsume(submitAction))
-            {
-                StartCoroutine(DieAfterMistakeFx());
-                return;
-            }
+            // 정답 판정 수행함
+            bool isCorrect = CheckAnswer(userInput);
+            GameEvents.OnFeedResult?.Invoke(userInput, isCorrect);
 
-            // 정답 판정
-            bool ok = IsCorrect(userInput, currentAnswer);
-            GameEvents.OnFeedResult?.Invoke(userInput, ok);
-
-            if (ok)
+            if (isCorrect)
             {
-                // 정답인 경우는 원래 흐름대로
-                EvolveOrFinish();
+                // 정답이면 진화 로직 실행함
+                ProcessEvolution();
             }
             else
             {
-                HandleMistakeFeedback();
+                // 오답이면 피드백 줌
+                HandleMistake();
             }
+
+            // 행동 후 배터리가 방전되었는지 한번 더 체크함
             if (battery.CurrentPercent <= 0)
             {
-                StartCoroutine(DieAfterMistakeFx());
+                StartCoroutine(DieSequenceRoutine());
             }
-
-        }
-        private void HandleMistakeFeedback()
-        {
-            Debug.Log("오답! 배터리만 소모됨.");
-
-            // 기존 TurnController에 있던 기능 이식
-            GameEvents.RaiseMistakeHit(); // 오답 UI 연출 (화면 흔들림 등)
-            Handheld.Vibrate();           // 진동
-        }
-
-        private IEnumerator DieAfterMistakeFx()
-        {
-            yield return new WaitForSeconds(0.35f);
-            WordEaterDie();
-        }
-        // 내부 로직
-
-        private bool IsCorrect(string input, string answer)
-        {
-            // v1: 완전 일치. v2: 유사도(레벤슈타인/임베딩) 도입.
-            return string.Equals(input.Trim(), answer.Trim(), System.StringComparison.Ordinal);
         }
 
         /// <summary>
-        /// 단계 종료 처리(다음 단계 or 성체)
-        /// - 현재 단계가 최종 단계(Word)이면: 도감에 등록하고 엔딩 처리
-        /// - 아니면: 다음 단계로 진화
+        /// 입력값과 정답을 비교함
         /// </summary>
-        private void EvolveOrFinish()
+        private bool CheckAnswer(string input)
         {
+            return string.Equals(input.Trim(), currentAnswer.Trim(), StringComparison.Ordinal);
+        }
+
+        /// <summary>
+        /// 오답 시 진동 등 피드백을 처리함
+        /// </summary>
+        private void HandleMistake()
+        {
+            GameEvents.RaiseMistakeHit();
+            Handheld.Vibrate();
+        }
+
+        /// <summary>
+        /// 정답을 맞췄을 때 다음 단계로 진화하거나 엔딩을 봄
+        /// </summary>
+        private void ProcessEvolution()
+        {
+            // 이미 최종 단계(Word)라면 엔딩 처리함
             if (stage == GrowthStage.Word)
             {
-                // 성체 달성 → UI/연출 등 외부 구독자에게 알림
-                GameEvents.OnEvolved?.Invoke(stage);
-
-                // 성체가 되었으므로 "도감"에 현재 개체를 등록
-                RegisterToGallery();
-
-                // 게임 클리어 처리(엔딩 등)
-                gamemanager.EndingController(2);
-                galleryUIManager.Refresh();
+                HandleEnding();
                 return;
             }
 
-            // (성체가 아니라면) 다음 단계 단어 배정 및 진화
+            // 다음 단계 연관 단어를 배정받음
             currentEntry = wordService.PickNextLinkedWord(currentEntry, stage);
             currentAnswer = currentEntry.word;
-            GameEvents.OnNewWordAssigned?.Invoke(currentAnswer);
 
-            // 배터리 채워주기
+            // 단계 상승시키고 배터리 채워줌
+            stage++;
             battery.RefillToMax();
 
-            stage = (GrowthStage)((int)stage + 1);
+            // 보상 아이템 지급함
+            ItemDropManager.Instance.ObtainRandomItem();
             GameEvents.OnEvolved?.Invoke(stage);
 
+            // 다음 단계 시작함
             BeginStage(stage);
         }
 
         /// <summary>
-        /// 사망 처리(휴지통/광고 보상 등 훅)
+        /// 게임 클리어 엔딩을 처리하고 도감에 등록함
         /// </summary>
-        private void WordEaterDie()
+        private void HandleEnding()
+        {
+            GameEvents.OnEvolved?.Invoke(stage);
+            RegisterToGallery();
+            ItemDropManager.Instance.ObtainRandomItem();
+
+            gamemanager.EndingController(2);
+            galleryUIManager.Refresh();
+        }
+
+        #endregion
+
+        #region [Death & Revive]
+
+        /// <summary>
+        /// 사망 연출을 위해 약간의 딜레이를 줌
+        /// </summary>
+        private IEnumerator DieSequenceRoutine()
+        {
+            yield return new WaitForSeconds(0.35f);
+            OnDeath();
+        }
+
+        /// <summary>
+        /// 실제 사망 처리를 수행하고 부활 로직을 시작함
+        /// </summary>
+        private void OnDeath()
         {
             if (isDead) return;
             isDead = true;
+            enabled = false;
             GameEvents.OnDied?.Invoke();
 
-            enabled = false;
-
-            // 알림창이 다 뜨고 사라진 뒤(콜백) -> 광고 팝업 로직 실행
-            UIManager.Instance.ShowEmergencyAlarm(currentAnswer, 2.0f, () =>
-            {
-                // 알림창 종료 후 광고 팝업 로직
-                if (GameReviveSystem.Instance != null)
-                {
-                    Debug.Log("광고 팝업 띄울겨");
-                    GameReviveSystem.Instance.OnPlayerDied(onGiveUp: () =>
-                    {
-                        // 광고 보기를 거절(X버튼)했을 때 -> 게임 오버(배터리 방전) 연출
-                        gamemanager.EndingController(1);
-                    });
-                }
-                else
-                {
-                    // 시스템이 없으면 바로 게임오버
-                    gamemanager.EndingController(1);
-                }
-            });
+            // 부활권 보유 여부부터 체크함
+            CheckReviveTicketAvailability();
         }
 
-        // 부활시
-        public void Reactivate()
+        /// <summary>
+        /// 부활권 아이템이 있는지 확인함
+        /// </summary>
+        private void CheckReviveTicketAvailability()
         {
-            isDead = false;       // 죽은 상태 해제
-            enabled = true;       // 다시 동작
-                                  // 필요하면 무적 타이머/상태 초기화/입력언락 등을 여기서 처리
+            int ticketCount = ItemManager.Instance.GetCount(ItemType.ReviveTicket);
+
+            if (ticketCount > 0)
+            {
+                // 부활권이 있으면 팝업으로 물어봄
+                UIManager.Instance.ShowConfirmPopup(
+                    "부활권 사용",
+                    $"부활권을 사용하여 이어하시겠습니까?\n(남은 개수: {ticketCount}개)",
+                    onYes: TryUseReviveTicket,
+                    onNo: ShowAnswerAndTriggerAdLogic,
+                    itemIcon: reviveTicketSprite
+                );
+            }
+            else
+            {
+                // 없으면 바로 정답 공개 후 광고 로직으로 넘어감
+                ShowAnswerAndTriggerAdLogic();
+            }
         }
 
-        // 현재 스테이지에 맞는 제출 액션을 반환하는 함수
+        /// <summary>
+        /// 부활권 사용을 시도함
+        /// </summary>
+        private void TryUseReviveTicket()
+        {
+            if (ItemManager.Instance.TryUseItem(ItemType.ReviveTicket))
+            {
+                RevivePlayer();
+                NoticeManager.Instance.ShowSticky("부활권 사용! 단어를 다시 맞춰보세요.");
+            }
+            else
+            {
+                // 사용 실패 시(혹시 모를 오류) 광고 로직으로 넘어감
+                ShowAnswerAndTriggerAdLogic();
+            }
+        }
+
+        /// <summary>
+        /// 정답을 보여주고 확인 시 광고 부활 로직을 호출함
+        /// </summary>
+        private void ShowAnswerAndTriggerAdLogic()
+        {
+            UIManager.Instance.ShowEmergencyAlarm("정답단어", currentAnswer, 2.0f, CheckAdRevive);
+        }
+
+        /// <summary>
+        /// 광고 시스템을 통해 부활 기회를 제공함
+        /// </summary>
+        private void CheckAdRevive()
+        {
+            if (GameReviveSystem.Instance != null)
+            {
+                // 광고 보고 부활할지 포기할지 결정함
+                GameReviveSystem.Instance.OnPlayerDied(onGiveUp: () =>
+                {
+                    gamemanager.EndingController(1); // 포기하면 게임오버
+                });
+            }
+            else
+            {
+                // 시스템 없으면 바로 게임오버
+                gamemanager.EndingController(1);
+            }
+        }
+
+        /// <summary>
+        /// 플레이어를 다시 활성화하고 배터리를 채움
+        /// </summary>
+        public void RevivePlayer()
+        {
+            isDead = false;
+            enabled = true;
+            battery.RefillToMax();
+        }
+
+        #endregion
+
+        #region [Helpers]
+
+        // 새 단어가 할당되었음을 이벤트로 알림
+        private void NotifyNewWordAssigned() => GameEvents.OnNewWordAssigned?.Invoke(currentAnswer);
+
+        // 현재 상태를 체크포인트에 저장함
+        private void SaveCheckpoint()
+        {
+            if (GameReviveSystem.Instance != null && battery != null)
+            {
+                GameReviveSystem.Instance.SaveCheckpoint(this, battery.CurrentPercent);
+            }
+        }
+
+        // 현재 단계에 따른 제출 비용 타입을 반환함
         private ActionType GetSubmitAction()
         {
             switch (stage)
             {
                 case GrowthStage.Byte: return ActionType.SubmitByte;
                 case GrowthStage.Word: return ActionType.SubmitWord;
-                default: return ActionType.SubmitBit; // 기본값 Bit
+                default: return ActionType.SubmitBit;
             }
         }
 
-
-        public void RestoreAnswer(string answer, GrowthStage s)
+        // 현재 이미지를 캡처해서 파일로 저장함
+        private void CaptureThumbnail(string fileName)
         {
-            stage = s;
-            currentAnswer = answer;
-            GameEvents.OnNewWordAssigned?.Invoke(currentAnswer);
-
-            var sr = GetComponent<Image>();
-            if (sr != null)
-            {
-                if (stage == GrowthStage.Bit) sr.sprite = BitImg;
-                if (stage == GrowthStage.Byte) sr.sprite = ByteImg;
-                if (stage == GrowthStage.Word) sr.sprite = WordImg;
-            }
+            if (TargetImage != null)
+                GalleryCapture.SaveSpriteThumb(TargetImage, fileName, 256);
         }
 
-
-        public WordEntry returnCurrentEnrty()
-        {
-            return currentEntry;
-        }
-
-        public string CurrentAnswer => currentAnswer;
-
-        public GrowthStage ReturnStage()
-        {
-            return stage;
-        }
-
-        /// <summary>
-        /// [도감 등록] 성체 달성 시 현재 워드이터를 도감 JSON에 등록한다.
-        /// 동작 순서:
-        /// 1) 현재 단어/단계를 이용해 "고유 ID" 생성 (충돌 방지용)
-        /// 2) UI에 표시할 제목/카테고리(설명) 텍스트 구성
-        /// 3) 현재 SpriteRenderer의 스프라이트를 썸네일 PNG로 저장
-        /// 4) GalleryStore(싱글톤)로 Upsert → gallery.json에 반영
-        /// </summary>
+        // 현재 워드이터를 도감(JSON)에 등록함
         private void RegisterToGallery()
         {
-            var entry = currentEntry;
-
-            // 최종 키: Word 단계의 MakeStableId (예: "2-수학")
-            string finalId = MakeStableId(entry);
-
-            // 임시 경로/최종 경로
+            string finalId = $"{currentEntry.stage}-{currentEntry.word.Trim().Replace(" ", "")}";
             string baseDir = Application.persistentDataPath;
-            string tmpS0 = Path.Combine(baseDir, $"thumb_{pendingEvoId}_s0.png");
-            string tmpS1 = Path.Combine(baseDir, $"thumb_{pendingEvoId}_s1.png");
-            string finS0 = Path.Combine(baseDir, $"thumb_{finalId}_s0.png");
-            string finS1 = Path.Combine(baseDir, $"thumb_{finalId}_s1.png");
 
-            // Bit/Byte 파일을 최종 키 이름으로 이동(있을 때만)
-            MoveIfExists(tmpS0, finS0);
-            MoveIfExists(tmpS1, finS1);
+            // 임시 썸네일들을 최종 ID 이름으로 변경함
+            MoveThumbFile(baseDir, $"thumb_{pendingEvoId}_s0.png", $"thumb_{finalId}_s0.png");
+            MoveThumbFile(baseDir, $"thumb_{pendingEvoId}_s1.png", $"thumb_{finalId}_s1.png");
 
-            // Word 썸네일은 최종 키로 저장
-            var img = GetComponent<Image>();
+            // 최종 단계 썸네일 저장함
+            string finalS2Path = Path.Combine(baseDir, $"thumb_{finalId}_s2.png");
+            CaptureThumbnail($"thumb_{finalId}_s2");
 
-            string finS2 = Path.Combine(baseDir, $"thumb_{finalId}_s2.png");
-
-            // Image 컴포넌트를 넘겨서 저장
-            if (img != null)
-            {
-                GalleryCapture.SaveSpriteThumb(img, $"thumb_{finalId}_s2", 256);
-            }
-            else
-            {
-                Debug.LogError("WordEater에 Image 컴포넌트가 없습니다! 저장 실패.");
-            }
-
-            // 도감 등록: 대표 썸네일은 Word
+            // JSON 데이터 생성 및 업데이트함
             var item = new GalleryItem
             {
                 id = finalId,
-                displayName = entry.word,
-                desc = GetTopicForDisplay(entry),
-                thumbPath = finS2,
+                displayName = currentEntry.word,
+                desc = GetDisplayTopic(currentEntry),
+                thumbPath = finalS2Path,
                 dateCaught = System.DateTime.Now.ToString("yyyy-MM-dd")
             };
-            GalleryStore.Instance.Upsert(item);
+
+            if (FileManager.Instance != null)
+            {
+                FileManager.Instance.UpsertGalleryItem(item);
+            }
         }
 
-        static void MoveIfExists(string src, string dst)
+        // 파일 이름을 변경함 (덮어쓰기 처리 포함)
+        private void MoveThumbFile(string dir, string srcName, string dstName)
         {
+            string src = Path.Combine(dir, srcName);
+            string dst = Path.Combine(dir, dstName);
             try
             {
                 if (File.Exists(src))
                 {
-                    // 덮어쓰기 방지: 기존 있으면 삭제
                     if (File.Exists(dst)) File.Delete(dst);
                     File.Move(src, dst);
                 }
             }
-            catch (System.Exception ex)
-            {
-                Debug.LogWarning($"[Gallery] Move fail {src} -> {dst} : {ex.Message}");
-            }
+            catch { }
         }
-        /// <summary>
-        /// [도감 고유키 생성] 단어가 중복될 수 있으므로 "단계-단어" 형태로 고정 키를 만든다.
-        /// 예: stage=2, word="수학" → "2-수학"
-        /// </summary>
-        static string MakeStableId(WordEntry e)
+
+        // 도감에 표시할 카테고리 주제를 가져옴
+        private string GetDisplayTopic(WordEntry e)
         {
-            string slug = e.word.Trim().Replace(" ", ""); // 공백 제거 등 최소 정규화
-            return $"{e.stage}-{slug}";
+            if (e.stage == 2) return e.word;
+            return (e.related != null && e.related.Length > 0) ? e.related[0] : "기타";
         }
 
         /// <summary>
-        /// [표시용 카테고리 텍스트] 데이터 구조상 topic 필드는 없으므로 다음 규칙 적용:
-        /// - Word(2단계)는 상위 개념이므로 "자기 자신"을 카테고리로 사용
-        /// - Bit/Byte는 related[] 첫 번째 항목을 대표 카테고리로 사용
-        /// - 없을 경우 "기타"
+        /// 데이터 복구용 메서드임 (ReviveSystem 등에서 사용)
         /// </summary>
-        static string GetTopicForDisplay(WordEntry e)
+        public void RestoreAnswer(string answer, GrowthStage s)
         {
-            if (e.stage == 2) return e.word;                     // 최상위 카테고리
-            if (e.related != null && e.related.Length > 0)
-                return e.related[0];                              // 대표 카테고리 하나만 표시
-            return "기타";
+            stage = s;
+            currentAnswer = answer;
+            NotifyNewWordAssigned();
+            UpdateVisuals();
         }
-
+        #endregion
     }
 }
