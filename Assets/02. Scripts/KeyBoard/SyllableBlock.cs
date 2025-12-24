@@ -23,7 +23,13 @@ public class SyllableBlock : MonoBehaviour
 
     float _baseFontSize;
 
-    // ★ 복합 모음 테이블 (ㅗ+ㅣ=ㅚ 포함)
+    enum AnchorKind { Center, VowelSide, VowelBelow, Final }
+
+    // -------------------------
+    //   복합 모음 / 겹받침 테이블
+    // -------------------------
+
+    // ㅗ+ㅣ=ㅚ, ㅗ+ㅏ=ㅘ, ㅜ+ㅓ=ㅝ, ㅡ+ㅣ=ㅢ 등
     static readonly Dictionary<(string, string), string> VowelFuse = new()
     {
         { ("ㅗ", "ㅏ"), "ㅘ" }, { ("ㅏ", "ㅗ"), "ㅘ" },
@@ -37,7 +43,7 @@ public class SyllableBlock : MonoBehaviour
         { ("ㅡ", "ㅣ"), "ㅢ" }, { ("ㅣ", "ㅡ"), "ㅢ" },
     };
 
-    // ★ 겹받침 테이블
+    // 겹받침: ㄱ+ㅅ=ㄳ, ㄴ+ㅈ=ㄵ, ㄹ+ㄱ=ㄺ, ...
     static readonly Dictionary<(string, string), string> FinalFuse = new()
     {
         { ("ㄱ", "ㅅ"), "ㄳ" },
@@ -69,9 +75,10 @@ public class SyllableBlock : MonoBehaviour
         All.Remove(this);
     }
 
-    /// <summary>
-    /// 현재 블럭의 자모 상태를 세팅하고 label에 반영
-    /// </summary>
+    // -------------------------
+    //   label에 글자 반영
+    // -------------------------
+
     public void SetSyllable(string cho, string jung, string jong)
     {
         choseong = cho;
@@ -104,41 +111,51 @@ public class SyllableBlock : MonoBehaviour
     }
 
     // -------------------------
-    //   복합 모음 / 겹받침
+    //   복합 모음 / 겹받침 헬퍼
     // -------------------------
 
     static bool TryFuseVowel(string v1, string v2, out string fused)
     {
-        if (string.IsNullOrEmpty(v1) || string.IsNullOrEmpty(v2))
-        {
-            fused = null;
-            return false;
-        }
-
-        if (VowelFuse.TryGetValue((v1, v2), out fused))
-            return true;
-
         fused = null;
-        return false;
+        if (string.IsNullOrEmpty(v1) || string.IsNullOrEmpty(v2)) return false;
+        return VowelFuse.TryGetValue((v1, v2), out fused);
     }
 
     static bool TryFuseFinal(string t1, string t2, out string fused)
     {
-        if (string.IsNullOrEmpty(t1) || string.IsNullOrEmpty(t2))
-        {
-            fused = null;
-            return false;
-        }
-
-        if (FinalFuse.TryGetValue((t1, t2), out fused))
-            return true;
-
         fused = null;
-        return false;
+        if (string.IsNullOrEmpty(t1) || string.IsNullOrEmpty(t2)) return false;
+        return FinalFuse.TryGetValue((t1, t2), out fused);
     }
 
     // -------------------------
-    //   이 블럭이 해당 자모를 받을 수 있는지
+    //   역할별 스냅 기준 앵커 선택
+    // -------------------------
+
+    static RectTransform GetTargetAnchorForJamo(SyllableBlock block, JamoMagnet jamo)
+    {
+        if (!block || jamo == null) return null;
+
+        switch (jamo.role)
+        {
+            case JamoRole.Choseong:
+                return block.centerAnchor;
+
+            case JamoRole.Jungseong:
+                if (jamo.vowelAttach == VowelAttach.Side)
+                    return block.vowelSideAnchor ? block.vowelSideAnchor : block.centerAnchor;
+                else
+                    return block.vowelBelowAnchor ? block.vowelBelowAnchor : block.centerAnchor;
+
+            case JamoRole.Jongseong:
+                return block.finalAnchor ? block.finalAnchor : block.centerAnchor;
+        }
+
+        return block.centerAnchor;
+    }
+
+    // -------------------------
+    //   이 블럭이 자모를 받을 수 있는지
     // -------------------------
 
     bool CanAccept(JamoMagnet j, JamoRole asRole)
@@ -148,6 +165,7 @@ public class SyllableBlock : MonoBehaviour
         bool hasL = !string.IsNullOrEmpty(choseong);
         bool hasV = !string.IsNullOrEmpty(jungseong);
         bool hasT = !string.IsNullOrEmpty(jongseong);
+        string g = (j.glyph ?? "").Trim();
 
         switch (asRole)
         {
@@ -163,7 +181,7 @@ public class SyllableBlock : MonoBehaviour
                 if (!hasV) return true;
 
                 // 이미 모음이 있으면 → 복합 모음으로 합칠 수 있을 때만 허용
-                return TryFuseVowel(jungseong, j.glyph, out _);
+                return TryFuseVowel(jungseong, g, out _);
 
             case JamoRole.Jongseong:
                 // 초+중이 있어야 받침 허용
@@ -173,7 +191,7 @@ public class SyllableBlock : MonoBehaviour
                 if (!hasT) return true;
 
                 // 이미 받침 있으면 → 겹받침으로 합칠 수 있을 때만 허용
-                return TryFuseFinal(jongseong, j.glyph, out _);
+                return TryFuseFinal(jongseong, g, out _);
         }
 
         return false;
@@ -182,7 +200,7 @@ public class SyllableBlock : MonoBehaviour
     bool CanAccept(JamoMagnet j) => CanAccept(j, j.role);
 
     // -------------------------
-    //   실제로 블럭 내부 상태 갱신
+    //   실제로 블럭 상태 갱신 + 자모 제거
     // -------------------------
 
     bool AttachJamoWithRole(JamoMagnet j, JamoRole asRole)
@@ -235,10 +253,12 @@ public class SyllableBlock : MonoBehaviour
 
     // -------------------------
     //   자모를 가장 가까운 블럭에 붙이기
-    //   ↓ 여기서 "교 + ㅇ → 굥" 같은 거 위치 기반으로 처리
     // -------------------------
 
-    public static bool TrySnapJamoToAnyBlock(JamoMagnet jamo, Camera uiCam, bool createIfNone = false)
+    public static bool TrySnapJamoToAnyBlock(
+    JamoMagnet jamo,
+    Camera uiCam,
+    bool createIfNone = true)
     {
         if (!jamo) return false;
 
@@ -247,82 +267,98 @@ public class SyllableBlock : MonoBehaviour
 
         Vector2 jamoScreen = RectTransformUtility.WorldToScreenPoint(uiCam, jamoRT.position);
 
+        // 1. 기존 블럭 중 "centerAnchor" 기준으로 가장 가까운 것 찾기
         SyllableBlock bestBlock = null;
-        JamoRole bestRole = jamo.role;
-        float bestDist = float.MaxValue;
+        float bestBlockDist = float.MaxValue;
 
         foreach (var b in All)
         {
-            if (!b) continue;
+            if (!b || !b.centerAnchor) continue;
 
-            // 이 블럭에 대해 "어떤 역할로 붙일지" 후보들을 전부 본다.
-            void Consider(RectTransform anchor, JamoRole asRole)
+            Vector2 centerScreen = RectTransformUtility.WorldToScreenPoint(uiCam, b.centerAnchor.position);
+            float d = Vector2.Distance(jamoScreen, centerScreen);
+            if (d < b.snapRadius && d < bestBlockDist)
             {
-                if (!anchor) return;
-
-                Vector2 anchorScreen = RectTransformUtility.WorldToScreenPoint(uiCam, anchor.position);
-                float d = Vector2.Distance(jamoScreen, anchorScreen);
-                float radius = b.snapRadius;
-
-                if (d < radius && d < bestDist)
-                {
-                    bestDist = d;
-                    bestBlock = b;
-                    bestRole = asRole;
-                }
-            }
-
-            // 1) 자모가 원래 Jungseong이면, Side/Below 기준
-            if (jamo.role == JamoRole.Jungseong)
-            {
-                RectTransform anchor = null;
-                if (jamo.vowelAttach == VowelAttach.Side)
-                    anchor = b.vowelSideAnchor ? b.vowelSideAnchor : b.centerAnchor;
-                else
-                    anchor = b.vowelBelowAnchor ? b.vowelBelowAnchor : b.centerAnchor;
-
-                Consider(anchor, JamoRole.Jungseong);
-            }
-            // 2) 자모가 원래 Jongseong이면, finalAnchor 기준
-            else if (jamo.role == JamoRole.Jongseong)
-            {
-                RectTransform anchor = b.finalAnchor ? b.finalAnchor : b.centerAnchor;
-                Consider(anchor, JamoRole.Jongseong);
-            }
-            // 3) 자모가 Choseong이면, "초성"과 "받침" 두 가지 후보를 모두 본다.
-            else // jamo.role == JamoRole.Choseong
-            {
-                // (1) 초성 후보: 비어 있는 블럭에 붙을 때
-                if (b.centerAnchor)
-                    Consider(b.centerAnchor, JamoRole.Choseong);
-
-                // (2) 받침 후보: 이미 초+중이 완성된 블럭이라면 finalAnchor에 떨어졌을 때 종성으로 취급
-                if (!string.IsNullOrEmpty(b.choseong) &&
-                    !string.IsNullOrEmpty(b.jungseong) &&
-                    b.finalAnchor)
-                {
-                    Consider(b.finalAnchor, JamoRole.Jongseong);
-                }
+                bestBlock = b;
+                bestBlockDist = d;
             }
         }
 
-        // 근처에 스냅 가능한 블럭이 없으면
+        // 2. 근처 블럭이 없으면 새 블럭 생성 (옵션)
         if (!bestBlock)
         {
-            if (!createIfNone)
+            if (!createIfNone) return false;
+            if (!Prefab)
+            {
+                Debug.LogWarning("[SyllableBlock] Prefab not assigned");
                 return false;
+            }
 
-            // 자모 위치에 새 블럭을 만들고 싶으면 여기서 생성 로직을 추가하면 되지만,
-            // 지금 구조(자모끼리 합쳐서 블럭 생성)에서는 사용하지 않음.
-            return false;
+            var parent = jamoRT.parent as RectTransform;
+            var blockGO = Object.Instantiate(Prefab.gameObject, parent);
+            var blockRT = blockGO.GetComponent<RectTransform>();
+
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(parent, jamoScreen, uiCam, out var local);
+            blockRT.anchoredPosition = local;
+            blockRT.localScale = Vector3.one;
+
+            bestBlock = blockGO.GetComponent<SyllableBlock>();
+
+            // 드래그 설정 복사
+            var jamoDrag = jamo.GetComponent<DraggableWordUI>();
+            var blockDrag = blockGO.GetComponent<DraggableWordUI>();
+            if (jamoDrag && blockDrag)
+            {
+                blockDrag.Init(jamoDrag.DragRoot, jamoDrag.AllowedArea, jamoDrag.TrashArea, jamoDrag.UiCamera);
+            }
         }
 
-        // 최종적으로 선택된 블럭 + 역할로 붙이기
-        return bestBlock.AttachJamoWithRole(jamo, bestRole);
+        // 3. 이 블럭 안에서 "어느 앵커가 가장 가까운지"를 보고 역할 결정
+        RectTransform targetAnchor;
+        AnchorKind anchorKind = GetClosestAnchor(bestBlock, jamoScreen, uiCam, out targetAnchor);
+
+        // 기본은 자모의 원래 role
+        JamoRole effectiveRole = jamo.role;
+
+        // 블럭의 현재 상태
+        bool hasL = !string.IsNullOrEmpty(bestBlock.choseong);
+        bool hasV = !string.IsNullOrEmpty(bestBlock.jungseong);
+        bool hasT = !string.IsNullOrEmpty(bestBlock.jongseong);
+
+        switch (anchorKind)
+        {
+            case AnchorKind.Final:
+                // ★ 초성과 중성이 이미 있는 상태에서 아래(final)에 떨어지면 무조건 종성 취급
+                if (hasL && hasV)
+                    effectiveRole = JamoRole.Jongseong;
+                break;
+
+            case AnchorKind.VowelSide:
+            case AnchorKind.VowelBelow:
+                // 옆/아래 모음 자리면 중성으로 취급 (role이 Jong이어도 위치가 모음자리면 막을 수도 있음)
+                effectiveRole = JamoRole.Jungseong;
+                break;
+
+            case AnchorKind.Center:
+                // 가운데는 기본적으로 초성/중성 판단:
+                //  - 블럭이 완전히 비어 있으면 초성
+                //  - 초성이 없고, 자모가 모음이라면 중성으로도 처리 가능 (원하면 확장)
+                if (!hasL && !hasV && !hasT)
+                    effectiveRole = JamoRole.Choseong;
+                break;
+        }
+
+        // 4. 최종 역할을 가지고 실제 붙이기 시도
+        bool applied = bestBlock.AttachJamoWithRole(jamo, effectiveRole);
+        if (!applied)
+            return false;
+
+        return true;
     }
 
+
     // -------------------------
-    //   외부에서 화면 좌표에 블럭 생성하고 싶을 때
+    //   화면 좌표에 새 블럭 만들기
     // -------------------------
 
     public static SyllableBlock CreateBlockAtScreen(
@@ -345,4 +381,46 @@ public class SyllableBlock : MonoBehaviour
 
         return block;
     }
+
+    static AnchorKind GetClosestAnchor(
+    SyllableBlock block,
+    Vector2 jamoScreen,
+    Camera uiCam,
+    out RectTransform targetAnchor)
+    {
+        targetAnchor = null;
+
+        RectTransform center = block.centerAnchor;
+        RectTransform side = block.vowelSideAnchor;
+        RectTransform below = block.vowelBelowAnchor;
+        RectTransform final = block.finalAnchor;
+
+        float bestDist = float.MaxValue;
+        AnchorKind bestKind = AnchorKind.Center;
+        RectTransform bestAnchor = null;         
+
+        void TryCandidate(RectTransform rt, AnchorKind kind)
+        {
+            if (!rt) return;
+
+            Vector2 scr = RectTransformUtility.WorldToScreenPoint(uiCam, rt.position);
+            float d = Vector2.Distance(jamoScreen, scr);
+            if (d < bestDist)
+            {
+                bestDist = d;
+                bestKind = kind;
+                bestAnchor = rt;                
+            }
+        }
+
+        // 후보들 검사
+        TryCandidate(center, AnchorKind.Center);
+        TryCandidate(side, AnchorKind.VowelSide);
+        TryCandidate(below, AnchorKind.VowelBelow);
+        TryCandidate(final, AnchorKind.Final);
+
+        targetAnchor = bestAnchor;             
+        return bestKind;
+    }
 }
+
