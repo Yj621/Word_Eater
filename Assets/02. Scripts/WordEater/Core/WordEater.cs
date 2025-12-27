@@ -65,9 +65,8 @@ namespace WordEater.Core
             // 레벨 범위 벗어나지 않게 클램핑함
             stage = (GrowthStage)Mathf.Clamp(level, 0, 2);
 
-            // 초기 단어 데이터 로드하고 저장된 정답으로 덮어씌움
-            currentEntry = wordService.PickInitialWord();
-            currentEntry.word = savedAnswer;
+            // 초기 단어 데이터 로드하고 WordBank 에서 찾아서 매칭
+            currentEntry = wordService.PickWordFromFile(level,savedAnswer);
             currentAnswer = currentEntry.word;
 
             // 외형 업데이트하고 이벤트 알림

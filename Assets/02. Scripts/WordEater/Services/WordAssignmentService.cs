@@ -25,12 +25,25 @@ namespace WordEater.Services
             return pool[Random.Range(0, pool.Count)];
         }
 
+        public WordEntry PickWordFromFile(int stg , string fileWord)
+        {
+            // stage 중에 word가 있는 단어 선택
+            var pool = wordBank.entries
+                .Where(e => e.stage == stg && e.word == fileWord)
+                .ToList();
+
+            return pool.FirstOrDefault();
+        }
+
+
         /// <summary>
         /// 이전 단어와 topic/related 가 이어지는 후보를 우선 선택
         /// </summary>
         /// 
         public WordEntry PickNextLinkedWord(WordEntry prev, GrowthStage stage)
         {
+            Debug.Log(prev);
+
             int nextStage = (int)stage+1;
 
             // 현재 단어의 related에 있는 단어 중, 다음 단계에 속하는 단어만 선택
@@ -48,6 +61,7 @@ namespace WordEater.Services
                     .ToList();
             }
             */
+
 
             return pool[Random.Range(0, pool.Count)];
         }

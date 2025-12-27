@@ -6,32 +6,30 @@ namespace WordEater.Data
     [CreateAssetMenu(fileName = "WordBank", menuName = "WordEater/WordBank")]
     public class WordBank : ScriptableObject
     {
-        // 헷갈리지 않게 단어 리스트를 적어둠
-        // Bit : 주사위 , 거울 , 빛 , 호랑이 , 별 , 바람 , 강 , 나무 , 대화
-
-        // Byte : 확률 , 운 , 게임 , 반사 , 대칭 , 광선 , 파동 , 에너지 , 동물 , 상징 ,
-        //민속 , 중력 , 운명 , 흐름 , 날씨 , 지형 , 생명 , 성장 , 순환 , 논리 , 연산 , 정보
-        //소통 , 구조
-
-        // Word : 수학 , 통계 , 문화 , 철학 , 물리 , 광학 , 천문 , 소리 , 공학
-        //생물 , 자연 , 역사 , 지리 , 기상 , 지구 , 생태 , 데이터 , 언어 , 사회 , 예술
-
-
         public List<WordEntry> entries = new List<WordEntry>()
         {
             //Bit
             new WordEntry { word="주사위", stage=0, related=new[]{"확률","운","게임"} },
             new WordEntry { word="거울", stage=0, related=new[]{"반사","대칭","광선"} },
             new WordEntry { word="호랑이", stage=0, related=new[]{"동물","상징","민속"} },
-            new WordEntry { word="별", stage=0, related=new[]{"중력","천문","운명"} },
+            new WordEntry { word="별", stage=0, related=new[]{"중력","운명","에너지"} },
             new WordEntry { word="바람", stage=0, related=new[]{"흐름","날씨","에너지"} },
             new WordEntry { word="강", stage=0, related=new[]{"흐름","지형","생명"} },
-            new WordEntry { word="나무", stage=0, related=new[]{"성장","순환","생태"} },
-            new WordEntry { word="대화", stage=0, related=new[]{"소통","구조","사회"} },
+            new WordEntry { word="나무", stage=0, related=new[]{"성장","순환","조각"} },
+            new WordEntry { word="대화", stage=0, related=new[]{"소통","구조"} },
+            new WordEntry { word="빛", stage=0, related=new[]{"반사","광선","파동"} },
+            new WordEntry { word="가을", stage=0, related=new[]{"날씨","생명","성장"} },
+            new WordEntry { word="컴퓨터", stage=0, related=new[]{"논리","연산","정보"} },
+            new WordEntry { word="동상", stage=0, related=new[]{"상징","민속","조각"} },
+            new WordEntry { word="얼음", stage=0, related=new[]{"반사","지형","조각","음식"} },
+            new WordEntry { word="야구", stage=0, related=new[]{"게임","운","운동"} },
+            new WordEntry { word="김치", stage=0, related=new[]{"민속","음식","에너지"} },
+            new WordEntry { word="개미", stage=0, related=new[]{"동물","생명"} },
+            new WordEntry { word="독서", stage=0, related=new[]{"성장","정보","논리"} },
 
             // Byte
-            new WordEntry { word="확률", stage=1, related=new[]{"수학","통계","게임"} },
-            new WordEntry { word="운", stage=1, related=new[]{"수학","통계","게임"} },
+            new WordEntry { word="확률", stage=1, related=new[]{"수학","통계"} },
+            new WordEntry { word="운", stage=1, related=new[]{"수학","통계"} },
             new WordEntry { word="게임", stage=1, related=new[]{"수학","문화","예술"} },
             new WordEntry { word="반사", stage=1, related=new[]{"광학","물리","천문"} },
             new WordEntry { word="대칭", stage=1, related=new[]{"광학","물리","천문"} },
@@ -54,7 +52,9 @@ namespace WordEater.Data
             new WordEntry { word="정보", stage=1, related=new[]{"데이터","공학","수학"} },
             new WordEntry { word="소통", stage=1, related=new[]{"언어","사회","문화"} },
             new WordEntry { word="구조", stage=1, related=new[]{"언어","사회","문화"} },
-            new WordEntry { word="데이터", stage=1, related=new[]{"공학","수학","통계"} },
+            new WordEntry { word="조각", stage=1, related=new[]{"예술","철학","역사"} },
+            new WordEntry { word="운동", stage=1, related=new[]{"문화","생물","예술"} },
+            new WordEntry { word="음식", stage=1, related=new[]{"문화","생물","역사"} },
 
             // Word
             new WordEntry { word="수학", stage=2, related=new string[]{ } },
