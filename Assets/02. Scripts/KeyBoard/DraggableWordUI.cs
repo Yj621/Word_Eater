@@ -53,6 +53,7 @@ public class DraggableWordUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         cg.blocksRaycasts = true;
     }
 
+
     /// <summary>드래그 시작 시 호출</summary>
     public void OnBeginDrag(PointerEventData eventData)
     {
@@ -76,45 +77,59 @@ public class DraggableWordUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         }
     }
 
-    /// <summary>드래그 끝났을 때: 영역 판정 + 스냅 시도 + 삭제/환불 처리</summary>
     public void OnEndDrag(PointerEventData eventData)
     {
         try
         {
-            // 1) 쓰레기통에 드롭 → 삭제 + 환불
-            if (trashArea &&
-                RectTransformUtility.RectangleContainsScreenPoint(trashArea, eventData.position, uiCamera))
-            {
-                RefundAndDestroy();
-                return;
-            }
-
-            // 2) 허용 구역 밖에 드롭 → 삭제 + 환불
-            if (allowedArea &&
-                !RectTransformUtility.RectangleContainsScreenPoint(allowedArea, eventData.position, uiCamera))
-            {
-                RefundAndDestroy();
-                return;
-            }
-
-            // 3) 허용 구역 안에 있고, 자모라면 → 블럭 쪽으로 스냅 시도
             var magnet = GetComponent<JamoMagnet>();
-            if (magnet != null)
+
+            // 1) 쓰레기통에 바로 버리기
+            if (trashArea && RectTransformUtility.RectangleContainsScreenPoint(trashArea, eventData.position, uiCamera))
             {
-                // 실제 스냅 로직은 JamoMagnet/SyllableBlock 쪽에서 처리
-                magnet.TrySnap(dragRoot, uiCamera);
+                if (magnet != null)
+                {
+                    // 두트윈 애니 후 환불+삭제
+                    magnet.PlayTrashAnim(trashArea, RefundAndDestroy);
+                }
+                else
+                {
+                    RefundAndDestroy();
+                }
+                return;
             }
-            // 만약 SyllableBlock 자체를 드래그하는 프리팹이라면 magnet가 없을 수 있음
+
+            // 2) 처음 드래그부터 바로 범위 밖이면 그 자리에서 삭제
+            if (allowedArea && !RectTransformUtility.RectangleContainsScreenPoint(allowedArea, eventData.position, uiCamera))
+            {
+                if (magnet != null)
+                {
+                    magnet.PlayTrashAnim(null, RefundAndDestroy);   // 제자리 축소 삭제
+                }
+                else
+                {
+                    RefundAndDestroy();
+                }
+                return;
+            }
+
+            // 3) 허용구역 안이면 스냅/조립 로직
+            if (magnet)
+            {
+                bool snapped = magnet.TrySnap(dragRoot, uiCamera);
+                // TrySnap 내부에서 Syl 조립 / 삭제까지 처리하니까
+                // true면 여기서 끝, false면 그냥 지금 자리 유지
+                if (snapped) return;
+            }
         }
         finally
         {
-            // 드래그 종료 후 다시 Raycast 가능하게
             if (cg) cg.blocksRaycasts = true;
         }
     }
 
+
     /// <summary>이 조각을 제거하면서, 소비했던 키 개수를 되돌려준다.</summary>
-    void RefundAndDestroy()
+    public void RefundAndDestroy()
     {
         if (owner && sourceInventoryIndex >= 0)
         {

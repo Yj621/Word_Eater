@@ -28,6 +28,8 @@ public class SubmitManager : MonoBehaviour
             return;
         }
 
+        keyboardmanager.ConfirmUse();
+
         // 3. 서버 통신
         StartCoroutine(pythonConnectManager.SimilartyTwoWord(word1, word2, (result) =>
         {

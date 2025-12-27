@@ -8,6 +8,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject touchblockPanel;
 
     [SerializeField] private FileManager filemanager;
+    [SerializeField] private PhoneSwiper phoneSwiper;
 
     //인자가 두개씩 필요한 애들
 
@@ -216,6 +217,7 @@ public class GameManager : MonoBehaviour
         // 애니메이션
         panel.DOAnchorPos(targetLocal, 0.3f).SetEase(Ease.OutBack);
         panel.DOScale(Vector3.one, 0.3f).SetEase(Ease.OutBack);
+        phoneSwiper.isUsingTab = true;
     }
 
     private void HidePanelToButton(RectTransform panel, RectTransform btn)
@@ -234,6 +236,7 @@ public class GameManager : MonoBehaviour
              .SetEase(Ease.InBack)
              .SetUpdate(true)
              .OnComplete(() => panel.gameObject.SetActive(false));
+        phoneSwiper.isUsingTab = false;
     }
 
     // ---- 단일 인자 버전 (같은 Canvas에서만 사용 시) ----

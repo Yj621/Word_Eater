@@ -54,6 +54,8 @@ public class KeyBoardManager : MonoBehaviour
     bool InRange(int i) => (longPressKeys != null && i >= 0 && i < longPressKeys.Length);
     public int GetCount(int index) => (KeyCount.isReady ? KeyCount.Get(index) : 0);
 
+    Vector2 lastPointerScreenPos;
+
     // -----------------------------
     // 초기화
     // -----------------------------
@@ -303,6 +305,8 @@ public class KeyBoardManager : MonoBehaviour
             return;
         }
 
+        lastPointerScreenPos = screenPos;
+
         if (dragIsUI && dragUIRect)
         {
             var root = ResolveUISpawnRoot();
@@ -319,9 +323,40 @@ public class KeyBoardManager : MonoBehaviour
 
         if (IsPointerReleased(activePointerId))
         {
+            HandleInitialDropForUI();
             EndDrag();
         }
     }
+
+    void HandleInitialDropForUI()
+    {
+        if (!dragIsUI || !dragUIRect) return;
+
+        var drag = dragUIRect.GetComponent<DraggableWordUI>();
+
+        // 1) 쓰레기통 위 → 환불 + 삭제
+        if (trashArea &&
+            RectTransformUtility.RectangleContainsScreenPoint(
+                trashArea, lastPointerScreenPos, uiCamera))
+        {
+            if (drag != null) drag.RefundAndDestroy();
+            else Destroy(dragUIRect.gameObject);
+            return;
+        }
+
+        // 2) 허용 영역 밖 → 환불 + 삭제
+        if (allowedArea &&
+            !RectTransformUtility.RectangleContainsScreenPoint(
+                allowedArea, lastPointerScreenPos, uiCamera))
+        {
+            if (drag != null) drag.RefundAndDestroy();
+            else Destroy(dragUIRect.gameObject);
+            return;
+        }
+
+        // 3) 허용 영역 안이라면 그냥 그 자리에 남겨둠
+    }
+
 
     // -----------------------------
     // 프리팹 스폰 & 드래그 시작
@@ -346,7 +381,9 @@ public class KeyBoardManager : MonoBehaviour
             rt.pivot = new Vector2(0.5f, 0.5f);
             rt.anchoredPosition = local + (Vector2)spawnOffset;
             rt.localScale = Vector3.one;
-
+            var jamo = go.GetComponent<JamoMagnet>();
+            jamo.PlaySpawnAnim();
+            rt.SetAsLastSibling();
             var drag = go.GetComponent<DraggableWordUI>();
             drag.Init(root, allowedArea, trashArea, uiCamera);
             drag.BindSource(this, invIndex, amount);
@@ -362,6 +399,7 @@ public class KeyBoardManager : MonoBehaviour
             var sp = new Vector3(startScreen.x, startScreen.y, worldDepth);
             var worldPos = cam ? cam.ScreenToWorldPoint(sp) : buttonRT.position;
             var go = Instantiate(prefab, worldPos + spawnOffset, Quaternion.identity);
+            GetComponent<JamoMagnet>()?.PlaySpawnAnim();
 
             var drag = go.GetComponent<DraggableWordUI>();
             if (drag != null)
@@ -582,4 +620,17 @@ public class KeyBoardManager : MonoBehaviour
         if (buttons[index] == null || prefabs[index] == null) return false;
         return true;
     }
+
+    // KeyBoardManager 클래스 안 어딘가(public 메서드들 근처)에 추가
+    /// <summary>
+    /// 단어 제출 등으로 키 사용을 확정할 때 호출.
+    /// - 지금 세션에서 쓴 키(_sessionSpent)는 환불하지 않고 버린다.
+    /// - 화면 위에 놓인 조각들은 정리만 한다.
+    /// </summary>
+    public void ConfirmUse()
+    {
+        _sessionSpent.Clear();   // 환불 기록 버리기 (다시는 돌려주지 않음)
+        ClearAllSpawnedPieces(); // 화면에 남은 자모/Syl 블럭 제거
+    }
+
 }

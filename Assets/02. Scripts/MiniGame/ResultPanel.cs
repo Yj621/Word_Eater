@@ -8,7 +8,7 @@ public class ResultPanel : MonoBehaviour
     
     public void Init(bool isEasyMode, int clearCount)
     {
-        if (ModeText) ModeText.text = $"Mode : {(isEasyMode ? "Easy" : "Hard")} Mode";
-        if (ScoreText) ScoreText.text = $"Cleared {clearCount} MiniGames";
+        if (ModeText) ModeText.text = $"{(isEasyMode ? "이지" : "하드")} 모드";
+        if (ScoreText) ScoreText.text = $"{clearCount} 개의 미니게임 클리어!";
     }
 }

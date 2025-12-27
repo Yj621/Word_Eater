@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using DG.Tweening;
+using NUnit.Framework.Internal;
 using TMPro;
 using UnityEngine;
 
@@ -191,6 +193,11 @@ public class SyllableBlock : MonoBehaviour
         }
 
         SetSyllable(choseong, jungseong, jongseong);
+        PlayReceiveJamoAnim();
+        if (!string.IsNullOrEmpty(jongseong))
+        {
+            PlayFinalAttachAnim();      
+        }
         Object.Destroy(j.gameObject);
         return true;
     }
@@ -309,36 +316,36 @@ public class SyllableBlock : MonoBehaviour
         // 기본은 자모가 들고 있는 역할
         JamoRole attachRole = jamo.role;
 
-        // ★ 중요 로직:
-        // - 초+중이 이미 있고, 아래쪽(아래 모음/종성 앵커) 근처면 → 종성으로 강제
-        // - 그 외엔 모음앵커면 중성, 나머지는 prefab role 유지
         switch (kind)
         {
             case AnchorKind.VowelSide:
-                // 옆 모음 위치: 모음이면 중성, 자음이면 그냥 원래 role
-                if (jamo.role == JamoRole.Jungseong) attachRole = JamoRole.Jungseong;
+                // 옆 모음 위치 → 모음이면 중성
+                if (jamo.role == JamoRole.Jungseong)
+                    attachRole = JamoRole.Jungseong;
                 break;
 
             case AnchorKind.VowelBelow:
+                // 초+중 이미 있고, "자음"이 아래에 오면 종성
                 if (hasL && hasV && jamo.role != JamoRole.Jungseong)
                 {
-                    // 초+중 이미 있고 자음을 아래에 붙이면 → 종성
                     attachRole = JamoRole.Jongseong;
                 }
                 else if (jamo.role == JamoRole.Jungseong)
                 {
+                    // 모음이면 그냥 중성
                     attachRole = JamoRole.Jungseong;
                 }
                 break;
 
             case AnchorKind.Final:
-                // 종성 앵커 근처 = 무조건 종성
-                attachRole = JamoRole.Jongseong;
+                
+                if (jamo.role != JamoRole.Jungseong)
+                    attachRole = JamoRole.Jongseong;
                 break;
 
             case AnchorKind.Center:
             default:
-                // 중앙은 기본 역할 그대로
+                // 그대로 놔둠
                 break;
         }
 
@@ -366,4 +373,51 @@ public class SyllableBlock : MonoBehaviour
         rt.localScale = Vector3.one;
         return block;
     }
+
+    #region DOTween Animations
+
+    /// <summary>초+중이 합쳐져서 새 블럭이 태어날 때</summary>
+    public void PlayBirthAnim()
+    {
+        if (!label) return;
+
+        var rt = GetComponent<RectTransform>();
+        var cg = GetComponent<CanvasGroup>() ?? gameObject.AddComponent<CanvasGroup>();
+
+        rt.localScale = Vector3.one * 0.3f;
+        rt.localRotation = Quaternion.Euler(0, 0, Random.Range(-10f, 10f));
+        cg.alpha = 0f;
+
+        Sequence seq = DOTween.Sequence();
+        seq.Append(cg.DOFade(1f, 0.15f));
+        seq.Join(rt.DOScale(1.1f, 0.15f).SetEase(Ease.OutBack));
+        seq.Join(rt.DORotate(Vector3.zero, 0.15f));
+        seq.Append(rt.DOScale(1f, 0.08f));
+    }
+
+    /// <summary>모든 자모(초/중/종)가 붙을 때 공통으로 살짝 튀는 느낌</summary>
+    public void PlayReceiveJamoAnim()
+    {
+        if (!label) return;
+        var rt = label.rectTransform;
+
+        rt.DOKill();
+        rt.localScale = Vector3.one;
+        rt.DOPunchScale(Vector3.one * 0.2f, 0.12f, 10, 0.9f);
+    }
+
+    /// <summary>받침이 새로 생겼을 때 아래로 살짝 눌렸다 올라오는 느낌</summary>
+    public void PlayFinalAttachAnim()
+    {
+        var rt = GetComponent<RectTransform>();
+        rt.DOKill();
+
+        float originalY = rt.anchoredPosition.y;
+
+        Sequence seq = DOTween.Sequence();
+        seq.Append(rt.DOAnchorPosY(originalY - 6f, 0.06f));
+        seq.Append(rt.DOAnchorPosY(originalY, 0.08f).SetEase(Ease.OutQuad));
+    }
+
+    #endregion
 }
