@@ -87,7 +87,7 @@ public class AlgorithmMessage : MonoBehaviour
                 }
                 else
                 {
-                    resultText.text = $"유사도: {similarity.Value.ToString("F2")}";
+                    resultText.text = $"유사도 : {(similarity.Value * 100f).ToString("F0")}%";
                 }
             }
             else
