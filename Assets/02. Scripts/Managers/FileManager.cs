@@ -16,7 +16,7 @@ public class FileManager : MonoBehaviour
     // 자모음 개수
     // 오디오 볼륨
     // 히스토리
-    // 배경화면 << O
+    // 배경화면
 
     public static FileManager Instance { get; private set; }
 
@@ -38,6 +38,7 @@ public class FileManager : MonoBehaviour
         public int Level;
         public string Answer;
         public string History;
+        public List<string> Relevant;
     }
 
     [System.Serializable]
@@ -85,13 +86,14 @@ public class FileManager : MonoBehaviour
     // ========================================================================
     // [Part 1] 워드이터 게임 데이터 (레벨, 정답, 히스토리)
     // ========================================================================
-    public void SaveWordEaterInfo(int le, string an, string hi)
+    public void SaveWordEaterInfo(int le, string an, string hi, List<string> RR)
     {
         WordEaterData data = new WordEaterData
         {
             Level = le,
             Answer = an,
-            History = hi
+            History = hi,
+            Relevant = RR
         };
 
         string json = JsonUtility.ToJson(data, true);
@@ -110,7 +112,21 @@ public class FileManager : MonoBehaviour
         WordEaterData data = JsonUtility.FromJson<WordEaterData>(json);
 
         if (wordeater != null) wordeater.LoadFromSaveData(data.Level, data.Answer);
-        if (gamemanager != null) gamemanager.HistoryLIne = data.History;
+        if (gamemanager != null) { 
+            gamemanager.HistoryLIne = data.History;
+            gamemanager.RelevantResult = data.Relevant;
+        }
+    }
+
+    public void SaveRelevant(List<string> Rel)
+    {
+        if (!File.Exists(WordEaterPath)) return;
+
+        string json = File.ReadAllText(WordEaterPath);
+        WordEaterData data = JsonUtility.FromJson<WordEaterData>(json);
+        data.Relevant = Rel;
+
+        File.WriteAllText(WordEaterPath, JsonUtility.ToJson(data, true));
     }
 
     public void SaveHistory(string newHis)

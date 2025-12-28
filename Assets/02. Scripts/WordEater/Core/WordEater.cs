@@ -82,6 +82,7 @@ namespace WordEater.Core
         {
             // 히스토리 초기화함
             gamemanager.HistoryLIne = "";
+            gamemanager.RelevantResult.Clear();
 
             if (initial)
             {
@@ -98,7 +99,7 @@ namespace WordEater.Core
             SaveCheckpoint();
 
             // 현재 상태를 파일에 저장함
-            filemanager.SaveWordEaterInfo((int)stage, currentAnswer, gamemanager.HistoryLIne);
+            filemanager.SaveWordEaterInfo((int)stage, currentAnswer, gamemanager.HistoryLIne , gamemanager.RelevantResult);
             NotifyNewWordAssigned();
         }
 

@@ -2,6 +2,8 @@ using UnityEngine;
 using System.Collections;
 using DG.Tweening;
 using UnityEngine.UI;
+using System.Collections.Generic;
+
 public class GameManager : MonoBehaviour
 {
     [SerializeField] private WordEater.Core.WordEater wordeater;
@@ -55,6 +57,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] private ADPopup sharedAdPopup;
 
     public string HistoryLIne = "";
+    public List<string> RelevantResult = new List<string>();
+
 
     [Header("슬라이드 메니저")]
     [SerializeField] private SlideManager smanager;
