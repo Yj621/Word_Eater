@@ -9,65 +9,123 @@ public class SlideManager : MonoBehaviour
 
     public RectTransform SettingPanel;
     Vector2 originPos;
+    Vector2 tempPos;
 
+    Vector2 UpPos;
 
     public bool isOK = true;
+    public bool isSlide = false;
+
     void Awake()
     {
         originPos = SettingPanel.anchoredPosition;
+
     }
     void Update()
     {
-            if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0))
+        {
+            startPos = Input.mousePosition;
+        }
+
+        if (Input.GetMouseButton(0))
+        {
+            tempPos = Input.mousePosition;
+            DuringSilde();
+        }
+
+        if (Input.GetMouseButtonUp(0))
+        {
+            isSlide = false;
+            endPos = Input.mousePosition;
+            DetectSwipe();
+        }
+
+        // 모바일
+        if (Input.touchCount > 0)
+        {
+            Touch touch = Input.GetTouch(0);
+
+            if (touch.phase == TouchPhase.Began)
+                startPos = touch.position;
+
+            if (touch.phase == TouchPhase.Moved || touch.phase == TouchPhase.Stationary)
             {
-                startPos = Input.mousePosition;
+                tempPos = Input.mousePosition;
+                DuringSilde();
             }
 
-            if (Input.GetMouseButtonUp(0))
+            if (touch.phase == TouchPhase.Ended)
             {
-                endPos = Input.mousePosition;
-
+                endPos = touch.position;
                 DetectSwipe();
             }
+        }
+    }
 
-            if (Input.touchCount > 0)
+    private void DuringSilde()
+    {
+        float swipeY = startPos.y - tempPos.y;
+        float swipeThreshold = Screen.height * 0.2f;
+
+        if (!isSlide)
+        {
+
+            if (swipeY > swipeThreshold && isOK)
             {
-                Touch touch = Input.GetTouch(0);
 
-                if (touch.phase == TouchPhase.Began)
-                    startPos = touch.position;
+                // 패널 정상화
+                SettingPanel.anchoredPosition = originPos + Vector2.up * SettingPanel.rect.height;
+                UpPos = SettingPanel.anchoredPosition;
 
-                if (touch.phase == TouchPhase.Ended)
-                {
-                    endPos = touch.position;
-                    DetectSwipe();
-                }
+                SettingPanel.transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
+                SettingPanel.gameObject.SetActive(true);
+                isSlide = true;
             }
+        }
+        else
+        {
+            Vector2 targetPos = new Vector2(UpPos.x, UpPos.y - (swipeY / 3));
+
+            gamemanager.SlidePanelDuring(SettingPanel, targetPos);
+        }
+
     }
 
     private void DetectSwipe()
     {
 
-            float swipeY = startPos.y - endPos.y;
+        float swipeY = startPos.y - endPos.y;
 
-            float swipeThreshold = Screen.height * 0.5f;
+        float swipeThreshold = Screen.height * 0.5f;
 
+
+        //위에서 아래로 슬라이드
         if (swipeY > swipeThreshold)
         {
             if (isOK)
             {
                 SettingPanel.anchoredPosition = originPos + Vector2.up * Screen.height;
-
-                gamemanager.SlidePanelSetting(SettingPanel, originPos,0);
+                gamemanager.SlidePanelSetting(SettingPanel, originPos, 0);
             }
         }
 
         //아래에서 위로 슬라이드
-        else if (endPos.y - startPos.y > swipeThreshold) {
-            if (SettingPanel.gameObject.activeSelf) {
-                gamemanager.SlidePanelSetting(SettingPanel, originPos,1);
+        else if (endPos.y - startPos.y > swipeThreshold)
+        {
+            if (SettingPanel.gameObject.activeSelf)
+            {
+                gamemanager.SlidePanelSetting(SettingPanel, originPos, 1);
+            }
+        }
+        else {
+            if (isOK && SettingPanel.gameObject.activeSelf)
+            {
+                gamemanager.SlidePanelSetting(SettingPanel, originPos, 1);
             }
         }
 
+
     }
+
 }

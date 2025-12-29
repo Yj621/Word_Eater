@@ -228,7 +228,6 @@ public class GameManager : MonoBehaviour
     {
         if (panel == null || btn == null) return;
 
-        smanager.isOK = true;
 
         var parent = panel.parent as RectTransform;
         Vector2 endLocal = CanvasUtil.ConvertBetweenCanvases(btn, parent);
@@ -239,7 +238,9 @@ public class GameManager : MonoBehaviour
         panel.DOAnchorPos(endLocal, 0.2f)
              .SetEase(Ease.InBack)
              .SetUpdate(true)
-             .OnComplete(() => panel.gameObject.SetActive(false));
+             .OnComplete(() => { panel.gameObject.SetActive(false);
+                 smanager.isOK = true;
+             });
         phoneSwiper.isUsingTab = false;
     }
 
@@ -317,26 +318,35 @@ public class GameManager : MonoBehaviour
     {
         float duration = 0.4f;
 
+        //위에서 아래로
         if (type == 0)
         {
+            smanager.isOK = false;
             Panel.transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
-
             Panel.gameObject.SetActive(true);
 
             Panel.DOAnchorPos(originPos, duration)
                 .SetEase(Ease.OutCubic);
         }
+        //아래에서 위로
         else if (type == 1) {
             Panel.DOAnchorPos(originPos + Vector2.up * Screen.height, duration)
                          .SetEase(Ease.InCubic)
                      .OnComplete(() =>
                       {
                           Panel.gameObject.SetActive(false);
+                          smanager.isOK = true;
                       });
         }
     }
 
+    public void SlidePanelDuring(RectTransform Panel, Vector2 targetPos) {
+        
+        float duration = 0.2f;
 
+        Panel.DOAnchorPos(targetPos, duration)
+                    .SetEase(Ease.OutCubic);
+    }
 
 
     /// <summary>
