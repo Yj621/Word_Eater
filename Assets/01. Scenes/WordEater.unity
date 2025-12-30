@@ -25397,7 +25397,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 238, y: -8.063339}
+  m_AnchoredPosition: {x: 238, y: -8.0633545}
   m_SizeDelta: {x: 400, y: 300}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &791721814
@@ -42275,7 +42275,10 @@ MonoBehaviour:
   gamemanager: {fileID: 1076038538945570555}
   galleryUIManager: {fileID: 29464938}
   filemanager: {fileID: 476206674}
-  stageSprites: []
+  stageSprites:
+  - {fileID: 376747241359653198, guid: 74301ebcc5a44c54b95a000ea786ca20, type: 3}
+  - {fileID: -2307929912617645041, guid: 74301ebcc5a44c54b95a000ea786ca20, type: 3}
+  - {fileID: -5405038573520594224, guid: 74301ebcc5a44c54b95a000ea786ca20, type: 3}
   reviveTicketSprite: {fileID: -488721925442295091, guid: 4124878fdbab6214f9de16b93ad43e92, type: 3}
   stage: 0
   currentAnswer: 
