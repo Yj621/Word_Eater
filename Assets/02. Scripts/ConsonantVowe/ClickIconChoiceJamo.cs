@@ -1,3 +1,4 @@
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -26,28 +27,44 @@ public class ClickIconChoiceJamo : MonoBehaviour, IPointerClickHandler
         rect.localScale = Vector3.one;
         rect.localRotation = Quaternion.identity;
 
+        rect.localScale = Vector3.zero;
+        rect.DOScale(Vector3.one, 0.3f).SetEase(Ease.OutBack);
+
+
         // 여기서  Confirm_Panel 전달
         chooser.InitConfirmPanel(sceneConfirmPanel);
 
         chooser.OnSelected += (type, jamo) =>
         {
             JamoInventory.Instance.Add(type, jamo);
-
             if (consumeAfterPick)
             {
-                closePanel.SetActive(false);
+                OnCloseChooser();
             }
-
         };
         closePanel.SetActive(true);
     }
 
     public void OnCloseChooser()
     {
-        closePanel.SetActive(false);
+        // 1. 현재 떠 있는 창(Chooser)을 찾습니다.
         var chooser = targetPanel.GetComponentInChildren<JamoChooserUI>();
 
-        if (chooser != null)
-            Destroy(chooser.gameObject);
+        // 만약 창이 없다면 패널만 끄고 리턴
+        if (chooser == null)
+        {
+            closePanel.SetActive(false);
+            return;
+        }
+
+        // 2. [DOTween] 작아지는 애니메이션 적용
+        chooser.transform.DOScale(Vector3.zero, 0.2f)
+            .SetEase(Ease.InBack) // 쏙 들어가는 느낌
+            .OnComplete(() =>
+            {
+                // 3. 애니메이션이 다 끝난 뒤 실행할 코드
+                Destroy(chooser.gameObject); // 오브젝트 파괴
+                closePanel.SetActive(false); // 배경 패널 끄기
+            });
     }
 }
