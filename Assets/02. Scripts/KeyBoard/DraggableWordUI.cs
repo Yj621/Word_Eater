@@ -81,6 +81,13 @@ public class DraggableWordUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     {
         try
         {
+            if (rt && dragRoot &&
+           RectTransformUtility.ScreenPointToLocalPointInRectangle(
+               dragRoot, eventData.position, uiCamera, out var local))
+            {
+                rt.anchoredPosition = local;
+            }
+
             var magnet = GetComponent<JamoMagnet>();
 
             // 1) 쓰레기통에 바로 버리기

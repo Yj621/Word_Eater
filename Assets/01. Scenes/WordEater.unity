@@ -52143,10 +52143,10 @@ RectTransform:
   - {fileID: 1958081365}
   - {fileID: 1436749898}
   - {fileID: 896714290}
-  - {fileID: 85389370}
   - {fileID: 754317715}
   - {fileID: 1260748827}
   - {fileID: 493617680}
+  - {fileID: 85389370}
   m_Father: {fileID: 1155597268}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
@@ -54169,7 +54169,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a82eea42e722eb44b90dd0c5132ceaf1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AdsManager
-  rewardedAdRevivalId: ca-app-apub-1881501262849586/3221896109
+  rewardedAdUnitId: unused
 --- !u!114 &4841418319224981448
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -430,15 +430,78 @@ public class KeyBoardManager : MonoBehaviour
 
     void EndDrag()
     {
+        if (dragging && dragIsUI && dragUIRect)
+        {
+            var drag = dragUIRect.GetComponent<DraggableWordUI>();
+            if (drag && EventSystem.current != null &&
+                TryGetPointerScreenPos(activePointerId, out var screenPos))
+            {
+                var fakeEvent = new PointerEventData(EventSystem.current)
+                {
+                    position = screenPos
+                };
+                drag.OnEndDrag(fakeEvent);
+            }
+        }
+
         dragging = false;
         activePointerId = int.MinValue;
         dragUIRect = null;
         dragWorldTr = null;
     }
 
-    // -----------------------------
-    // 인벤토리 조작 (Add/Consume/Refund)
-    // -----------------------------
+    public bool AddKeyByGlyph(string glyph, int amount = 1)
+    {
+        if (!KeyCount.isReady || string.IsNullOrEmpty(glyph))
+            return false;
+
+        int index = FindSlotIndexByGlyph(glyph);
+        if (index < 0)
+        {
+            Debug.LogWarning($"[KeyBoardManager] '{glyph}' 에 해당하는 슬롯을 찾지 못했어.");
+            return false;
+        }
+
+        KeyCount.AddAt(index, amount);
+        // 아이템으로 준 거라서 _sessionSpent 에는 기록 안 함
+        return true;
+    }
+
+    // 🔹 prefab들에서 glyph를 보고 longPressKeys 인덱스 찾기
+    int FindSlotIndexByGlyph(string glyph)
+    {
+        if (longPressKeys == null) return -1;
+        glyph = glyph.Trim();
+
+        for (int i = 0; i < longPressKeys.Length; i++)
+        {
+            GameObject prefab = null;
+
+            // 이 인덱스가 싱글키면 SingleWords 쪽에서 찾고
+            if (i < SingleWords.Length && SingleWords[i] != null)
+            {
+                prefab = SingleWords[i];
+            }
+            // 아니면 더블키(자/모)에서 찾고
+            else if (i < DSWords.Length && DSWords[i] != null)
+            {
+                prefab = DSWords[i];   // 기본(Shift OFF) 자모 기준
+            }
+            else if (i < DDWords.Length && DDWords[i] != null)
+            {
+                prefab = DDWords[i];   // 필요하면 이쪽도 사용
+            }
+
+            if (!prefab) continue;
+
+            var mag = prefab.GetComponent<JamoMagnet>();
+            if (mag != null && mag.glyph == glyph)
+                return i;
+        }
+
+        return -1;
+    }
+
 
     public void AddRandomKeys(int amount)
     {
