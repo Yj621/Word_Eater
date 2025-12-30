@@ -156,19 +156,42 @@ public class FileManager : MonoBehaviour
 
         if (!File.Exists(SoundPath))
         {
+            // 파일이 없으면 초기화
             soundmanager.SetBGMVolume(1f);
             soundmanager.SetSFXVolume(1f);
             return;
         }
 
         string json = File.ReadAllText(SoundPath);
-        SoundData data = JsonUtility.FromJson<SoundData>(json);
 
-        soundmanager.SetBGMVolume(data.BGM);
-        soundmanager.SetSFXVolume(data.SE);
+        // [중요] 변환하기 전에 먼저 비어있는지 확인해야 합니다!
+        if (string.IsNullOrEmpty(json) || json == "{}" || json.Trim() == "")
+        {
+            Debug.LogWarning("저장된 사운드 데이터가 비어있습니다. 기본값으로 초기화합니다.");
+            soundmanager.SetBGMVolume(1f);
+            soundmanager.SetSFXVolume(1f);
+            return; // 여기서 함수 종료
+        }
 
-        if (soundmanager.bgmSlider != null) soundmanager.bgmSlider.value = data.BGM;
-        if (soundmanager.seSlider != null) soundmanager.seSlider.value = data.SE;
+        // 데이터가 안전하다는 것이 확인된 후 변환 시도
+        try
+        {
+            SoundData data = JsonUtility.FromJson<SoundData>(json);
+
+            // 데이터 적용
+            soundmanager.SetBGMVolume(data.BGM);
+            soundmanager.SetSFXVolume(data.SE);
+
+            if (soundmanager.bgmSlider != null) soundmanager.bgmSlider.value = data.BGM;
+            if (soundmanager.seSlider != null) soundmanager.seSlider.value = data.SE;
+        }
+        catch (System.Exception e)
+        {
+            // 혹시 모를 깨진 파일 에러 방지
+            Debug.LogError("사운드 데이터 파싱 오류: " + e.Message);
+            soundmanager.SetBGMVolume(1f);
+            soundmanager.SetSFXVolume(1f);
+        }
     }
 
     // ========================================================================

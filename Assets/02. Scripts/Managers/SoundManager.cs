@@ -46,7 +46,10 @@ public class SoundManager : MonoBehaviour
             Destroy(gameObject);
             return;
         }
-
+        if (transform.parent != null)
+        {
+            transform.SetParent(null);
+        }
         Instance = this;             // 싱글톤 등록
         DontDestroyOnLoad(gameObject); // 씬 전환 시 유지
 

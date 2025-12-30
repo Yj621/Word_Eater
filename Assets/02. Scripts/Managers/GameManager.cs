@@ -8,6 +8,7 @@ public class GameManager : MonoBehaviour
 {
     [SerializeField] private WordEater.Core.WordEater wordeater;
     [SerializeField] private GameObject touchblockPanel;
+    [SerializeField] private GameObject wordEaterNamePanel;
 
     [SerializeField] private FileManager filemanager;
     [SerializeField] private PhoneSwiper phoneSwiper;
@@ -189,6 +190,7 @@ public class GameManager : MonoBehaviour
     private void Restart() {
         touchblockPanel.SetActive(false);
         wordeater.BeginStage(wordeater.CurrentStage, initial: true);
+        wordEaterNamePanel.SetActive(true);
     }
 
 
