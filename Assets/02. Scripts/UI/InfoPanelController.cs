@@ -28,10 +28,36 @@ public class InfoPanelController : MonoBehaviour
             galleryShortcutBtn.onClick.AddListener(OnGoToGallery);
     }
 
-    // 패널이 활성화될 때마다 정보를 갱신합니다.
+    /// <summary>
+    /// 패널이 활성화될 때마다 정보를 갱신
+    /// </summary>
     private void OnEnable()
     {
+        // 패널이 켜질 때 전체 UI 한번 갱신 (기존 로직)
         UpdateInfoUI();
+
+        // 이름 변경 이벤트 구독 (켜져 있는 동안 이름 바뀌면 즉시 반영)
+        if (FileManager.Instance != null)
+        {
+            FileManager.Instance.OnNameChanged += UpdateNameText;
+        }
+    }
+    private void OnDisable()
+    {
+        // 패널 꺼질 때 구독 해제 (메모리 누수 방지)
+        if (FileManager.Instance != null)
+        {
+            FileManager.Instance.OnNameChanged -= UpdateNameText;
+        }
+    }
+
+    // 이벤트가 발생했을 때(이름이 바뀔 때) 실행되는 함수
+    private void UpdateNameText(string newName)
+    {
+        if (nameText != null)
+        {
+            nameText.text = newName;
+        }
     }
 
     /// <summary>

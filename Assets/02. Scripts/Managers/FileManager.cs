@@ -3,6 +3,7 @@ using System.IO;
 using System.Collections.Generic;
 using static FileManager;
 using WordEater.Systems;
+using System;
 
 /// <summary>
 /// 게임 전체 데이터(진행도, 사운드, 도감)를 파일로 저장하고 불러오는 통합 관리자
@@ -21,6 +22,7 @@ public class FileManager : MonoBehaviour
 
     public static FileManager Instance { get; private set; }
     public string CurrentPlayerName { get; private set; } = "워드이터";
+    public event Action<string> OnNameChanged;
 
     [Header("Scene References")]
     public WordEater.Core.WordEater wordeater;
@@ -164,6 +166,7 @@ public class FileManager : MonoBehaviour
                 gamemanager.RelevantResult
             );
         }
+        OnNameChanged?.Invoke(CurrentPlayerName);
     }
 
     public void SaveRelevant(List<string> Rel)
