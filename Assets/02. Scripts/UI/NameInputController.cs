@@ -26,13 +26,6 @@ public class NameInputController : MonoBehaviour
 
     private void Start()
     {
-        // 비트(Bit) 단계가 아니면 패널 끄기
-        if (wordEater != null && wordEater.CurrentStage != GrowthStage.Bit)
-        {
-            gameObject.SetActive(false);
-            return; // 이후 로직 실행 안 함
-        }
-
         // 버튼 리스너 연결
         submitButton.onClick.AddListener(OnSubmitName);
 

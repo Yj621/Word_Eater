@@ -1,5 +1,6 @@
 using System;
 using DG.Tweening;
+using DG.Tweening.Core.Easing;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -371,9 +372,10 @@ public class UIManager : MonoBehaviour
 
     public void OnClickResetButton()
     {
+        // 데이터 삭제
         FileManager.Instance.ClearAllData();
 
-        // 배터리 시스템 등 Start()에서 초기화되는 녀석들을 위해 씬을 새로고침 해주는 것이 좋습니다.
+        // 씬 재시작 (이때 GameManager.Start가 다시 실행되면서 패널을 켤지 말지 결정함)
         UnityEngine.SceneManagement.SceneManager.LoadScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene().name);
     }
 }
