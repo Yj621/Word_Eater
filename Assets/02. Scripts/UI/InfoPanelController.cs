@@ -39,15 +39,18 @@ public class InfoPanelController : MonoBehaviour
     /// </summary>
     public void UpdateInfoUI()
     {
-        // 1. 이름 설정 (저장된 이름이 있다면 그것을 사용, 예시로 PlayerPrefs 사용)
-        // 실제 프로젝트의 데이터 관리 방식(FileManager 등)에 맞춰 수정이 필요할 수 있습니다.
-        string playerName = PlayerPrefs.GetString("WordEaterName", "장조성");
-        nameText.text = $"{playerName}";
-
-        // 2. 날짜 설정 (오늘 날짜)
+        if (FileManager.Instance != null)
+        {
+            nameText.text = FileManager.Instance.CurrentPlayerName;
+        }
+        else
+        {
+            nameText.text = "로딩중...";
+        }
+        // 날짜 설정 (오늘 날짜)
         dateText.text = DateTime.Now.ToString("yyyy년 MM월 dd일");
 
-        // 3. 현재 상태 설정 (WordEater의 Stage 정보 활용)
+        // 현재 상태 설정 (WordEater의 Stage 정보 활용)
         if (wordEater != null)
         {
             string statusString = "";
@@ -66,8 +69,8 @@ public class InfoPanelController : MonoBehaviour
             stateText.text = $"{statusString}";
         }
 
-        // 4. 시도 횟수 설정 (History.cs 참고)
-        // GameManager의 HistoryLine 문자열 개수를 세어 시도 횟수를 파악합니다.
+        // 시도 횟수 설정 (History.cs 참고)
+        // GameManager의 HistoryLine 문자열 개수를 세어 시도 횟수를 파악
         if (gameManager != null && !string.IsNullOrEmpty(gameManager.HistoryLIne))
         {
             // History.cs 로직을 참고하여 '|' 기준으로 나눔
@@ -76,7 +79,7 @@ public class InfoPanelController : MonoBehaviour
         }
         else
         {
-            tryText.text = "0번 >";
+            tryText.text = "0번";
         }
     }
 

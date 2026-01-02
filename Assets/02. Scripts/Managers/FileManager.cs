@@ -2,6 +2,7 @@ using UnityEngine;
 using System.IO;
 using System.Collections.Generic;
 using static FileManager;
+using WordEater.Systems;
 
 /// <summary>
 /// 게임 전체 데이터(진행도, 사운드, 도감)를 파일로 저장하고 불러오는 통합 관리자
@@ -19,6 +20,7 @@ public class FileManager : MonoBehaviour
     // 배경화면
 
     public static FileManager Instance { get; private set; }
+    public string CurrentPlayerName { get; private set; } = "워드이터";
 
     [Header("Scene References")]
     public WordEater.Core.WordEater wordeater;
@@ -31,6 +33,9 @@ public class FileManager : MonoBehaviour
     // 배터리 데이터 메모리 캐시
     public BatteryData batteryData = new BatteryData();
 
+    // 인벤토리 데이터 캐시
+    public InventoryData inventoryData = new InventoryData();
+
     // --- 데이터 클래스 정의 ---
     [System.Serializable]
     public class WordEaterData
@@ -38,7 +43,8 @@ public class FileManager : MonoBehaviour
         public int Level;
         public string Answer;
         public string History;
-        public List<string> Relevant;
+        public List<string> Relevant; //관련 단어
+        public string Name;
     }
 
     [System.Serializable]
@@ -56,11 +62,26 @@ public class FileManager : MonoBehaviour
         public bool IsFirstRun = true;    // 첫 실행 여부
     }
 
+    // 아이템 저장용 클래스
+    [System.Serializable]
+    public class ItemSaveEntry
+    {
+        public ItemType type;
+        public int count;
+    }
+
+    [System.Serializable]
+    public class InventoryData
+    {
+        public List<ItemSaveEntry> items = new List<ItemSaveEntry>();
+    }
+
     // --- 파일 경로 프로퍼티 ---
     string SoundPath => Path.Combine(Application.persistentDataPath, "sound.json");
     string WordEaterPath => Path.Combine(Application.persistentDataPath, "WordEaterInfo.json");
     string GalleryPath => Path.Combine(Application.persistentDataPath, "gallery.json");
     string BatteryPath => Path.Combine(Application.persistentDataPath, "battery.json");
+    string InventoryPath => Path.Combine(Application.persistentDataPath, "inventory.json");
     private void Awake()
     {
         // 싱글톤 설정 (필요하다면 DontDestroyOnLoad 사용, 여기서는 씬 내 관리자로 가정)
@@ -93,7 +114,8 @@ public class FileManager : MonoBehaviour
             Level = le,
             Answer = an,
             History = hi,
-            Relevant = RR
+            Relevant = RR,
+            Name = CurrentPlayerName
         };
 
         string json = JsonUtility.ToJson(data, true);
@@ -111,10 +133,36 @@ public class FileManager : MonoBehaviour
         string json = File.ReadAllText(WordEaterPath);
         WordEaterData data = JsonUtility.FromJson<WordEaterData>(json);
 
+        // 이름 로드 (비어있으면 기본값)
+        if (!string.IsNullOrEmpty(data.Name))
+            CurrentPlayerName = data.Name;
+        else
+            CurrentPlayerName = "워드이터";
+
         if (wordeater != null) wordeater.LoadFromSaveData(data.Level, data.Answer);
-        if (gamemanager != null) { 
+        if (gamemanager != null)
+        {
             gamemanager.HistoryLIne = data.History;
             gamemanager.RelevantResult = data.Relevant;
+        }
+    }
+
+    /// <summary>
+    /// 외부에서 이름을 변경할 때 호출 (변경 후 저장까지 수행)
+    /// </summary>
+    public void SetPlayerName(string newName)
+    {
+        CurrentPlayerName = newName;
+
+        // 이름만 바뀐 시점에 저장이 필요하다면, 현재 상태를 읽어와서 저장
+        if (wordeater != null && gamemanager != null)
+        {
+            SaveWordEaterInfo(
+                (int)wordeater.CurrentStage,
+                wordeater.Answer,
+                gamemanager.HistoryLIne,
+                gamemanager.RelevantResult
+            );
         }
     }
 
@@ -301,6 +349,62 @@ public class FileManager : MonoBehaviour
         File.WriteAllText(BatteryPath, json);
     }
 
+
+    // ========================================================================
+    // [Part 5] 아이템(Inventory) 데이터 - [새로 추가된 부분]
+    // ========================================================================
+
+    public void LoadInventory()
+    {
+        if (File.Exists(InventoryPath))
+        {
+            string json = File.ReadAllText(InventoryPath);
+            inventoryData = JsonUtility.FromJson<InventoryData>(json) ?? new InventoryData();
+        }
+        else
+        {
+            inventoryData = new InventoryData();
+        }
+    }
+
+    public void SaveInventory()
+    {
+        string json = JsonUtility.ToJson(inventoryData, true);
+        File.WriteAllText(InventoryPath, json);
+    }
+
+    /// <summary>
+    /// 외부(ItemManager)에서 개수를 조회할 때 사용
+    /// </summary>
+    public int GetItemCount(ItemType type)
+    {
+        var item = inventoryData.items.Find(x => x.type == type);
+        return item != null ? item.count : 0;
+    }
+
+    /// <summary>
+    /// 외부(ItemManager)에서 아이템 개수를 변경할 때 사용 (증가/감소 통합)
+    /// </summary>
+    public void UpdateItemCount(ItemType type, int delta)
+    {
+        var item = inventoryData.items.Find(x => x.type == type);
+
+        if (item != null)
+        {
+            item.count += delta;
+            // 개수가 0 미만이면 0으로 보정 (선택사항)
+            if (item.count < 0) item.count = 0;
+        }
+        else if (delta > 0)
+        {
+            // 없는데 추가하는 경우 새로 생성
+            inventoryData.items.Add(new ItemSaveEntry { type = type, count = delta });
+        }
+
+        // 변경 즉시 저장
+        SaveInventory();
+    }
+
     /// <summary>
     /// 게임의 모든 데이터(진행도, 사운드, 도감, 배터리)를 초기화하고 파일을 삭제합니다.
     /// </summary>
@@ -308,28 +412,30 @@ public class FileManager : MonoBehaviour
     {
         Debug.Log("[FileManager] 모든 데이터 초기화 시작...");
 
-        // 1. JSON 파일들 삭제
+        // JSON 파일들 삭제
         DeleteFileIfExists(WordEaterPath);
         DeleteFileIfExists(SoundPath);
         DeleteFileIfExists(GalleryPath);
         DeleteFileIfExists(BatteryPath);
+        DeleteFileIfExists(InventoryPath);
 
-        // 2. 썸네일 이미지들 삭제
+        // 썸네일 이미지들 삭제
         string[] thumbs = Directory.GetFiles(Application.persistentDataPath, "thumb_*.png");
         foreach (var path in thumbs)
         {
             File.Delete(path);
         }
 
-        // 3. 메모리 데이터 초기화
+        // 메모리 데이터 초기화
         galleryData = new GalleryData();
 
         batteryData = new BatteryData();
         batteryData.SavedBattery = 100;
         batteryData.IsFirstRun = true;
         batteryData.ExitTime = System.DateTime.UtcNow.ToBinary().ToString();
+        inventoryData = new InventoryData();
 
-        // 4. 인게임 상태 즉시 리셋 (게임 재시작 없이 반영하고 싶은 경우)
+        // 인게임 상태 즉시 리셋 (게임 재시작 없이 반영하고 싶은 경우)
 
         // [사운드]
         if (soundmanager != null)

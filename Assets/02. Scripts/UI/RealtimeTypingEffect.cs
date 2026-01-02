@@ -18,13 +18,13 @@ public class RealtimeTypingEffect : MonoBehaviour
 
     private void Start()
     {
-        // 1. 초기 텍스트 설정
+        // 초기 텍스트 설정
         UpdateDisplay(inputSource.text);
 
-        // 2. 인풋 필드에 내용이 바뀔 때마다 실행될 함수 연결
+        // 인풋 필드에 내용이 바뀔 때마다 실행될 함수 연결
         inputSource.onValueChanged.AddListener(OnInputValueChanged);
 
-        // 3. 커서 깜빡임 코루틴 시작
+        // 커서 깜빡임 코루틴 시작
         blinkCoroutine = StartCoroutine(CursorBlinkRoutine());
     }
 

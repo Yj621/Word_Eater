@@ -98,9 +98,12 @@ public class NameInputController : MonoBehaviour
             return; // 빈 이름은 진행 안 함
         }
 
-        // 이름 저장
-        PlayerPrefs.SetString("WordEaterName", inputName);
-        PlayerPrefs.Save();
+        if (FileManager.Instance != null)
+        {
+            // FileManager 내부의 SetPlayerName 함수가 
+            // CurrentPlayerName 변수 업데이트 + JSON 저장을 모두 수행합니다.
+            FileManager.Instance.SetPlayerName(inputName);
+        }
 
         // 정보창 갱신 요청
         if (infoPanel != null)
