@@ -53,6 +53,8 @@ public class UIManager : MonoBehaviour
     private Vector2 _showPosition = new Vector2(0, 0);         // 키보드 보임 위치
     private Vector2 _hidePosition = new Vector2(0, -450);      // 키보드 숨김 위치
 
+    [SerializeField] private SlideManager slidemanager;
+
     public static UIManager Instance;
 
     private void Awake()
@@ -344,6 +346,8 @@ public class UIManager : MonoBehaviour
     /// </summary>
     public void OpenKeyboard()
     {
+        slidemanager.isOK = false;
+
         PageIcon.SetActive(false);
         if (_isKeyboardOpen) return;
         _isKeyboardOpen = true;
@@ -358,6 +362,8 @@ public class UIManager : MonoBehaviour
     /// </summary>
     public void CloseKeyboard()
     {
+        slidemanager.isOK = true;
+
         KeyBoardManager.ClosePanelAndRestore();
         PageIcon.SetActive(true);
         if (!_isKeyboardOpen) return;

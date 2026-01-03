@@ -7808,6 +7808,7 @@ MonoBehaviour:
   _btnYes: {fileID: 527663724}
   _btnNo: {fileID: 1738086395}
   _itemImg: {fileID: 1704389633}
+  slidemanager: {fileID: 954633072}
 --- !u!114 &321487236
 MonoBehaviour:
   m_ObjectHideFlags: 0
