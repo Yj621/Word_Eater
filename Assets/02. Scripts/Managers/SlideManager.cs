@@ -97,7 +97,7 @@ public class SlideManager : MonoBehaviour
 
         float swipeY = startPos.y - endPos.y;
 
-        float swipeThreshold = Screen.height * 0.5f;
+        float swipeThreshold = Screen.height * 0.3f;
 
 
         //위에서 아래로 슬라이드

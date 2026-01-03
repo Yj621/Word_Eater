@@ -1,5 +1,6 @@
 using System;
 using DG.Tweening;
+using DG.Tweening.Core.Easing;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -51,6 +52,8 @@ public class UIManager : MonoBehaviour
 
     private Vector2 _showPosition = new Vector2(0, 0);         // 키보드 보임 위치
     private Vector2 _hidePosition = new Vector2(0, -450);      // 키보드 숨김 위치
+
+    [SerializeField] private SlideManager slidemanager;
 
     public static UIManager Instance;
 
@@ -204,25 +207,48 @@ public class UIManager : MonoBehaviour
         if (_titleText != null) _titleText.text = title;
         if (_explanText != null) _explanText.text = message;
 
-        // 예 버튼 이벤트 연결함
+        void ClosePanelWithAnimation(Action onCompleteAction)
+        {
+            // 버튼 중복 클릭 방지를 위해 잠시 인터랙션 끄기 (선택 사항)
+            if (_btnYes != null) _btnYes.interactable = false;
+            if (_btnNo != null) _btnNo.interactable = false;
+
+            // 크기를 0으로 줄이는 애니메이션 (0.2초)
+            _confirmPanel.transform.DOScale(0f, 0.2f)
+                .SetEase(Ease.InBack)
+                .SetUpdate(true) // 타임스케일 0일 때도 작동하도록
+                .OnComplete(() =>
+                {
+                    _confirmPanel.SetActive(false);
+
+                    // 버튼 인터랙션 복구
+                    if (_btnYes != null) _btnYes.interactable = true;
+                    if (_btnNo != null) _btnNo.interactable = true;
+
+                    // 애니메이션이 다 끝난 뒤에 실제 기능(Action) 실행
+                    onCompleteAction?.Invoke();
+                });
+        }
+
+        // 예 버튼 이벤트 연결
         if (_btnYes != null)
         {
             _btnYes.onClick.RemoveAllListeners();
             _btnYes.onClick.AddListener(() =>
             {
-                _confirmPanel.SetActive(false);
-                onYes?.Invoke();
+                // '예'를 눌렀을 때도 부드럽게 닫히게 하려면 이 함수 사용
+                ClosePanelWithAnimation(onYes);
             });
         }
 
-        // 아니오 버튼 이벤트 연결함
+        // 아니오 버튼 이벤트 연결 (여기가 질문하신 부분!)
         if (_btnNo != null)
         {
             _btnNo.onClick.RemoveAllListeners();
             _btnNo.onClick.AddListener(() =>
             {
-                _confirmPanel.SetActive(false);
-                onNo?.Invoke();
+                //그냥 끄지 않고 애니메이션 함수 호출
+                ClosePanelWithAnimation(onNo);
             });
         }
 
@@ -320,6 +346,8 @@ public class UIManager : MonoBehaviour
     /// </summary>
     public void OpenKeyboard()
     {
+        slidemanager.isOK = false;
+
         PageIcon.SetActive(false);
         if (_isKeyboardOpen) return;
         _isKeyboardOpen = true;
@@ -334,6 +362,8 @@ public class UIManager : MonoBehaviour
     /// </summary>
     public void CloseKeyboard()
     {
+        slidemanager.isOK = true;
+
         KeyBoardManager.ClosePanelAndRestore();
         PageIcon.SetActive(true);
         if (!_isKeyboardOpen) return;
@@ -348,9 +378,10 @@ public class UIManager : MonoBehaviour
 
     public void OnClickResetButton()
     {
+        // 데이터 삭제
         FileManager.Instance.ClearAllData();
 
-        // 배터리 시스템 등 Start()에서 초기화되는 녀석들을 위해 씬을 새로고침 해주는 것이 좋습니다.
+        // 씬 재시작 (이때 GameManager.Start가 다시 실행되면서 패널을 켤지 말지 결정함)
         UnityEngine.SceneManagement.SceneManager.LoadScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene().name);
     }
 }

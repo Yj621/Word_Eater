@@ -3,11 +3,13 @@ using System.Collections;
 using DG.Tweening;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using WordEater.Core;
 
 public class GameManager : MonoBehaviour
 {
     [SerializeField] private WordEater.Core.WordEater wordeater;
     [SerializeField] private GameObject touchblockPanel;
+    public GameObject wordEaterNamePanel;
 
     [SerializeField] private FileManager filemanager;
     [SerializeField] private PhoneSwiper phoneSwiper;
@@ -70,14 +72,26 @@ public class GameManager : MonoBehaviour
     }
     void Start()
     {
-        //파일들 먼저 불러오기
+        // 파일들 먼저 불러오기 (여기서 wordEater의 Stage가 결정됨)
         filemanager.LoadWordEaterInfo();
         filemanager.LoadSoundInfo();
 
-        //시작 브금 출력
+        string currentName = FileManager.Instance.CurrentPlayerName;
+        bool isDefaultName = (currentName == "워드이터"); // 기본 이름인지 확인
+
+        if (wordeater.CurrentStage == GrowthStage.Bit && isDefaultName)
+        {
+            wordEaterNamePanel.SetActive(true);
+        }
+        else
+        {
+            wordEaterNamePanel.SetActive(false);
+        }
+
+        // 시작 브금 출력
         SoundManager.Instance.BGMStart(1);
 
-        // 시작 시 게임오버 패널은 꺼두기
+        // 게임오버 패널 초기화
         if (gameOverCanvasGroup != null)
         {
             gameOverCanvasGroup.alpha = 0;
@@ -186,9 +200,22 @@ public class GameManager : MonoBehaviour
         Restart();
     }
 
-    private void Restart() {
+    public void Restart() 
+    {
         touchblockPanel.SetActive(false);
-        wordeater.BeginStage(wordeater.CurrentStage, initial: true);
+
+        // 워드이터 단계 초기화
+        wordeater.BeginStage(GrowthStage.Bit, initial: true);
+
+        // [중요] 죽어서 다시 시작하므로, 이름을 기본값으로 되돌려야 입력창이 뜸
+        // 파일매니저를 통해 이름만 "워드이터"로 리셋 (저장은 나중에 입력할 때 됨)
+        FileManager.Instance.SetPlayerName("워드이터");
+
+        // 패널 켜기
+        if (wordEaterNamePanel != null)
+        {
+            wordEaterNamePanel.SetActive(true);
+        }
     }
 
 

@@ -85,13 +85,13 @@ public class SubmitManager : MonoBehaviour
 
 
                     int randomIndex = UnityEngine.Random.Range(0, result.Count);
-                    NoticeManager.Instance.ShowSticky($"Relevant : {result[randomIndex]}");
+                    NoticeManager.Instance.ShowSticky($"힌트 단어 : {result[randomIndex]}");
                 }
             }));
         }
         else {
             int randomIndex = UnityEngine.Random.Range(0, gamemanager.RelevantResult.Count);
-            NoticeManager.Instance.ShowSticky($"Relevant : {gamemanager.RelevantResult[randomIndex]}");
+            NoticeManager.Instance.ShowSticky($"힌트 단어 : {gamemanager.RelevantResult[randomIndex]}");
         }
     }
 }
