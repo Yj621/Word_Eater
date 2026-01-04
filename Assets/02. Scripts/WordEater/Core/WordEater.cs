@@ -254,7 +254,7 @@ namespace WordEater.Core
         /// <summary>
         /// 정답을 맞췄을 때 다음 단계로 진화하거나 엔딩을 봄
         /// </summary>
-        private void ProcessEvolution()
+        public void ProcessEvolution()
         {
             // 이미 최종 단계(Word)라면 엔딩 처리함
             if (stage == GrowthStage.Word)
@@ -284,12 +284,20 @@ namespace WordEater.Core
         /// </summary>
         private void HandleEnding()
         {
+            // 1. 진화 이벤트 발생
             GameEvents.OnEvolved?.Invoke(stage);
+            
+            // 2. 도감(데이터) 등록 - 백그라운드 작업
             RegisterToGallery();
-            ItemDropManager.Instance.ObtainRandomItem();
-
-            gamemanager.EndingController(2);
+            
+            // 3. UI 갱신 (도감에 New 표시 등을 위함)
             galleryUIManager.Refresh();
+
+            // [중요] 아이템 획득(ObtainRandomItem) 코드는 여기서 삭제합니다.
+            // GameManager의 시퀀스 안에서 실행하도록 변경했기 때문입니다.
+            
+            // 4. 게임 매니저에게 클리어 시퀀스 시작 요청
+            gamemanager.EndingController(2);
         }
 
         #endregion

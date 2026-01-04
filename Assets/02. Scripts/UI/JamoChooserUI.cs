@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System;
 using TMPro;
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -9,6 +10,8 @@ public class JamoChooserUI : MonoBehaviour
     [Header("Top Tabs")]
     [SerializeField] private Button btnConsonant;
     [SerializeField] private Button btnVowel;
+    // [SerializeField] private Sprite pressBtnSprite;
+    // [SerializeField] private Sprite normalBtnSprite;
 
     [Header("Grid Root (Content)")]
     [SerializeField] private Transform gridRoot; // GridLayoutGroup 달린 오브젝트
@@ -23,6 +26,7 @@ public class JamoChooserUI : MonoBehaviour
     [SerializeField] private Button btnConfirmNo;              // 아니오 버튼
 
     public Action<JamoDefsType, string> OnSelected; // 외부에 콜백 제공
+    public Action<bool> OnRequestClose; // 외부에 닫기 요청 전달 (true: 창 닫기, false: 배경만 닫기)
 
     private JamoDefsType _current = JamoDefsType.Consonant;
     private readonly List<Button> _spawned = new();
@@ -46,6 +50,12 @@ public class JamoChooserUI : MonoBehaviour
     private void Switch(JamoDefsType type)
     {
         _current = type;
+        if (btnConsonant != null) 
+            btnConsonant.interactable = (type != JamoDefsType.Consonant);
+
+        if (btnVowel != null) 
+            btnVowel.interactable = (type != JamoDefsType.Vowel);
+            
         RebuildGrid(type == JamoDefsType.Consonant ? JamoDefs.Consonants : JamoDefs.Vowels);
     }
 
@@ -75,34 +85,6 @@ public class JamoChooserUI : MonoBehaviour
         }
     }
 
-    public void InitConfirmPanel(GameObject panel)
-    {
-        confirmPanel = panel;
-
-        if (confirmPanel == null)
-        {
-            Debug.LogError("[JamoChooserUI] InitConfirmPanel에 null이 넘어왔습니다.");
-            return;
-        }
-
-        // 자식들 찾아서 캐싱
-        confirmText = confirmPanel.transform.Find("Confirm_Text")
-                                            .GetComponent<TextMeshProUGUI>();
-        btnConfirmYes = confirmPanel.transform.Find("Button_Group/Yes_Button")
-                                              .GetComponent<Button>();
-        btnConfirmNo = confirmPanel.transform.Find("Button_Group/No_Button")
-                                              .GetComponent<Button>();
-
-        // 시작할 때는 항상 꺼두기
-        confirmPanel.SetActive(false);
-
-        // 혹시 이전 리스너가 남아 있을 수 있으니 정리
-        btnConfirmYes.onClick.RemoveAllListeners();
-        btnConfirmNo.onClick.RemoveAllListeners();
-
-        // 여기서는 공통 동작만 넣고, 실제 Yes/No 동작은 ShowConfirm에서 다시 설정
-    }
-
     private void ShowConfirm(string jamo)
     {
         Debug.Log($"[JamoChooserUI] ShowConfirm 호출됨: {jamo}");
@@ -118,15 +100,15 @@ public class JamoChooserUI : MonoBehaviour
             Close();
             return;
         }
-
+        // 열기 연출: 스케일 0 -> 1
+        confirmPanel.transform.localScale = Vector3.zero;
         confirmPanel.SetActive(true);
-        Debug.Log($"[JamoChooserUI] confirmPanel activeSelf={confirmPanel.activeSelf}, inHierarchy={confirmPanel.activeInHierarchy}");
-
+        confirmPanel.transform.SetAsLastSibling();
 
         if (confirmText != null)
-        {
             confirmText.text = $"'{jamo}' 를 선택하시겠습니까?";
-        }
+
+        confirmPanel.transform.DOScale(Vector3.one, 0.18f).SetEase(Ease.OutBack);
 
         // 기존 리스너가 중첩되지 않게 먼저 제거
         if (btnConfirmYes != null)
@@ -134,10 +116,17 @@ public class JamoChooserUI : MonoBehaviour
             btnConfirmYes.onClick.RemoveAllListeners();
             btnConfirmYes.onClick.AddListener(() =>
             {
-                // 여기서 실제로 획득됨 (외부에서 OnSelected에 JamoInventory.Add 연결해두면 됨)
+                // 실제로 획득됨
                 OnSelected?.Invoke(_current, _pendingJamo);
-                confirmPanel.SetActive(false);
-                Close();
+
+                // 닫는 연출: 스케일 축소 후 비활성화, 그 다음 외부에 창 닫기 요청 전달
+                confirmPanel.transform.DOScale(Vector3.zero, 0.15f)
+                    .SetEase(Ease.InBack)
+                    .OnComplete(() =>
+                    {
+                        confirmPanel.SetActive(false);
+                        OnRequestClose?.Invoke(true);
+                    });
             });
         }
 
@@ -146,8 +135,15 @@ public class JamoChooserUI : MonoBehaviour
             btnConfirmNo.onClick.RemoveAllListeners();
             btnConfirmNo.onClick.AddListener(() =>
             {
-                // 아니오 → 패널만 닫고 선택창은 그대로 유지
-                confirmPanel.SetActive(false);
+                // 아니오 → 패널 닫는 연출
+                confirmPanel.transform.DOScale(Vector3.zero, 0.12f)
+                    .SetEase(Ease.InBack)
+                    .OnComplete(() =>
+                    {
+                        confirmPanel.SetActive(false);
+                        // 아니오 선택: 배경(예: closePanel)만 닫도록 요청
+                        OnRequestClose?.Invoke(false);
+                    });
             });
         }
     }
@@ -165,7 +161,8 @@ public class JamoChooserUI : MonoBehaviour
 
     public void Close()
     {
-        Destroy(gameObject);
+        // 씬에 배치된 경우 재사용을 위해 비활성화 처리
+        gameObject.SetActive(false);
     }
 
     // 화면 좌표를 같은 Canvas의 앵커 좌표로 변환

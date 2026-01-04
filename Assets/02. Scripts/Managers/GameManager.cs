@@ -47,6 +47,11 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Image batteryFillImg;            // 빨간색 배터리 게이지
     [SerializeField] private Image cableIconImg;              // 케이블/번개 아이콘
 
+    [Header("게임 클리어 연출")]
+    [SerializeField] private Image captureImg;
+    [SerializeField] private RawImage snapshotImg;    // 캡쳐된 화면을 보여줄 RawImage
+    [SerializeField] private RectTransform galleryBtnTarget; // 사진이 날아갈 목표(도감 버튼)
+
     [Header("워드이터 관련")]
     [SerializeField] private RectTransform WordEaterPanel;
     [SerializeField] private RectTransform WordEaterBtn;
@@ -147,10 +152,114 @@ public class GameManager : MonoBehaviour
         else if (type == 2)
         {
             touchblockPanel.SetActive(true);
-            NoticeManager.Instance.ShowTimed("게임 클리어!", 3f);
-            StartCoroutine(RestartWithDelay(3f));
+            StartCoroutine(ProcessGameClearSequence());
         }
     }
+
+/// <summary>
+/// 게임 클리어 시 연출 처리
+/// </summary>
+    private IEnumerator ProcessGameClearSequence()
+    {
+        // 1. 게임 클리어 텍스트 표시
+        NoticeManager.Instance.ShowTimed("게임 클리어!", 2.0f);
+        
+        // 2. 잠시 대기
+        yield return new WaitForSeconds(1.5f);
+
+        // 3. [중요] 화면 캡쳐를 위해 프레임 끝까지 대기 (필수)
+        yield return new WaitForEndOfFrame();
+
+        // -------------------------------------------------------
+        // A. 화면 캡쳐 및 이미지 할당
+        // -------------------------------------------------------
+        Texture2D screenTexture = ScreenCapture.CaptureScreenshotAsTexture();
+        
+        if (snapshotImg != null)
+        {
+            snapshotImg.texture = screenTexture;
+            snapshotImg.color = Color.white;
+            snapshotImg.gameObject.SetActive(true);
+            
+            // 초기화: 화면 꽉 찬 상태, 중앙 위치
+            snapshotImg.rectTransform.localScale = Vector3.one;
+            snapshotImg.rectTransform.anchoredPosition = Vector2.zero;
+            
+            // 캔버스 크기에 맞춰 사이즈 델타 조정 (Stretch 상태면 생략 가능하지만 안전하게)
+            snapshotImg.rectTransform.sizeDelta = Vector2.zero; 
+        }
+
+        // -------------------------------------------------------
+        // B. 하얀색 플래시 터트리기 (찰칵!)
+        // -------------------------------------------------------
+        if (captureImg != null)
+        {
+            captureImg.gameObject.SetActive(true);
+            captureImg.color = Color.white; // 불투명
+            
+            // 0.5초 동안 빠르게 사라짐 -> 뒤에 있는 snapshotImg가 드러남
+            captureImg.DOFade(0f, 0.5f).SetEase(Ease.OutQuad);
+        }
+
+        // 플래시가 걷히는 시간 대기
+        yield return new WaitForSeconds(0.6f);
+
+        // -------------------------------------------------------
+        // C. 사진이 도감 버튼으로 빨려들어가는 연출
+        // -------------------------------------------------------
+        if (snapshotImg != null && galleryBtnTarget != null)
+        {
+            // 목표 위치 계산 (CanvasUtil 활용)
+            // snapshotImg의 부모 기준으로 galleryBtnTarget의 위치를 가져옴
+            Vector2 targetLocalPos = CanvasUtil.ConvertBetweenCanvases(
+                galleryBtnTarget, 
+                snapshotImg.rectTransform.parent as RectTransform
+            );
+
+            // DOTween 시퀀스 생성
+            Sequence flySeq = DOTween.Sequence();
+
+            // 1. 위치 이동
+            flySeq.Join(snapshotImg.rectTransform.DOAnchorPos(targetLocalPos, 1.0f).SetEase(Ease.InBack));
+            
+            // 2. 크기 축소 (작은 사진처럼)
+            flySeq.Join(snapshotImg.rectTransform.DOScale(0.1f, 1.0f).SetEase(Ease.InBack));
+            
+            // 3. 마지막에 살짝 페이드 아웃
+            flySeq.Join(snapshotImg.DOFade(0f, 0.3f).SetDelay(0.7f));
+
+            // 애니메이션 끝날 때까지 대기
+            yield return flySeq.WaitForCompletion();
+
+            // 이미지 끄기
+            snapshotImg.gameObject.SetActive(false);
+        }
+
+        // [메모리 관리] 캡쳐한 텍스처 메모리 해제 (중요!)
+        if (screenTexture != null)
+        {
+            Destroy(screenTexture);
+        }
+// 사진이 갤러리에 들어간 뒤, 유저가 "아 저장됐구나" 인식할 시간(0.5~1초)을 줍니다.
+    yield return new WaitForSeconds(0.8f);
+    
+        // -------------------------------------------------------
+        // D. 아이템 획득 및 재시작
+        // -------------------------------------------------------
+        
+        // 아이템 획득 로직
+        ItemDropManager.Instance.ObtainRandomItem(true);
+
+        // 아이템 확인 시간
+        yield return new WaitForSeconds(2.5f);
+
+        // 플래시 이미지 안전하게 끄기
+        if (captureImg != null) captureImg.gameObject.SetActive(false);
+
+        // 게임 재시작
+        Restart();
+    }
+
 
     // 배터리 방전 연출 코루틴
     private IEnumerator ProcessGameOverSequence()
@@ -190,13 +299,6 @@ public class GameManager : MonoBehaviour
 
         // 패널 끄고 재시작
         gameOverCanvasGroup.gameObject.SetActive(false);
-        Restart();
-    }
-
-    //일단은 N초뒤 시작이지만, 나중에 애니메이션을 넣으면 애니메이션 쪽에서 restart함수 실행으로 변경
-    private IEnumerator RestartWithDelay(float delay)
-    {
-        yield return new WaitForSeconds(delay);
         Restart();
     }
 
