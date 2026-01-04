@@ -55,6 +55,7 @@ public class JamoChooserUI : MonoBehaviour
 
         if (btnVowel != null) 
             btnVowel.interactable = (type != JamoDefsType.Vowel);
+            
         RebuildGrid(type == JamoDefsType.Consonant ? JamoDefs.Consonants : JamoDefs.Vowels);
     }
 

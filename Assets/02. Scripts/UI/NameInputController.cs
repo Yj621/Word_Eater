@@ -24,18 +24,47 @@ public class NameInputController : MonoBehaviour
     private Coroutine blinkCoroutine;
     private bool isCursorVisible = true;
 
+    private void Awake()
+    {
+        submitButton.onClick.AddListener(OnSubmitName);
+        nameInputField.onValueChanged.AddListener(OnInputValueChanged);
+    }
     private void Start()
     {
-        // 버튼 리스너 연결
-        submitButton.onClick.AddListener(OnSubmitName);
+    }
+    private void OnEnable()
+    {
+        ResetUI();
+    }
 
-        // 타이핑 감지 리스너 연결
-        nameInputField.onValueChanged.AddListener(OnInputValueChanged);
+    private void ResetUI()
+    {
+        // 1. 입력 필드 및 화면 텍스트 초기화
+        if (nameInputField != null)
+        {
+            nameInputField.text = "";
 
-        // 초기화 및 커서 깜빡임 시작
-        nameInputField.text = ""; // 초기화
-        UpdateDisplay("");        // 화면 초기화
+            // [추가 추천] 패널이 열리자마자 바로 입력 가능한 상태로 만듭니다.
+            // 모바일에서는 키보드가 자동으로 올라오고, PC에서는 커서가 바로 잡힙니다.
+            nameInputField.ActivateInputField();
+            nameInputField.Select();
+        }
+
+        UpdateDisplay("");
+
+        // 2. 커서 깜빡임 코루틴 재시작
+        isCursorVisible = true;
+        if (blinkCoroutine != null) StopCoroutine(blinkCoroutine);
         blinkCoroutine = StartCoroutine(CursorBlinkRoutine());
+    }
+    // 패널이 꺼질 때 안전하게 코루틴 정리
+    private void OnDisable()
+    {
+        if (blinkCoroutine != null)
+        {
+            StopCoroutine(blinkCoroutine);
+            blinkCoroutine = null;
+        }
     }
 
     // ========================================================================
