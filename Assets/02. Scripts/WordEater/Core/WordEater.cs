@@ -183,6 +183,28 @@ namespace WordEater.Core
             return true;
         }
 
+        public bool TryPayForMiniGame()
+        {
+            if (isDead) return false;
+
+            if (!battery.TryConsume(ActionType.MinigameStart))
+            {
+                NoticeManager.Instance.ShowSticky("배터리가 부족합니다");
+                return false;
+            }
+
+            // 결제 후 방전 체크
+            if (battery.CurrentPercent <= 0)
+            {
+                Debug.Log("[MiniGame 결제 후 소진] 사망 처리");
+                StartCoroutine(DieSequenceRoutine());
+                return false;
+            }
+
+            return true;
+        }
+
+
         /// <summary>
         /// 유저 입력을 받아 정답 여부를 판정하고 결과를 처리함
         /// </summary>

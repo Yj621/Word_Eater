@@ -119,6 +119,7 @@ namespace WordEater.Systems
                 case ActionType.OptimizeAlgoCall: return 20;
                 case ActionType.OptimizeAlgoMessage: return 15;
                 case ActionType.CleanNoise: return 20;
+                case ActionType.MinigameStart: return 20;
                 default: return 0;
             }
         }

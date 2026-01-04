@@ -24,6 +24,8 @@ public class MiniGameController : MonoBehaviour
 
     public int ClearCount = 0;
 
+    public WordEater.Core.WordEater wordeater;
+
     private void Awake()
     {
         algorithmPanel = GetComponentInParent<AlgorithmPanel>();
@@ -37,6 +39,14 @@ public class MiniGameController : MonoBehaviour
     public void Begin()
     {
         if (_running) return;
+
+        if (wordeater != null)
+        {
+            if (!wordeater.TryPayForMiniGame())
+            {
+                return;
+            }
+        }
         _running = true;
 
         // 모드에 따라 타이머 세팅
