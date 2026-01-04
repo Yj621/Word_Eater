@@ -16,6 +16,7 @@ public class UIManager : MonoBehaviour
     private float _animationDuration = 0.5f;              // 애니메이션 시간
 
     private bool _isKeyboardOpen = false;                 // 키보드 열림 상태 플래그
+    public GameObject InteractPanel;
     PhoneSwiper phoneSwiper;
     public KeyBoardManager KeyBoardManager;
     public GameObject PageIcon;                           // 페이지 아이콘 (키보드 열리면 숨김)
@@ -61,6 +62,8 @@ public class UIManager : MonoBehaviour
     {
         Instance = this;
         // 씬 시작 시 배터리 팝업 숨김 처리함
+        InteractPanel.SetActive(false);
+
         if (_batteryChargePanel != null)
             _batteryChargePanel.SetActive(false);
 
@@ -332,11 +335,13 @@ public class UIManager : MonoBehaviour
         if (_isKeyboardOpen)
         {
             phoneSwiper.isUsingTab = false;
+            InteractPanel.SetActive(false);
             CloseKeyboard();
         }
         else
         {
             phoneSwiper.isUsingTab = true;
+            InteractPanel.SetActive(true);
             OpenKeyboard();
         }
     }

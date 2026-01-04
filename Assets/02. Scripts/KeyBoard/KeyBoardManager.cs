@@ -59,7 +59,7 @@ public class KeyBoardManager : MonoBehaviour
 
     Vector2 lastPointerScreenPos;
     Vector2 _dragOffset;
-
+   
     // -----------------------------
     // 초기화
     // -----------------------------

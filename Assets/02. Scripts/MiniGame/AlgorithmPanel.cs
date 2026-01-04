@@ -34,12 +34,14 @@ public class AlgorithmPanel : MonoBehaviour
 
     public void OpenEasyMode()
     {
+        if (!_mini.CanStartMiniGame()) return;
         Mode = true;
         StartCoroutine(OpenPageTab());
     }
 
     public void OpenHardMode()
     {
+        if (!_mini.CanStartMiniGame()) return;
         Mode = false;
         StartCoroutine(OpenPageTab());
     }
@@ -53,7 +55,7 @@ public class AlgorithmPanel : MonoBehaviour
     {
         phoneSwiper.isUsingTab = true;
         ani.SetTrigger("Open");
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSecondsRealtime(0.5f);
 
         GameTab.SetActive(true);
         // 미니게임 시작
@@ -69,20 +71,29 @@ public class AlgorithmPanel : MonoBehaviour
 
         GameTab.SetActive(false);
         ani.SetTrigger("Close");
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSecondsRealtime(0.5f);
 
-        // 결과 주입 -> 활성화
+        // 결과 패널 준비
+        ResultTab.SetActive(true);
+
         var rp = ResultTab.GetComponentInChildren<ResultPanel>(true);
         if (rp != null)
+        {
             rp.Init(Mode, _mini != null ? _mini.ClearCount : 0);
 
-        ResultTab.SetActive(true);
+            
+            rp.BindOnClosed(CloseResultTab);
+
+            rp.Show();
+        }
     }
+
 
     public void CloseResultTab()
     {
-        ResultTab.SetActive(false);
         phoneSwiper.isUsingTab = false;
-       _mini.ClearCount = 0;
+
+        if (_mini != null) _mini.ClearCount = 0;
     }
+
 }
