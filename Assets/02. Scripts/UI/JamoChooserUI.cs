@@ -10,6 +10,8 @@ public class JamoChooserUI : MonoBehaviour
     [Header("Top Tabs")]
     [SerializeField] private Button btnConsonant;
     [SerializeField] private Button btnVowel;
+    // [SerializeField] private Sprite pressBtnSprite;
+    // [SerializeField] private Sprite normalBtnSprite;
 
     [Header("Grid Root (Content)")]
     [SerializeField] private Transform gridRoot; // GridLayoutGroup 달린 오브젝트
@@ -48,6 +50,11 @@ public class JamoChooserUI : MonoBehaviour
     private void Switch(JamoDefsType type)
     {
         _current = type;
+        if (btnConsonant != null) 
+            btnConsonant.interactable = (type != JamoDefsType.Consonant);
+
+        if (btnVowel != null) 
+            btnVowel.interactable = (type != JamoDefsType.Vowel);
         RebuildGrid(type == JamoDefsType.Consonant ? JamoDefs.Consonants : JamoDefs.Vowels);
     }
 
