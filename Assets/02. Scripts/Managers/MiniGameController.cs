@@ -2,6 +2,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
+using WordEater.Core;
 
 public class MiniGameController : MonoBehaviour
 {
@@ -83,6 +84,17 @@ public class MiniGameController : MonoBehaviour
         if (!_running) return;
         // 실패 처리: 탭 닫기
         FailAndClose();
+    }
+
+    public bool CanStartMiniGame()
+    {
+        if (wordeater == null) return true;
+
+        if (wordeater.isDead) return false;
+        if (!wordeater.TryPayForSubmit())
+            return false;
+
+        return true;
     }
 
     // === 내부 구현 ===

@@ -14,8 +14,6 @@ public class GameManager : MonoBehaviour
     [SerializeField] private FileManager filemanager;
     [SerializeField] private PhoneSwiper phoneSwiper;
 
-    //인자가 두개씩 필요한 애들
-
     [Header("전화 관련")]
     [SerializeField] private RectTransform CallPanel;
     [SerializeField] private RectTransform CallBtn;
@@ -497,7 +495,7 @@ public class GameManager : MonoBehaviour
             CallPanel.DOKill();
         }
     }
-
+    
     public void ShowPanel_Message() => ShowPanelFromButton(MessagePanel, MessageBtn);
     public void HidePanel_Message() => HidePanelToButton(MessagePanel, MessageBtn);
 
