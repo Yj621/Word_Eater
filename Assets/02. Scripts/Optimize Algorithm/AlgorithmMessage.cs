@@ -18,7 +18,6 @@ public class AlgorithmMessage : MonoBehaviour
 
     [Header("상태 변수")]
     private string lastDateKey = "";
-    // [삭제함] timeText 변수는 여기서 필요 없습니다. 프리팹 내부에서 찾습니다.
 
     [Header("횟수 표시")]
     [SerializeField] private TextMeshProUGUI countText;
