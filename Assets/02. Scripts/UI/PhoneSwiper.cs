@@ -3,6 +3,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using System.Collections;
 
 public class PhoneSwiper : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
@@ -25,7 +26,9 @@ public class PhoneSwiper : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
     public bool useUnscaledTime = true;
 
     [Tooltip("탭 UI가 켜져 있을 때 스와이프 잠금 여부")]
-    public bool isUsingTab = false;       
+    public bool isUsingTab = false;
+
+    public SlideManager slidemanager;
 
     int pageCount;
     int current;
@@ -120,6 +123,8 @@ public class PhoneSwiper : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
         if (isUsingTab) return;  // 탭 사용 중이면 스와이프 금지
 
         dragging = true;
+
+
         dragStartPointer = eventData.position;
         dragStartContentPos = content.anchoredPosition;
 
@@ -128,7 +133,9 @@ public class PhoneSwiper : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
 
     public void OnDrag(PointerEventData eventData)
     {
-        if (!dragging || isUsingTab) return;
+        if (!dragging || isUsingTab || slidemanager.BlockJJS) return;
+
+        if (dragStartPointer.y >= Screen.height * 0.7) return;
 
         float dx = eventData.position.x - dragStartPointer.x;
         float minX = -((pageCount - 1) * pageWidth);
@@ -138,10 +145,13 @@ public class PhoneSwiper : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        if (!dragging)
+        if (!dragging || slidemanager.BlockJJS)
             return;
 
+        if (dragStartPointer.y >= Screen.height * 0.7) return;
+
         dragging = false;
+
 
         // 드래그 끝나기 전에 탭이 켜진 상태가 되었으면 그냥 현재 페이지로 스냅
         if (isUsingTab)

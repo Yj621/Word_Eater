@@ -367,6 +367,7 @@ public class GameManager : MonoBehaviour
              .SetUpdate(true)
              .OnComplete(() => { panel.gameObject.SetActive(false);
                  smanager.isOK = true;
+                 smanager.BlockJJS = false;
              });
         phoneSwiper.isUsingTab = false;
     }
@@ -463,6 +464,7 @@ public class GameManager : MonoBehaviour
                       {
                           Panel.gameObject.SetActive(false);
                           smanager.isOK = true;
+                          smanager.BlockJJS = false;
                       });
         }
     }
