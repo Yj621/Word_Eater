@@ -9205,6 +9205,7 @@ MonoBehaviour:
   snapSpeed: 6
   useUnscaledTime: 1
   isUsingTab: 1
+  slidemanager: {fileID: 954633072}
 --- !u!114 &321487237
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11341,6 +11342,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gridArea: {fileID: 417404407}
   canvas: {fileID: 321487233}
+  slidemanager: {fileID: 954633072}
 --- !u!114 &401721477
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12583,6 +12585,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gridArea: {fileID: 417404407}
   canvas: {fileID: 321487233}
+  slidemanager: {fileID: 954633072}
 --- !u!114 &459739427
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -30847,6 +30850,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gridArea: {fileID: 417404407}
   canvas: {fileID: 321487233}
+  slidemanager: {fileID: 954633072}
 --- !u!114 &915886517
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -31059,6 +31063,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gridArea: {fileID: 417404407}
   canvas: {fileID: 321487233}
+  slidemanager: {fileID: 954633072}
 --- !u!114 &919620396
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -32358,6 +32363,7 @@ MonoBehaviour:
   SettingPanel: {fileID: 669611700}
   isOK: 1
   isSlide: 0
+  BlockJJS: 0
 --- !u!1 &956132027
 GameObject:
   m_ObjectHideFlags: 0
@@ -37323,6 +37329,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gridArea: {fileID: 417404407}
   canvas: {fileID: 321487233}
+  slidemanager: {fileID: 954633072}
 --- !u!114 &1130612007
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -46298,6 +46305,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gridArea: {fileID: 417404407}
   canvas: {fileID: 321487233}
+  slidemanager: {fileID: 954633072}
 --- !u!114 &1461207461
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -50050,6 +50058,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gridArea: {fileID: 417404407}
   canvas: {fileID: 321487233}
+  slidemanager: {fileID: 954633072}
 --- !u!114 &1597141047
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -51758,6 +51767,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gridArea: {fileID: 417404407}
   canvas: {fileID: 321487233}
+  slidemanager: {fileID: 954633072}
 --- !u!114 &1671799068
 MonoBehaviour:
   m_ObjectHideFlags: 0
