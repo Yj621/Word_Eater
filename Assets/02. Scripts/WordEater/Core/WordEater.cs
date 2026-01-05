@@ -23,6 +23,7 @@ namespace WordEater.Core
         [SerializeField] private GameManager gamemanager;            // 게임 매니저
         [SerializeField] private GalleryUIManager galleryUIManager;  // 도감 UI
         [SerializeField] private FileManager filemanager;            // 파일 관리자
+        [SerializeField] private AlgorithmMessage algoMessage;
 
         [Header("에셋 연결")]
         [SerializeField] private Sprite[] stageSprites;      // 0:Bit, 1:Byte, 2:Word 단계별 이미지
@@ -83,6 +84,11 @@ namespace WordEater.Core
             // 히스토리 초기화함
             gamemanager.HistoryLIne = "";
             gamemanager.RelevantResult.Clear();
+
+            if (algoMessage != null)
+            {
+                algoMessage.ClearAllMessages();
+            }
 
             if (initial)
             {
