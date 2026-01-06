@@ -6,6 +6,7 @@ public class SlideManager : MonoBehaviour
     private Vector2 endPos;
 
     public GameManager gamemanager;
+    public PhoneSwiper phoneswiper;
 
     public RectTransform SettingPanel;
     Vector2 originPos;
@@ -76,7 +77,7 @@ public class SlideManager : MonoBehaviour
             if (!isSlide)
             {
 
-                if (swipeY > swipeThreshold && isOK)
+                if (swipeY > swipeThreshold && isOK && phoneswiper.current == 0)
                 {
                     BlockJJS = true;
 
@@ -109,8 +110,9 @@ public class SlideManager : MonoBehaviour
             //위에서 아래로 슬라이드
             if (swipeY > swipeThreshold)
             {
-                if (isOK)
+                if (isOK && phoneswiper.current == 0)
                 {
+
                     BlockJJS = true;
 
                     SettingPanel.anchoredPosition = originPos + Vector2.up * Screen.height;

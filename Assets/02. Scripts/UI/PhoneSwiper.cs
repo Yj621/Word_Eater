@@ -31,7 +31,7 @@ public class PhoneSwiper : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
     public SlideManager slidemanager;
 
     int pageCount;
-    int current;
+    public int current;
     float pageWidth;
     Vector2 dragStartPointer;
     Vector2 dragStartContentPos;
