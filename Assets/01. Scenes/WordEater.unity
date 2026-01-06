@@ -9206,6 +9206,7 @@ MonoBehaviour:
   useUnscaledTime: 1
   isUsingTab: 1
   slidemanager: {fileID: 954633072}
+  current: 0
 --- !u!114 &321487237
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -32360,6 +32361,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SlideManager
   gamemanager: {fileID: 1076038538945570555}
+  phoneswiper: {fileID: 321487236}
   SettingPanel: {fileID: 669611700}
   isOK: 1
   isSlide: 0
