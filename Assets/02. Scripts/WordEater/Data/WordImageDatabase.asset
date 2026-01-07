@@ -1,0 +1,119 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: WordImageDatabase
+  m_EditorClassIdentifier: Assembly-CSharp::WordImageDatabase
+  entries:
+  - wordId: "\u3131"
+    stage1: {fileID: 3165899796926439750, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage2: {fileID: -4752425612545647142, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage3: {fileID: 4686824698260747337, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+  - wordId: "\u3134"
+    stage1: {fileID: -4594089353369289754, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage2: {fileID: -2354059711063605819, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage3: {fileID: -471073888702062171, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+  - wordId: "\u3137"
+    stage1: {fileID: -6580384045667553950, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage2: {fileID: 4287248763957884213, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage3: {fileID: -5644023846980588774, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+  - wordId: "\u3139"
+    stage1: {fileID: 3792526513636104858, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage2: {fileID: 3559492002611170487, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage3: {fileID: 5094515768039001723, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+  - wordId: "\u3141"
+    stage1: {fileID: 7757448381077667232, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage2: {fileID: 5401511560137783030, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage3: {fileID: 6193841273349202160, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+  - wordId: "\u3142"
+    stage1: {fileID: -132646383259103156, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage2: {fileID: 6591086342280470774, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage3: {fileID: -7500525083151601983, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+  - wordId: "\u3145"
+    stage1: {fileID: -3207293395672679602, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage2: {fileID: 4025993488710886356, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage3: {fileID: 8230896737735098868, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+  - wordId: "\u3147"
+    stage1: {fileID: 8924981685971987857, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage2: {fileID: 776483301816150382, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage3: {fileID: -5574175962241805000, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+  - wordId: "\u3148"
+    stage1: {fileID: 1234564877400804788, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage2: {fileID: 2918928299279551742, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage3: {fileID: 5053747061477087054, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+  - wordId: "\u314A"
+    stage1: {fileID: -2822254296033832399, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage2: {fileID: 7624803013939397866, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage3: {fileID: 2137487939644291043, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+  - wordId: "\u314B"
+    stage1: {fileID: 5819026292615639258, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage2: {fileID: -7638352863344023820, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage3: {fileID: 4279260447815411673, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+  - wordId: "\u314C"
+    stage1: {fileID: -2725109281459718677, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage2: {fileID: 2067264513268649471, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage3: {fileID: 7651781859617324059, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+  - wordId: "\u314D"
+    stage1: {fileID: 5387421849220487561, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage2: {fileID: 5624972090220295530, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage3: {fileID: -7045967433564052415, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+  - wordId: "\u314E"
+    stage1: {fileID: 7723011039732990620, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage2: {fileID: -6083742437205285698, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage3: {fileID: 7153432839150287189, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+  - wordId: "\u314F"
+    stage1: {fileID: -7822889250730481688, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage2: {fileID: 3521828221393556787, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage3: {fileID: -6014308715655879256, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+  - wordId: "\u3150"
+    stage1: {fileID: 7989653677615679038, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage2: {fileID: -4045913818987607195, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage3: {fileID: -9141477669620151374, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+  - wordId: "\u3151"
+    stage1: {fileID: 1742074617688873526, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage2: {fileID: -4747221221318155179, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage3: {fileID: 6163705066252985535, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+  - wordId: "\u3153"
+    stage1: {fileID: -5145785321142167959, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage2: {fileID: 2594531576690645067, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage3: {fileID: 5516658542004611499, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+  - wordId: "\u3154"
+    stage1: {fileID: -4584151765692215533, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage2: {fileID: -1020199144507162475, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage3: {fileID: -6815178579652776234, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+  - wordId: "\u3155"
+    stage1: {fileID: -316027206385280079, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage2: {fileID: -8723901684147417176, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage3: {fileID: 2335598134973145799, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+  - wordId: "\u3157"
+    stage1: {fileID: -3698128117783161051, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage2: {fileID: 3585568857036811593, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage3: {fileID: 6168501941972456945, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+  - wordId: "\u315B"
+    stage1: {fileID: -8994116326460197667, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage2: {fileID: -6100323290548043609, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage3: {fileID: 6029603084457176567, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+  - wordId: "\u315C"
+    stage1: {fileID: 1431793361739885436, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage2: {fileID: 8911286832144423688, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage3: {fileID: -1071611826460809842, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+  - wordId: "\u3160"
+    stage1: {fileID: 708993111747667650, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage2: {fileID: -6852310005523189640, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage3: {fileID: -1391447313322094005, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+  - wordId: "\u3161"
+    stage1: {fileID: 6794093562252383551, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage2: {fileID: -4047751510287185744, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage3: {fileID: -936677674310579850, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+  - wordId: "\u3163"
+    stage1: {fileID: 6372863131365923011, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage2: {fileID: -1288632510793510946, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage3: {fileID: -7057655634767249522, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}

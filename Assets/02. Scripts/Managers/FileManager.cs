@@ -47,6 +47,7 @@ public class FileManager : MonoBehaviour
         public string History;
         public List<string> Relevant; //관련 단어
         public string Name;
+        public string ImgId;
     }
 
     [System.Serializable]
@@ -109,7 +110,7 @@ public class FileManager : MonoBehaviour
     // ========================================================================
     // [Part 1] 워드이터 게임 데이터 (레벨, 정답, 히스토리)
     // ========================================================================
-    public void SaveWordEaterInfo(int le, string an, string hi, List<string> RR)
+    public void SaveWordEaterInfo(int le, string an, string hi, List<string> RR , string id)
     {
         WordEaterData data = new WordEaterData
         {
@@ -117,7 +118,8 @@ public class FileManager : MonoBehaviour
             Answer = an,
             History = hi,
             Relevant = RR,
-            Name = CurrentPlayerName
+            Name = CurrentPlayerName,
+            ImgId = id
         };
 
         string json = JsonUtility.ToJson(data, true);
@@ -141,7 +143,10 @@ public class FileManager : MonoBehaviour
         else
             CurrentPlayerName = "워드이터";
 
-        if (wordeater != null) wordeater.LoadFromSaveData(data.Level, data.Answer);
+        if (wordeater != null) { 
+            wordeater.LoadFromSaveData(data.Level, data.Answer);
+            wordeater.wordImgString = data.ImgId;
+        }
         if (gamemanager != null)
         {
             gamemanager.HistoryLIne = data.History;
@@ -159,12 +164,11 @@ public class FileManager : MonoBehaviour
         // 이름만 바뀐 시점에 저장이 필요하다면, 현재 상태를 읽어와서 저장
         if (wordeater != null && gamemanager != null)
         {
-            SaveWordEaterInfo(
-                (int)wordeater.CurrentStage,
-                wordeater.Answer,
-                gamemanager.HistoryLIne,
-                gamemanager.RelevantResult
-            );
+            string json = File.ReadAllText(WordEaterPath);
+            WordEaterData data = JsonUtility.FromJson<WordEaterData>(json);
+            data.Name = newName;
+
+            File.WriteAllText(WordEaterPath, JsonUtility.ToJson(data, true));
         }
         OnNameChanged?.Invoke(CurrentPlayerName);
     }

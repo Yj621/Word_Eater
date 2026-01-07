@@ -52,6 +52,9 @@ namespace WordEater.Core
         public GrowthStage CurrentStage => stage;
         public string Answer => currentAnswer;
 
+        public WordImageDatabase wordimgdatabase;
+        public string wordImgString = "";
+
         private void Awake()
         {
         }
@@ -71,7 +74,7 @@ namespace WordEater.Core
             currentAnswer = currentEntry.word;
 
             // 외형 업데이트하고 이벤트 알림
-            UpdateVisuals();
+            UpdateVisuals(1);
             NotifyNewWordAssigned();
             SaveCheckpoint();
         }
@@ -105,7 +108,8 @@ namespace WordEater.Core
             SaveCheckpoint();
 
             // 현재 상태를 파일에 저장함
-            filemanager.SaveWordEaterInfo((int)stage, currentAnswer, gamemanager.HistoryLIne , gamemanager.RelevantResult);
+            Debug.Log(wordImgString + "비긴 스테이지에서");
+            filemanager.SaveWordEaterInfo((int)stage, currentAnswer, gamemanager.HistoryLIne , gamemanager.RelevantResult, wordImgString);
             NotifyNewWordAssigned();
         }
 
@@ -139,22 +143,78 @@ namespace WordEater.Core
         /// <summary>
         /// 현재 단계에 맞는 스프라이트로 교체하고 썸네일을 캡처함
         /// </summary>
-        private void UpdateVisuals()
+        private void UpdateVisuals(int type = 0) // 0-> 새로운 이미지 , 1 -> 이미지 불러오기
         {
             if (TargetImage == null) return;
 
             // 단계에 맞는 스프라이트 적용함
             int index = (int)stage;
-            if (stageSprites != null && index >= 0 && index < stageSprites.Length)
+            if (type == 0)
             {
-                TargetImage.sprite = stageSprites[index];
-            }
+                // bit 단계면 랜덤 선택
+                if (index == 0)
+                {
+                    if (stageSprites != null && index >= 0)
+                    {
+                        int randomIndex = UnityEngine.Random.Range(0, wordimgdatabase.entries.Count);
+                        wordImgString = wordimgdatabase.entries[randomIndex].wordId;
+                        TargetImage.sprite = wordimgdatabase.entries[randomIndex].stage1;
 
-            // 살아있을 때만 썸네일 저장함
-            if (!isDead)
-            {
-                string suffix = stage == GrowthStage.Bit ? "s0" : (stage == GrowthStage.Byte ? "s1" : "s2");
-                CaptureThumbnail($"thumb_{pendingEvoId}_{suffix}");
+                        Debug.Log(wordImgString);
+                    }
+                }
+                // bit 아니면 다음 단계로
+                else
+                {
+                    if (stageSprites != null && index >= 0 && wordImgString != "")
+                    {
+                        WordStageImages cur = wordimgdatabase.entries.Find(e => e.wordId == wordImgString);
+
+                        //byte
+                        if (index == 1)
+                        {
+                            TargetImage.sprite = cur.stage2;
+                        }
+
+                        //word
+                        if (index == 2)
+                        {
+                            TargetImage.sprite = cur.stage3;
+                        }
+                    }
+                }
+
+
+                // 살아있을 때만 썸네일 저장함
+                if (!isDead)
+                {
+                    string suffix = stage == GrowthStage.Bit ? "s0" : (stage == GrowthStage.Byte ? "s1" : "s2");
+                    CaptureThumbnail($"thumb_{pendingEvoId}_{suffix}");
+                }
+            }
+            else {
+                if (stageSprites != null && index >= 0 && wordImgString != "")
+                {
+                    WordStageImages cur = wordimgdatabase.entries.Find(e => e.wordId == wordImgString);
+
+                    //bit
+                    if (index == 0)
+                    {
+                        TargetImage.sprite = cur.stage1;
+                    }
+
+                    //byte
+                    if (index == 1)
+                    {
+                        TargetImage.sprite = cur.stage2;
+                    }
+
+                    //word
+                    if (index == 2)
+                    {
+                        TargetImage.sprite = cur.stage3;
+                    }
+                }
             }
         }
         #endregion
@@ -508,7 +568,7 @@ namespace WordEater.Core
             stage = s;
             currentAnswer = answer;
             NotifyNewWordAssigned();
-            UpdateVisuals();
+            UpdateVisuals(1);
         }
         #endregion
     }
