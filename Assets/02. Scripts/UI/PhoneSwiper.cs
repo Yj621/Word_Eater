@@ -137,9 +137,11 @@ public class PhoneSwiper : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
 
         if (dragStartPointer.y >= Screen.height * 0.7) return;
 
+
         float dx = eventData.position.x - dragStartPointer.x;
+
         float minX = -((pageCount - 1) * pageWidth);
-        float targetX = Mathf.Clamp(dragStartContentPos.x + dx, minX, 0f);
+        float targetX = Mathf.Clamp(dragStartContentPos.x + (dx/3), minX, 0f);
         content.anchoredPosition = new Vector2(targetX, dragStartContentPos.y);
     }
 
