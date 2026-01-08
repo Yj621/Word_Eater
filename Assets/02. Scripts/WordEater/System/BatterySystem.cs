@@ -116,8 +116,8 @@ namespace WordEater.Systems
                 case ActionType.SubmitBit: return 20;
                 case ActionType.SubmitByte: return 15;
                 case ActionType.SubmitWord: return 10;
-                case ActionType.OptimizeAlgoCall: return 20;
-                case ActionType.OptimizeAlgoMessage: return 15;
+                case ActionType.OptimizeAlgoCall: return 15;
+                case ActionType.OptimizeAlgoMessage: return 10;
                 case ActionType.CleanNoise: return 20;
                 case ActionType.MinigameStart: return 20;
                 default: return 0;
