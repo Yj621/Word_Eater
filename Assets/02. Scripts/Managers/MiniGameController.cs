@@ -43,11 +43,23 @@ public class MiniGameController : MonoBehaviour
 
         if (wordeater != null)
         {
-            if (!wordeater.TryPayForMiniGame())
+            // 수정: bool 체크가 아니라 콜백을 넘겨줌
+            wordeater.TryPayForMiniGame(() =>
             {
-                return;
-            }
+                // === 결제 성공(또는 강제 진행) 시 실행될 로직 ===
+                RealStartGame();
+            });
         }
+        else
+        {
+            // WordEater가 연결 안 된 테스트 상황이면 그냥 시작
+            RealStartGame();
+        }
+    }
+
+    // [추가] 실제 게임 시작 로직을 분리함 (코드 중복 방지)
+    private void RealStartGame()
+    {
         _running = true;
 
         // 모드에 따라 타이머 세팅
@@ -57,7 +69,6 @@ public class MiniGameController : MonoBehaviour
         // 첫 게임 시작
         StartRandomGame(skipIndex: -1);
     }
-
     public void StopAllGames()
     {
         _running = false;
@@ -91,8 +102,6 @@ public class MiniGameController : MonoBehaviour
         if (wordeater == null) return true;
 
         if (wordeater.isDead) return false;
-        if (!wordeater.TryPayForSubmit())
-            return false;
 
         return true;
     }

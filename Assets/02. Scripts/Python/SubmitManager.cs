@@ -11,10 +11,10 @@ public class SubmitManager : MonoBehaviour
     public WordEater.Core.WordEater wordeater;
     public GameManager gamemanager;
     public FileManager filemanager;
+
     public void OnSubmitButton()
     {
-        // 1. 단어 조합 확인 (비용 없음)
-        // [수정] returnCurrentEnrty().word -> CurrentEntry.word
+        // 1. 단어 조합 확인 (비용 없음 - 먼저 체크)
         string word1 = wordeater.CurrentEntry.word;
         if (!keyboardmanager.TryBuildWord(out var word2))
         {
@@ -22,40 +22,45 @@ public class SubmitManager : MonoBehaviour
             return;
         }
 
-        // 2. 배터리 선결제 확인 (WordEater에 복구한 메서드 사용)
-        if (!wordeater.TryPayForSubmit())
+        // 2. 배터리 결제 시도 (콜백 방식으로 변경됨)
+        // [중요] "성공 시 실행할 로직"을 람다 함수 () => { ... } 안에 넣습니다.
+        wordeater.TryPayForSubmit(() =>
         {
-            uimanager.CloseKeyboard();
-            return;
-        }
+            // === 여기서부터는 배터리 결제가 성공(또는 강제 제출)했을 때만 실행됩니다 ===
 
-        keyboardmanager.ConfirmUse();
+            // 키보드 알파벳 소모 확정
+            keyboardmanager.ConfirmUse();
 
-        // 3. 서버 통신
-        StartCoroutine(pythonConnectManager.SimilartyTwoWord(word1, word2, (result) =>
-        {
-            if (result.HasValue)
+            // 3. 서버 통신
+            StartCoroutine(pythonConnectManager.SimilartyTwoWord(word1, word2, (result) =>
             {
-                if (result.Value == 1)
+                if (result.HasValue)
                 {
-                    NoticeManager.Instance.ShowSticky("정답!");
+                    if (result.Value == 1)
+                    {
+                        NoticeManager.Instance.ShowSticky("정답!");
+                    }
+                    else
+                    {
+                        NoticeManager.Instance.ShowSticky($"유사도 : {(result.Value * 100f).ToString("F0")}%");
+                        gamemanager.HistoryLIne += word2 + "," + (result.Value * 100f).ToString("F0") + "%" + "|";
+                        gamemanager.UpdateHistoryLineInFile(gamemanager.HistoryLIne);
+                    }
+
+                    wordeater.DoFeedData(word2);
                 }
                 else
                 {
-                    NoticeManager.Instance.ShowSticky($"유사도 : {(result.Value * 100f).ToString("F0")}%");
-                    gamemanager.HistoryLIne += word2 + "," + (result.Value * 100f).ToString("F0") + "%" + "|";
-                    gamemanager.UpdateHistoryLineInFile(gamemanager.HistoryLIne);
+                    NoticeManager.Instance.ShowTimed("Uncorrect Word!", 2f);
                 }
+            }));
 
-                wordeater.DoFeedData(word2);
-            }
-            else
-            {
-                NoticeManager.Instance.ShowTimed("Uncorrect Word!", 2f);
-            }
-        }));
+            // 성공적으로 제출 절차가 시작되었으므로 키보드를 닫습니다.
+            uimanager.CloseKeyboard();
+        });
 
-        uimanager.CloseKeyboard();
+        // 참고: 만약 팝업에서 'No(포기)'를 누르면 위 { } 안의 코드는 실행되지 않고,
+        // 키보드도 닫히지 않은 상태로 유지됩니다. (유저가 다시 수정할 수 있도록)
     }
 
     public void OnRelevantButton()

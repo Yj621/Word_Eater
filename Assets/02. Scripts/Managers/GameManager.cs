@@ -117,7 +117,7 @@ public class GameManager : MonoBehaviour
         );
 
         // 팝업 띄우기 & 보상 로직 연결
-        sharedAdPopup.Show(
+        sharedAdPopup.YesNoPanelShow(
             onAccept: () =>
             {
                 // 광고 시청 완료(Yes) 시 실행될 로직

@@ -23,6 +23,8 @@ public class ADPopup : MonoBehaviour
     [SerializeField] private Ease showEase = Ease.OutBack; // 나타날 때 효과 (통통 튀는 느낌)
     [SerializeField] private Ease hideEase = Ease.InBack;  // 사라질 때 효과
 
+    // 광고 모드인지, 단순 확인 모드인지 구분하는 플래그
+    private bool _isAdMode = true;
     private Action _onAccept;
     private Action _onDecline;
     private bool _visible;
@@ -48,7 +50,15 @@ public class ADPopup : MonoBehaviour
         if (noThanksLabel != null) noThanksLabel.text = noThanksText;
     }
 
-    public void Show(Action onAccept, Action onDecline)
+    /// <summary>
+    ///  팝업의 모드를 설정 (true: 광고 보기, false: 그냥 확인)
+    /// </summary>
+    public void SetAdMode(bool isAd)
+    {
+        _isAdMode = isAd;
+    }
+
+    public void YesNoPanelShow(Action onAccept, Action onDecline)
     {
         _onAccept = onAccept;
         _onDecline = onDecline;
@@ -148,6 +158,16 @@ public class ADPopup : MonoBehaviour
         if (!_visible) return;
         SetButtonsInteractable(false);
 
+        // 1. 광고 모드가 아니면 바로 수락 처리 (강제 제출 등)
+        if (!_isAdMode)
+        {
+            _onAccept?.Invoke();
+            Hide();
+            SetButtonsInteractable(true);
+            return;
+        }
+
+        // 2. 광고 모드면 기존 로직(AdsManager) 실행
         AdsManager.Instance.ShowRewarded(
             onRewardEarned: () =>
             {

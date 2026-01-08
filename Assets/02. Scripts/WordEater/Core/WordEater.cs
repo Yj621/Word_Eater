@@ -24,6 +24,7 @@ namespace WordEater.Core
         [SerializeField] private GalleryUIManager galleryUIManager;  // 도감 UI
         [SerializeField] private FileManager filemanager;            // 파일 관리자
         [SerializeField] private AlgorithmMessage algoMessage;
+        [SerializeField] private ADPopup adPopup;
 
         [Header("에셋 연결")]
         [SerializeField] private Sprite[] stageSprites;      // 0:Bit, 1:Byte, 2:Word 단계별 이미지
@@ -145,131 +146,185 @@ namespace WordEater.Core
         /// </summary>
         private void UpdateVisuals(int type = 0) // 0-> 새로운 이미지 , 1 -> 이미지 불러오기
         {
+            // 1. TargetImage가 없으면 중단
             if (TargetImage == null) return;
+
+            // [디버깅] 데이터베이스 연결 확인
+            if (wordimgdatabase == null)
+            {
+                Debug.LogError("❌ [치명적 오류] WordImgDatabase가 연결되지 않았습니다! 인스펙터를 확인하세요.");
+                return;
+            }
+            if (wordimgdatabase.entries == null || wordimgdatabase.entries.Count == 0)
+            {
+                Debug.LogError("❌ [데이터 오류] WordImgDatabase는 연결됐지만, 내용물(Entries)이 비어있습니다!");
+                return;
+            }
 
             // 단계에 맞는 스프라이트 적용함
             int index = (int)stage;
-            if (type == 0)
-            {
-                // bit 단계면 랜덤 선택
-                if (index == 0)
-                {
-                    if (stageSprites != null && index >= 0)
-                    {
-                        int randomIndex = UnityEngine.Random.Range(0, wordimgdatabase.entries.Count);
-                        wordImgString = wordimgdatabase.entries[randomIndex].wordId;
-                        TargetImage.sprite = wordimgdatabase.entries[randomIndex].stage1;
 
-                        Debug.Log(wordImgString);
+            try // 안전 장치 추가
+            {
+                if (type == 0)
+                {
+                    // bit 단계면 랜덤 선택
+                    if (index == 0)
+                    {
+                        if (stageSprites != null && index >= 0)
+                        {
+                            int randomIndex = UnityEngine.Random.Range(0, wordimgdatabase.entries.Count);
+                            // 여기서 entries 접근 시 에러가 났었습니다.
+                            var entry = wordimgdatabase.entries[randomIndex];
+
+                            wordImgString = entry.wordId;
+                            TargetImage.sprite = entry.stage1;
+
+                            Debug.Log($"[Visual Update] New Bit Image: {wordImgString}");
+                        }
+                    }
+                    // bit 아니면 다음 단계로
+                    else
+                    {
+                        if (stageSprites != null && index >= 0 && !string.IsNullOrEmpty(wordImgString))
+                        {
+                            WordStageImages cur = wordimgdatabase.entries.Find(e => e.wordId == wordImgString);
+
+                            if (cur != null) // 찾는 ID가 없을 수도 있음
+                            {
+                                // byte
+                                if (index == 1) TargetImage.sprite = cur.stage2;
+                                // word
+                                if (index == 2) TargetImage.sprite = cur.stage3;
+                            }
+                            else
+                            {
+                                Debug.LogWarning($"⚠️ ID '{wordImgString}'에 해당하는 이미지를 DB에서 찾을 수 없습니다.");
+                            }
+                        }
+                    }
+
+                    // 살아있을 때만 썸네일 저장함
+                    if (!isDead)
+                    {
+                        string suffix = stage == GrowthStage.Bit ? "s0" : (stage == GrowthStage.Byte ? "s1" : "s2");
+                        CaptureThumbnail($"thumb_{pendingEvoId}_{suffix}");
                     }
                 }
-                // bit 아니면 다음 단계로
-                else
+                else // type == 1 (로드 시)
                 {
-                    if (stageSprites != null && index >= 0 && wordImgString != "")
+                    if (stageSprites != null && index >= 0 && !string.IsNullOrEmpty(wordImgString))
                     {
                         WordStageImages cur = wordimgdatabase.entries.Find(e => e.wordId == wordImgString);
 
-                        //byte
-                        if (index == 1)
+                        if (cur != null)
                         {
-                            TargetImage.sprite = cur.stage2;
-                        }
-
-                        //word
-                        if (index == 2)
-                        {
-                            TargetImage.sprite = cur.stage3;
+                            if (index == 0) TargetImage.sprite = cur.stage1;
+                            if (index == 1) TargetImage.sprite = cur.stage2;
+                            if (index == 2) TargetImage.sprite = cur.stage3;
                         }
                     }
-                }
-
-
-                // 살아있을 때만 썸네일 저장함
-                if (!isDead)
-                {
-                    string suffix = stage == GrowthStage.Bit ? "s0" : (stage == GrowthStage.Byte ? "s1" : "s2");
-                    CaptureThumbnail($"thumb_{pendingEvoId}_{suffix}");
                 }
             }
-            else {
-                if (stageSprites != null && index >= 0 && wordImgString != "")
-                {
-                    WordStageImages cur = wordimgdatabase.entries.Find(e => e.wordId == wordImgString);
-
-                    //bit
-                    if (index == 0)
-                    {
-                        TargetImage.sprite = cur.stage1;
-                    }
-
-                    //byte
-                    if (index == 1)
-                    {
-                        TargetImage.sprite = cur.stage2;
-                    }
-
-                    //word
-                    if (index == 2)
-                    {
-                        TargetImage.sprite = cur.stage3;
-                    }
-                }
+            catch (System.Exception e)
+            {
+                Debug.LogError($"UpdateVisuals 내부 에러 발생: {e.Message}");
             }
         }
         #endregion
 
         #region [Game Loop]
-
         /// <summary>
         /// 제출 전 배터리 비용을 지불할 수 있는지 확인함
+        /// UI 팝업 대기를 위해 성공 시 실행할 로직(onSuccess)을 인자로 받음
         /// </summary>
-        public bool TryPayForSubmit()
+        public void TryPayForSubmit(Action onSuccess)
         {
-            if (isDead) return false;
+            if (isDead) return;
 
             ActionType costType = GetSubmitAction();
 
-            // 1 배터리 소모 시도함
-            if (!battery.TryConsume(costType))
+            // 1. 배터리가 충분한 경우 (정상 진행)
+            if (battery.TryConsume(costType))
             {
-                // 배터리 부족하면 알림 띄우고 실패 처리함
-                NoticeManager.Instance.ShowSticky("배터리가 부족합니다");
-                return false;
-            }
+                // 즉시 성공 로직 실행 (서버 통신 시작)
+                onSuccess?.Invoke();
 
-            // 2 소모 후 배터리가 0 이하가 되었는지 체크함
+                // [삭제함] 여기서 사망 체크를 하면 안 됩니다! 
+                // 서버 응답(정답 확인)이 오기 전에 체크해버려서, 
+                // 정답을 맞췄음에도 배터리가 0이라서 죽는 문제가 발생합니다.
+
+                // CheckBatteryDeath();  <-- 이 줄을 지웠습니다.
+            }
+            // 2. 배터리가 부족한 경우 (팝업 띄우기)
+            else
+            {
+                adPopup.Configure("배터리 부족 경고", "강제 제출", "닫기");
+                adPopup.SetAdMode(false);
+
+                adPopup.YesNoPanelShow(
+                      onAccept: () =>
+                      {
+                          battery.ForceEmpty();
+                          onSuccess?.Invoke();
+                          // 여기도 사망 체크 없음 (DoFeedData 안에서 처리됨)
+                      },
+                      onDecline: () =>
+                      {
+                          NoticeManager.Instance.ShowSticky("배터리가 부족합니다");
+                      }
+                );
+            }
+        }
+
+        /// <summary>
+        /// 소모 후 사망 체크 헬퍼 메서드
+        /// </summary>
+        private void CheckBatteryDeath()
+        {
             if (battery.CurrentPercent <= 0)
             {
                 Debug.Log("[결제 후 소진] 사망 처리");
                 StartCoroutine(DieSequenceRoutine());
-                return false; // 사망했으므로 로직 중단함
             }
-
-            return true;
         }
 
-        public bool TryPayForMiniGame()
+        /// <summary>
+        /// 미니게임 시작 비용 지불 (콜백 방식)
+        /// </summary>
+        public void TryPayForMiniGame(Action onSuccess)
         {
-            if (isDead) return false;
+            if (isDead) return;
 
-            if (!battery.TryConsume(ActionType.MinigameStart))
+            // 1. 배터리 충분함
+            if (battery.TryConsume(ActionType.MinigameStart))
             {
-                NoticeManager.Instance.ShowSticky("배터리가 부족합니다");
-                return false;
+                onSuccess?.Invoke();
             }
-
-            // 결제 후 방전 체크
-            if (battery.CurrentPercent <= 0)
+            // 2. 배터리 부족함 -> 팝업
+            else
             {
-                Debug.Log("[MiniGame 결제 후 소진] 사망 처리");
-                StartCoroutine(DieSequenceRoutine());
-                return false;
-            }
+                adPopup.Configure("배터리 부족", "강제 시작", "포기");
+                adPopup.SetAdMode(false); // 광고 없이
 
-            return true;
+                adPopup.YesNoPanelShow(
+                    onAccept: () =>
+                    {
+                        // 강제 시작: 배터리 0으로 만들고 게임 시작
+                        battery.ForceEmpty();
+
+                        onSuccess?.Invoke();
+
+                        // 미니게임 시작 비용도 없는데 했으므로 사망 처리
+                        StartCoroutine(DieSequenceRoutine());
+                    },
+                    onDecline: () =>
+                    {
+                        NoticeManager.Instance.ShowSticky("배터리가 부족합니다");
+                    }
+                );
+            }
         }
-
 
         /// <summary>
         /// 유저 입력을 받아 정답 여부를 판정하고 결과를 처리함
