@@ -31,6 +31,7 @@ public class GameManager : MonoBehaviour
     [Header("인벤 관련")]
     [SerializeField] private RectTransform FolderPanel;
     [SerializeField] private RectTransform FolderBtn;
+    [SerializeField] private CanvasGroup folderCanvasGroup;
 
     [Header("설정 관련")]
     [SerializeField] private RectTransform SettingPanel;
@@ -39,6 +40,7 @@ public class GameManager : MonoBehaviour
     [Header("아이템 관련")]
     [SerializeField] private RectTransform ItemFolderPanel;
     [SerializeField] private RectTransform ItemFolderBtn;
+    [SerializeField] private CanvasGroup itemFolderCanvasGroup;
 
     [Header("게임 오버 연출 (배터리 방전)")]
     [SerializeField] private CanvasGroup gameOverCanvasGroup; // 검은 배경 전체 (알파값 조절용)
@@ -100,8 +102,21 @@ public class GameManager : MonoBehaviour
             gameOverCanvasGroup.alpha = 0;
             gameOverCanvasGroup.gameObject.SetActive(false);
         }
+        InitBlurPanel(folderCanvasGroup, FolderPanel);
+        InitBlurPanel(itemFolderCanvasGroup, ItemFolderPanel);
     }
 
+    // 블러 패널 초기화 헬퍼 함수
+    private void InitBlurPanel(CanvasGroup cg, RectTransform rt)
+    {
+        if (cg != null && rt != null)
+        {
+            rt.gameObject.SetActive(true); // 무조건 켜둠 (셰이더 로드 유지)
+            cg.alpha = 0f;                 // 대신 투명하게
+            cg.blocksRaycasts = false;     // 터치 방지
+            cg.interactable = false;
+        }
+    }
     /// <summary>
     /// [아이템 광고] 버튼 클릭 시
     /// </summary>
@@ -505,10 +520,6 @@ public class GameManager : MonoBehaviour
     public void ShowPanel_Gallery() => ShowPanelFromButton(GalleryPanel, GalleryBtn);
     public void HidePanel_Gallery() => HidePanelToButton(GalleryPanel, GalleryBtn);
 
-    // 다른 Canvas여도 정확히 버튼 자리에서 시작/복귀
-    public void ShowPanel_Folder() => ShowPanelFromButton(FolderPanel, FolderBtn);
-    public void HidePanel_Folder() => HidePanelToButton(FolderPanel, FolderBtn);
-
     public void ShowPanel_Setting() => ShowPanelFromButton(SettingPanel, SettingBtn);
     public void HidePanel_Setting() => HidePanelToButton(SettingPanel, SettingBtn);
 
@@ -518,9 +529,73 @@ public class GameManager : MonoBehaviour
     public void ShowPanel_History() => ShowPanelFromButton(HistoryPanel, HistoryBtn);
     public void HidePanel_History() => HidePanelToButton(HistoryPanel, HistoryBtn);
 
-    public void ShowPanel_Item() => ShowPanelFromButton(ItemFolderPanel, ItemFolderBtn);
-    public void HidePanel_Item() => HidePanelToButton(ItemFolderPanel, ItemFolderBtn);
+    public void ShowPanel_Folder() => ShowBlurPanelFromButton(FolderPanel, FolderBtn, folderCanvasGroup);
+    public void HidePanel_Folder() => HideBlurPanelToButton(FolderPanel, FolderBtn, folderCanvasGroup);
+
+    public void ShowPanel_Item() => ShowBlurPanelFromButton(ItemFolderPanel, ItemFolderBtn, itemFolderCanvasGroup);
+    public void HidePanel_Item() => HideBlurPanelToButton(ItemFolderPanel, ItemFolderBtn, itemFolderCanvasGroup);
+
+    // -----------------------------------------------------------------------
+    // [핵심 변경 2] 블러 패널 전용 Show/Hide 함수 추가
+    // 기존 ShowPanelFromButton과 비슷하지만 SetActive 대신 Alpha를 조절함
+    // -----------------------------------------------------------------------
+
+    private void ShowBlurPanelFromButton(RectTransform panel, RectTransform btn, CanvasGroup cg)
+    {
+        if (panel == null || btn == null || cg == null) return;
+
+        smanager.isOK = false;
+
+        // [중요] 이미 SetActive(true) 상태임. 초기화 렉 없음.
+
+        var parent = panel.parent as RectTransform;
+        Vector2 startLocal = CanvasUtil.ConvertBetweenCanvases(btn, parent);
+
+        // 애니메이션 시작 전 위치/스케일 초기화
+        panel.anchoredPosition = startLocal;
+        panel.localScale = Vector3.zero;
+
+        // 터치 활성화
+        cg.blocksRaycasts = true;
+        cg.interactable = true;
+
+        // DOTween 시퀀스로 부드럽게 등장 (투명도 + 크기 + 이동)
+        Sequence seq = DOTween.Sequence();
+        seq.Join(panel.DOAnchorPos(Vector2.zero, 0.3f).SetEase(Ease.OutBack)); // 중앙으로 이동
+        seq.Join(panel.DOScale(Vector3.one, 0.3f).SetEase(Ease.OutBack));      // 커지기
+        seq.Join(cg.DOFade(1f, 0.3f));                                         // [핵심] 투명도 0->1
+
+        phoneSwiper.isUsingTab = true;
+    }
+
+    private void HideBlurPanelToButton(RectTransform panel, RectTransform btn, CanvasGroup cg)
+    {
+        if (panel == null || btn == null || cg == null) return;
+
+        var parent = panel.parent as RectTransform;
+        Vector2 endLocal = CanvasUtil.ConvertBetweenCanvases(btn, parent);
+
+        // 터치 즉시 비활성화
+        cg.blocksRaycasts = false;
+        cg.interactable = false;
+
+        Sequence seq = DOTween.Sequence();
+        seq.Join(panel.DOScale(Vector3.zero, 0.2f).SetEase(Ease.InBack));
+        seq.Join(panel.DOAnchorPos(endLocal, 0.2f).SetEase(Ease.InBack));
+        seq.Join(cg.DOFade(0f, 0.2f)); // [핵심] 투명도 1->0
+
+        seq.SetUpdate(true);
+        seq.OnComplete(() =>
+        {
+            smanager.isOK = true;
+            smanager.BlockJJS = false;
+        });
+
+        phoneSwiper.isUsingTab = false;
+    }
 }
+
+
 
 /// <summary>
 /// Canvas A의 RectTransform 위치를 Canvas B(정확히는 대상 부모 RectTransform)의 로컬좌표로 변환

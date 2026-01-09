@@ -58858,13 +58858,14 @@ GameObject:
   - component: {fileID: 1931050332}
   - component: {fileID: 1931050334}
   - component: {fileID: 1931050333}
+  - component: {fileID: 1931050335}
   m_Layer: 5
   m_Name: Folder_Panel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1931050332
 RectTransform:
   m_ObjectHideFlags: 0
@@ -58923,6 +58924,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1931050331}
   m_CullTransparentMesh: 1
+--- !u!225 &1931050335
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1931050331}
+  m_Enabled: 1
+  m_Alpha: 0
+  m_Interactable: 0
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &1931561560
 GameObject:
   m_ObjectHideFlags: 0
@@ -62241,13 +62254,14 @@ GameObject:
   - component: {fileID: 2074593096}
   - component: {fileID: 2074593098}
   - component: {fileID: 2074593097}
+  - component: {fileID: 2074593099}
   m_Layer: 5
   m_Name: 'ItemFolder_Panel '
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &2074593096
 RectTransform:
   m_ObjectHideFlags: 0
@@ -62306,6 +62320,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2074593095}
   m_CullTransparentMesh: 1
+--- !u!225 &2074593099
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2074593095}
+  m_Enabled: 1
+  m_Alpha: 0
+  m_Interactable: 0
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &2078344803
 GameObject:
   m_ObjectHideFlags: 0
@@ -63173,10 +63199,12 @@ MonoBehaviour:
   GalleryBtn: {fileID: 915886513}
   FolderPanel: {fileID: 1931050332}
   FolderBtn: {fileID: 459739423}
+  folderCanvasGroup: {fileID: 1931050335}
   SettingPanel: {fileID: 669611700}
   SettingBtn: {fileID: 1671799064}
   ItemFolderPanel: {fileID: 2074593096}
   ItemFolderBtn: {fileID: 401721474}
+  itemFolderCanvasGroup: {fileID: 2074593099}
   gameOverCanvasGroup: {fileID: 670591819}
   batteryFillImg: {fileID: 857733347}
   cableIconImg: {fileID: 182028254}
@@ -63457,7 +63485,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5916570232876476328, guid: e220d5c3374d41f4eac453e75f05b85d, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5916570232876476328, guid: e220d5c3374d41f4eac453e75f05b85d, type: 3}
       propertyPath: m_AnchorMin.x
@@ -63465,15 +63493,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5916570232876476328, guid: e220d5c3374d41f4eac453e75f05b85d, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5916570232876476328, guid: e220d5c3374d41f4eac453e75f05b85d, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 240
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5916570232876476328, guid: e220d5c3374d41f4eac453e75f05b85d, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 240
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5916570232876476328, guid: e220d5c3374d41f4eac453e75f05b85d, type: 3}
       propertyPath: m_LocalPosition.x
@@ -63505,11 +63533,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5916570232876476328, guid: e220d5c3374d41f4eac453e75f05b85d, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 140
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5916570232876476328, guid: e220d5c3374d41f4eac453e75f05b85d, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -140
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5916570232876476328, guid: e220d5c3374d41f4eac453e75f05b85d, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
