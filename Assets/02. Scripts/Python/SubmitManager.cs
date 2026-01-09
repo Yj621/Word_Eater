@@ -30,7 +30,7 @@ public class SubmitManager : MonoBehaviour
             uimanager.InteractPanel.SetActive(false);
             uimanager.CloseKeyboard();
             return;
-        }
+        });
 
             // 키보드 알파벳 소모 확정
             keyboardmanager.ConfirmUse();
@@ -62,11 +62,11 @@ public class SubmitManager : MonoBehaviour
             // 성공적으로 제출 절차가 시작되었으므로 키보드를 닫습니다.
             uimanager.InteractPanel.SetActive(false);
             uimanager.CloseKeyboard();
-        });
+        }
 
         // 참고: 만약 팝업에서 'No(포기)'를 누르면 위 { } 안의 코드는 실행되지 않고,
         // 키보드도 닫히지 않은 상태로 유지됩니다. (유저가 다시 수정할 수 있도록)
-    }
+    
 
     public void OnRelevantButton()
     {
