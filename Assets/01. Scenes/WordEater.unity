@@ -63781,7 +63781,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a82eea42e722eb44b90dd0c5132ceaf1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AdsManager
-  rewardedAdRevivalId: ca-app-apub-1881501262849586/3221896109
+  rewardedAdUnitId: unused
 --- !u!224 &4387353267101508220
 RectTransform:
   m_ObjectHideFlags: 0

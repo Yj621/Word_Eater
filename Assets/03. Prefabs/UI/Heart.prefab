@@ -114,7 +114,6 @@ GameObject:
   - component: {fileID: 7662934506207124770}
   - component: {fileID: 7825142364765914209}
   - component: {fileID: 6015401441403838205}
-  - component: {fileID: 6909842524317728315}
   m_Layer: 5
   m_Name: Heart
   m_TagString: Untagged
@@ -191,15 +190,3 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
---- !u!114 &6909842524317728315
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8091757446661746796}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c88bcee35650155408e912b6947bac1f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 

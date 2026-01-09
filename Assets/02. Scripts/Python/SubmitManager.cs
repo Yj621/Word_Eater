@@ -27,6 +27,10 @@ public class SubmitManager : MonoBehaviour
         wordeater.TryPayForSubmit(() =>
         {
             // === 여기서부터는 배터리 결제가 성공(또는 강제 제출)했을 때만 실행됩니다 ===
+            uimanager.InteractPanel.SetActive(false);
+            uimanager.CloseKeyboard();
+            return;
+        }
 
             // 키보드 알파벳 소모 확정
             keyboardmanager.ConfirmUse();
@@ -56,6 +60,7 @@ public class SubmitManager : MonoBehaviour
             }));
 
             // 성공적으로 제출 절차가 시작되었으므로 키보드를 닫습니다.
+            uimanager.InteractPanel.SetActive(false);
             uimanager.CloseKeyboard();
         });
 
