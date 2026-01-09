@@ -25,6 +25,7 @@ public class SubmitManager : MonoBehaviour
         // 2. 배터리 선결제 확인 (WordEater에 복구한 메서드 사용)
         if (!wordeater.TryPayForSubmit())
         {
+            uimanager.InteractPanel.SetActive(false);
             uimanager.CloseKeyboard();
             return;
         }
@@ -54,7 +55,7 @@ public class SubmitManager : MonoBehaviour
                 NoticeManager.Instance.ShowTimed("Uncorrect Word!", 2f);
             }
         }));
-
+        uimanager.InteractPanel.SetActive(false);
         uimanager.CloseKeyboard();
     }
 

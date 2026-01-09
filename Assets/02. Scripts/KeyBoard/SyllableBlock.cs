@@ -313,8 +313,10 @@ public class SyllableBlock : MonoBehaviour
         bool hasL = !string.IsNullOrEmpty(best.choseong);
         bool hasV = !string.IsNullOrEmpty(best.jungseong);
 
-        // 기본은 자모가 들고 있는 역할
         JamoRole attachRole = jamo.role;
+
+        if (hasL && hasV && jamo.role != JamoRole.Jungseong)
+            attachRole = JamoRole.Jongseong;
 
         switch (kind)
         {
