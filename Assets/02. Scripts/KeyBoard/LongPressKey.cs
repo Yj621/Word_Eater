@@ -2,6 +2,7 @@ using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public enum KeyType { Single, Double }
 
@@ -14,27 +15,27 @@ public class LongPressKey : MonoBehaviour, IPointerDownHandler, IPointerUpHandle
     public KeyType keyType = KeyType.Single;
     public int index = 0;
     public float longPressThreshold = 0.35f;
-    public GameObject[] KeyBoardBatterys;
+  
+[SerializeField] private Image gaugeFill;   // Type: Filled 인 이미지
+//[SerializeField] private bool showUsedRatio = true; // true=쓴 비율, false=남은 비율
 
-    bool pressing;
+bool pressing;
     bool fired;
     Coroutine waitCo;
-    PointerEventData lastDownEvent; 
+    PointerEventData lastDownEvent;
 
-    public void SetValue(int value, int max)
+    public void SetValue(int count, int max)
     {
-        if (KeyBoardBatterys == null || KeyBoardBatterys.Length == 0) return;
-        value = Mathf.Clamp(value, 0, max);
+        if (!gaugeFill) return;
 
-        for (int i = 0; i < KeyBoardBatterys.Length; i++)
-        {
-            var cell = KeyBoardBatterys[i];
-            if (!cell) continue;
-            bool on = i < value;        
-            cell.SetActive(on);
-        }
+        max = Mathf.Max(1, max);
+        count = Mathf.Clamp(count, 0, max);
+
+        float remain01 = count / (float)max;      // 남은 비율
+    
+        gaugeFill.fillAmount = remain01;
     }
-    public void OnPointerDown(PointerEventData eventData)
+public void OnPointerDown(PointerEventData eventData)
     {
         lastDownEvent = eventData;
         pressing = true; fired = false;
