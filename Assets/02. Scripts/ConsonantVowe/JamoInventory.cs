@@ -47,6 +47,13 @@ public class JamoInventory : MonoBehaviour
         }
     }
 
+    public bool CanAdd(string jamo)
+    {
+        var kb = Keyboard;
+        if (kb == null) return false;
+        return kb.CanAddKey(jamo);
+    }
+
     public int GetCount(string jamo)
         => _counts.TryGetValue(jamo, out var cnt) ? cnt : 0;
 }

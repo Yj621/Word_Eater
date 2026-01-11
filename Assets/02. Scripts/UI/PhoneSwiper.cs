@@ -3,7 +3,6 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using System.Collections;
 
 public class PhoneSwiper : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {

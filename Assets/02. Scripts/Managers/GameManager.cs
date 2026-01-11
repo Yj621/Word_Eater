@@ -326,6 +326,12 @@ public class GameManager : MonoBehaviour
         // 파일매니저를 통해 이름만 "워드이터"로 리셋 (저장은 나중에 입력할 때 됨)
         FileManager.Instance.SetPlayerName("워드이터");
 
+        // [중요] 게임 재시작 시 1번(0번 인덱스) 화면으로 이동
+        if (phoneSwiper != null)
+        {
+             phoneSwiper.GoToPage(0);
+        }
+
         // 패널 켜기
         if (wordEaterNamePanel != null)
         {
@@ -570,6 +576,9 @@ public class GameManager : MonoBehaviour
 
     private void HideBlurPanelToButton(RectTransform panel, RectTransform btn, CanvasGroup cg)
     {
+        // [수정] 참조가 없더라도 일단 스와이프 잠금은 해제해야 함 (버그 방지)
+        if (phoneSwiper != null) phoneSwiper.isUsingTab = false;
+
         if (panel == null || btn == null || cg == null) return;
 
         var parent = panel.parent as RectTransform;

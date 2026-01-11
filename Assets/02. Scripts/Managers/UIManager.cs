@@ -368,6 +368,9 @@ public class UIManager : MonoBehaviour
     public void CloseKeyboard()
     {
         slidemanager.isOK = true;
+        
+        // [수정] 키보드 닫을 때 스와이프 잠금 해제
+        if (phoneSwiper != null) phoneSwiper.isUsingTab = false;
 
         KeyBoardManager.ClosePanelAndRestore();
         PageIcon.SetActive(true);

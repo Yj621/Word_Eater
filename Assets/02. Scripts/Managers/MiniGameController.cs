@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using WordEater.Core;
+using WordEater.Systems;
 
 public class MiniGameController : MonoBehaviour
 {
@@ -41,34 +42,56 @@ public class MiniGameController : MonoBehaviour
     {
         if (_running) return;
 
+        // [Legacy] 기존 호출 대응 (바로 결제 후 시작)
+        CheckPayment(() => StartGame());
+    }
+
+    // [New] 결제만 먼저 시도 (패널 열기 전에 호출)
+    public void CheckPayment(System.Action onPaid)
+    {
         if (wordeater != null)
         {
-            // 수정: bool 체크가 아니라 콜백을 넘겨줌
             wordeater.TryPayForMiniGame(() =>
             {
-                // === 결제 성공(또는 강제 진행) 시 실행될 로직 ===
-                RealStartGame();
+                onPaid?.Invoke();
             });
         }
         else
         {
-            // WordEater가 연결 안 된 테스트 상황이면 그냥 시작
-            RealStartGame();
+            // 워드이터 없으면 프리패스
+            onPaid?.Invoke();
         }
     }
 
-    // [추가] 실제 게임 시작 로직을 분리함 (코드 중복 방지)
-    private void RealStartGame()
+    [Header("시간 연장 설정")]
+    public string bonusTimeGameName = "TargetGameName"; // 이 이름이 포함된 게임은 시간을 더 줌
+    public float bonusTimeAmount = 5f;
+
+    // [New] 실제 게임 시작 (패널 열린 후 호출)
+    public void StartGame()
     {
         _running = true;
 
+        // 첫 게임 시작 (인덱스 결정됨)
+        StartRandomGame(skipIndex: -1);
+
         // 모드에 따라 타이머 세팅
         float limit = algorithmPanel != null && algorithmPanel.Mode ? _timeLimitEasy : _timeLimitHard;
-        SetupTimer(limit);
 
-        // 첫 게임 시작
-        StartRandomGame(skipIndex: -1);
+        // [추가] 특정 게임이면 시간 추가
+        if (_currentIndex >= 0 && _currentIndex < minigames.Length)
+        {
+            if (minigames[_currentIndex].name.Contains(bonusTimeGameName))
+            {
+                limit += bonusTimeAmount;
+            }
+        }
+
+        SetupTimer(limit);
     }
+
+    // [Deprecated] 내부 호출용이었던 것 -> StartGame으로 대체
+    private void RealStartGame() => StartGame();
     public void StopAllGames()
     {
         _running = false;
@@ -181,33 +204,46 @@ public class MiniGameController : MonoBehaviour
         }
     }
 
-    private void CheckItemReward()
+    // [변경] UI 표시를 여기서 하지 않고, 획득한 아이템 타입을 리턴해서 AlgorithmPanel이 통합 표시하게 함
+    public ItemType CheckItemReward()
     {
         // 보상을 받을지 여부
         bool getReward = false;
-        bool isHard = (algorithmPanel != null && !algorithmPanel.Mode); // Mode가 true면 Easy, false면 Hard라고 가정
+        bool isHard = (algorithmPanel != null && !algorithmPanel.Mode); 
 
-        // 조건 1: 하드모드일 때 (확률적으로 지급)
-        if (isHard && ClearCount > 1) // 최소 2개는 깼어야 함
+        if (isHard && ClearCount > 0)
         {
-            // 예: 30% 확률
-            if (Random.value <= 0.5f) getReward = true;
+            if (Random.value <= 1f) getReward = true; 
         }
-        // 조건 2: 일반모드인데 많이 깼을 때 (예: 5개 이상)
         else if (ClearCount >= 5)
         {
             getReward = true;
         }
 
-        // 보상 지급
+        // 보상 지급 로직
         if (getReward)
         {
-            // 아이템 획득 매니저 호출
-            // (ItemDropManager는 앞서 설명드린 새 스크립트입니다)
-            if (ItemDropManager.Instance != null)
+            if (isHard)
             {
-                ItemDropManager.Instance.ObtainRandomItem(showUI: true);
+                 // 하드모드 -> 자음/모음 선택권
+                 if (ItemManager.Instance != null)
+                 {
+                     ItemManager.Instance.AddItem(ItemType.JamoSelectionTicket, 1);
+                     return ItemType.JamoSelectionTicket;
+                 }
+            }
+            else
+            {
+                // 일반모드 -> 기존 랜덤 로직
+                if (ItemDropManager.Instance != null)
+                {
+                    // showUI = false로 해서 여기서 팝업 안 띄우고 타입만 받아옴
+                    return ItemDropManager.Instance.ObtainRandomItem(showUI: false);
+                }
             }
         }
+
+        // 획득 실패 혹은 조건 미달
+        return (ItemType)(-1); // -1 or generic invalid
     }
 }

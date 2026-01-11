@@ -8,7 +8,8 @@ namespace WordEater.Systems
         BatteryRefill,  // 배터리 채우기
         HintChosung,    // 초성 힌트
         FillKeyCounts,  // 자음/모음 채우기
-        ReviveTicket    // 부활권
+        ReviveTicket,    // 부활권
+        JamoSelectionTicket // 자음/모음 선택권
     }
 
     public class ItemManager : MonoBehaviour

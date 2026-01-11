@@ -2,6 +2,7 @@ using System;
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using WordEater.Systems;
 
 public class ClickIconChoiceJamo : MonoBehaviour, IPointerClickHandler
 {
@@ -15,6 +16,16 @@ public class ClickIconChoiceJamo : MonoBehaviour, IPointerClickHandler
     // 핸들러 보관(중복 구독 방지용)
     private Action<JamoDefsType, string> _selectedHandler;
     private Action<bool> _requestCloseHandler;
+
+    // [추가] 동적 생성을 위한 초기화 함수
+    public void Initialize(JamoChooserUI chooser, Transform target, GameObject folder, GameObject confirm, GameObject close)
+    {
+        this.chooserPanel = chooser;
+        this.targetPanel = target;
+        this.folderPanel = folder;
+        this.confirmPanel = confirm;
+        this.closePanel = close;
+    }
 
     public void OnPointerClick(PointerEventData eventData)
     {
@@ -38,12 +49,24 @@ public class ClickIconChoiceJamo : MonoBehaviour, IPointerClickHandler
 
         // 활성화 전 초기 스케일 세팅
         chooser.gameObject.SetActive(true);
+        chooser.consumeAfterPick = this.consumeAfterPick; // [추가] 소모 여부 전달
         rect.localScale = Vector3.zero;
         rect.DOScale(Vector3.one, 0.3f).SetEase(Ease.OutBack);
 
         // 기존 구독 해제(안전하게 중복 제거)
         chooser.OnSelected -= _selectedHandler;
         chooser.OnRequestClose -= _requestCloseHandler;
+        chooser.OnCheckCanReceive = null;
+
+        // [추가] 받을 수 있는지 체크하는 로직 연결
+        chooser.OnCheckCanReceive = (jamo) =>
+        {
+            if (JamoInventory.Instance != null)
+            {
+                return JamoInventory.Instance.CanAdd(jamo);
+            }
+            return true;
+        };
 
         // 선택 이벤트 처리(인스펙터 오브젝트 재사용 시 중복 구독 방지)
         _selectedHandler = (type, jamo) =>

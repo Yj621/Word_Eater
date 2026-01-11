@@ -492,6 +492,15 @@ public class KeyBoardManager : MonoBehaviour
         return true;
     }
 
+    public bool CanAddKey(string glyph)
+    {
+        if (!KeyCount.isReady || string.IsNullOrEmpty(glyph)) return false;
+        int index = FindSlotIndexByGlyph(glyph);
+        if (index < 0) return false;
+        
+        return KeyCount.Get(index) < KeyCount.MaxCount;
+    }
+
     // 🔹 prefab들에서 glyph를 보고 longPressKeys 인덱스 찾기
     int FindSlotIndexByGlyph(string glyph)
     {

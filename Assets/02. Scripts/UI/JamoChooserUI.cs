@@ -4,6 +4,7 @@ using TMPro;
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
+using WordEater.Systems;
 
 public class JamoChooserUI : MonoBehaviour
 {
@@ -27,6 +28,10 @@ public class JamoChooserUI : MonoBehaviour
 
     public Action<JamoDefsType, string> OnSelected; // 외부에 콜백 제공
     public Action<bool> OnRequestClose; // 외부에 닫기 요청 전달 (true: 창 닫기, false: 배경만 닫기)
+    public Func<string, bool> OnCheckCanReceive; // [추가] 받을 수 있는지 미리 체크 (true면 가능)
+    
+    // [추가] 아이템 소모 여부 (ClickIconChoiceJamo 등에서 설정)
+    public bool consumeAfterPick = false;
 
     private JamoDefsType _current = JamoDefsType.Consonant;
     private readonly List<Button> _spawned = new();
@@ -116,6 +121,29 @@ public class JamoChooserUI : MonoBehaviour
             btnConfirmYes.onClick.RemoveAllListeners();
             btnConfirmYes.onClick.AddListener(() =>
             {
+                // [추가] 받을 수 있는 상태인지 먼저 체크
+                if (OnCheckCanReceive != null && !OnCheckCanReceive(_pendingJamo))
+                {
+                     // 토스트 팝업 등으로 "더 이상 가질 수 없습니다" 표시 권장
+                     Debug.LogWarning("가득 차서 받을 수 없습니다.");
+                     if (UIManager.Instance != null) UIManager.Instance.Show("더 이상 가질 수 없습니다!");
+                     return;
+                }
+
+                // [추가] 아이템 소모 시도
+                if (consumeAfterPick && ItemManager.Instance != null)
+                {
+                    // 자음/모음 선택권 소모
+                    if (!ItemManager.Instance.TryUseItem(ItemType.JamoSelectionTicket))
+                    {
+                        Debug.LogWarning("아이템이 부족하여 사용할 수 없습니다.");
+                        // UI 닫기 등 처리
+                        confirmPanel.SetActive(false);
+                        OnRequestClose?.Invoke(false);
+                        return;
+                    }
+                }
+
                 // 실제로 획득됨
                 OnSelected?.Invoke(_current, _pendingJamo);
 
