@@ -21809,7 +21809,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::JamoTicketDisplay
   ticketPrefab: {fileID: 5810522835654831440, guid: e220d5c3374d41f4eac453e75f05b85d, type: 3}
   targetItem: 4
-  chooserPanel: {fileID: 3288585806717256096}
+  chooserPanel: {fileID: 9008209247488705876}
   targetPanel: {fileID: 75262864}
   folderPanel: {fileID: 1931050331}
   confirmPanel: {fileID: 8299425700644363074}
@@ -42388,7 +42388,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -17.389984}
+  m_AnchoredPosition: {x: 0, y: -17.390015}
   m_SizeDelta: {x: 0, y: -245.23}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1564626880
@@ -54612,27 +54612,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 200, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &3288585806717256096
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9008209247488705875}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: df9b73942710e664dbf63f9962e5d2d7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::JamoChooserUI
-  btnConsonant: {fileID: 7804578967405008338}
-  btnVowel: {fileID: 6176019941094287351}
-  gridRoot: {fileID: 7419266818509417770}
-  jamoButtonTemplate: {fileID: 3189205523268529834, guid: af0b250b7faa76c48a2b5460b002a67c, type: 3}
-  confirmPanel: {fileID: 8299425700644363074}
-  confirmText: {fileID: 6705038095600608724}
-  btnConfirmYes: {fileID: 8433134373878536004}
-  btnConfirmNo: {fileID: 7930729798459839632}
-  consumeAfterPick: 0
 --- !u!224 &3533434402478424210
 RectTransform:
   m_ObjectHideFlags: 0
@@ -54862,7 +54841,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a82eea42e722eb44b90dd0c5132ceaf1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AdsManager
-  rewardedAdUnitId: unused
+  rewardedAdRevivalId: ca-app-apub-1881501262849586/3221896109
 --- !u!224 &4387353267101508220
 RectTransform:
   m_ObjectHideFlags: 0
@@ -56129,7 +56108,7 @@ GameObject:
   - component: {fileID: 3533434402478424210}
   - component: {fileID: 107549439808968323}
   - component: {fileID: 7827263428051206863}
-  - component: {fileID: 3288585806717256096}
+  - component: {fileID: 9008209247488705876}
   m_Layer: 5
   m_Name: Jamo_Panel
   m_TagString: Untagged
@@ -56137,6 +56116,27 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 0
+--- !u!114 &9008209247488705876
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9008209247488705875}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: df9b73942710e664dbf63f9962e5d2d7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::JamoChooserUI
+  btnConsonant: {fileID: 7804578967405008338}
+  btnVowel: {fileID: 6176019941094287351}
+  gridRoot: {fileID: 7419266818509417770}
+  jamoButtonTemplate: {fileID: 3189205523268529834, guid: af0b250b7faa76c48a2b5460b002a67c, type: 3}
+  confirmPanel: {fileID: 8299425700644363074}
+  confirmText: {fileID: 6705038095600608724}
+  btnConfirmYes: {fileID: 8433134373878536004}
+  btnConfirmNo: {fileID: 7930729798459839632}
+  consumeAfterPick: 0
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

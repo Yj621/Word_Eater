@@ -11,7 +11,7 @@ public class JamoTicketDisplay : MonoBehaviour
     [SerializeField] private JamoChooserUI chooserPanel;
     [SerializeField] private Transform targetPanel;
     [SerializeField] private GameObject folderPanel;
-    [SerializeField] private GameObject confirmPanel;
+    [SerializeField] private GameObject jamoConfirmPanel;
     [SerializeField] private GameObject closePanel;
 
     private List<GameObject> _spawnedTickets = new List<GameObject>();
@@ -73,7 +73,7 @@ public class JamoTicketDisplay : MonoBehaviour
         var comp = go.GetComponent<ClickIconChoiceJamo>();
         if (comp != null)
         {
-            comp.Initialize(chooserPanel, targetPanel, folderPanel, confirmPanel, closePanel);
+            comp.Initialize(chooserPanel, targetPanel, folderPanel, jamoConfirmPanel, closePanel);
         }
 
         _spawnedTickets.Add(go);

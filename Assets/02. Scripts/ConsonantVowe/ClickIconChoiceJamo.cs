@@ -99,23 +99,16 @@ public class ClickIconChoiceJamo : MonoBehaviour, IPointerClickHandler
 
     public void OnCloseChooser()
     {
-        // 현재 떠 있는 창(Chooser)을 찾음
-        var chooser = targetPanel.GetComponentInChildren<JamoChooserUI>();
-
-        // 만약 창이 없다면 패널만 끄고 리턴
-        if (chooser == null)
-        {
-            closePanel.SetActive(false);
-            return;
-        }
+        chooserPanel.gameObject.SetActive(false);
+        closePanel.SetActive(false);
 
         // [DOTween] 작아지는 애니메이션 적용 (Destroy 대신 비활성화)
-        chooser.transform.DOScale(Vector3.zero, 0.2f)
+        chooserPanel.transform.DOScale(Vector3.zero, 0.2f)
             .SetEase(Ease.InBack) // 쏙 들어가는 느낌
             .OnComplete(() =>
             {
                 // 애니메이션이 다 끝난 뒤 오브젝트 비활성화
-                chooser.gameObject.SetActive(false);
+                chooserPanel.gameObject.SetActive(false);
                 closePanel.SetActive(false); // 배경 패널 끄기
             });
     }

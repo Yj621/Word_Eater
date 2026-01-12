@@ -41,9 +41,9 @@ public class UIManager : MonoBehaviour
     [SerializeField] private Button _batteryChargeButton;      // 확인 버튼
 
     [Header("아이템 사용 확인 팝업")]
-    [SerializeField] private GameObject _confirmPanel;         // 확인 팝업 패널
-    [SerializeField] private TextMeshProUGUI _titleText;       // 팝업 제목
-    [SerializeField] private TextMeshProUGUI _explanText;      // 팝업 설명
+    [SerializeField] private GameObject _itemBuyConfirmPanel;         // 확인 팝업 패널
+    [SerializeField] private TextMeshProUGUI _itemTitleText;       // 팝업 제목
+    [SerializeField] private TextMeshProUGUI _itemExplanText;      // 팝업 설명
     [SerializeField] private Button _btnYes;                   // 예 버튼
     [SerializeField] private Button _btnNo;                    // 아니오 버튼
     [SerializeField] private Image _itemImg;                   // 아이콘 이미지
@@ -198,17 +198,17 @@ public class UIManager : MonoBehaviour
     /// </summary>
     public void ShowConfirmPopup(string title, string message, Action onYes, Action onNo, Sprite itemIcon = null)
     {
-        if (_confirmPanel == null)
+        if (_itemBuyConfirmPanel == null)
         {
             Debug.LogError("Confirm Panel 미할당됨");
             onNo?.Invoke();
             return;
         }
 
-        _confirmPanel.SetActive(true);
+        _itemBuyConfirmPanel.SetActive(true);
 
-        if (_titleText != null) _titleText.text = title;
-        if (_explanText != null) _explanText.text = message;
+        if (_itemTitleText != null) _itemTitleText.text = title;
+        if (_itemExplanText != null) _itemExplanText.text = message;
 
         void ClosePanelWithAnimation(Action onCompleteAction)
         {
@@ -217,12 +217,12 @@ public class UIManager : MonoBehaviour
             if (_btnNo != null) _btnNo.interactable = false;
 
             // 크기를 0으로 줄이는 애니메이션 (0.2초)
-            _confirmPanel.transform.DOScale(0f, 0.2f)
+            _itemBuyConfirmPanel.transform.DOScale(0f, 0.2f)
                 .SetEase(Ease.InBack)
                 .SetUpdate(true) // 타임스케일 0일 때도 작동하도록
                 .OnComplete(() =>
                 {
-                    _confirmPanel.SetActive(false);
+                    _itemBuyConfirmPanel.SetActive(false);
 
                     // 버튼 인터랙션 복구
                     if (_btnYes != null) _btnYes.interactable = true;
@@ -270,8 +270,8 @@ public class UIManager : MonoBehaviour
         }
 
         // 팝업 등장 애니메이션 실행함
-        _confirmPanel.transform.localScale = Vector3.zero;
-        _confirmPanel.transform.DOScale(1f, 0.3f).SetEase(Ease.OutBack).SetUpdate(true);
+        _itemBuyConfirmPanel.transform.localScale = Vector3.zero;
+        _itemBuyConfirmPanel.transform.DOScale(1f, 0.3f).SetEase(Ease.OutBack).SetUpdate(true);
     }
 
     /// <summary>
