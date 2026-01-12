@@ -35,10 +35,10 @@ public class UIManager : MonoBehaviour
     private Sprite _defaultAlarmSprite;                       // 기본 아이콘 저장용
 
     [Header("UI 연결")]
-    [SerializeField] private GameObject _batteryChargePanel;   // 배터리 팝업 부모 패널
-    [SerializeField] private Transform _t_BatteryCharge;       // 팝업 본체 (애니메이션용)
+    [SerializeField] private GameObject _offLineRewardPanel;   // 배터리 팝업 부모 패널
+    [SerializeField] private Transform _t_OffLineReward;       // 팝업 본체 (애니메이션용)
     [SerializeField] private TextMeshProUGUI _messageText;     // 메시지 표시 텍스트
-    [SerializeField] private Button _batteryChargeButton;      // 확인 버튼
+    [SerializeField] private Button _offLineRewardButton;      // 확인 버튼
 
     [Header("아이템 사용 확인 팝업")]
     [SerializeField] private GameObject _itemBuyConfirmPanel;         // 확인 팝업 패널
@@ -64,12 +64,12 @@ public class UIManager : MonoBehaviour
         // 씬 시작 시 배터리 팝업 숨김 처리함
         InteractPanel.SetActive(false);
 
-        if (_batteryChargePanel != null)
-            _batteryChargePanel.SetActive(false);
+        if (_offLineRewardPanel != null)
+            _offLineRewardPanel.SetActive(false);
 
         // 배터리 팝업 버튼 리스너 연결함
-        if (_batteryChargeButton != null)
-            _batteryChargeButton.onClick.AddListener(OnConfirmClicked);
+        if (_offLineRewardButton != null)
+            _offLineRewardButton.onClick.AddListener(OnConfirmClicked);
 
         // 기본 알림 아이콘 저장함
         if (_alarmIconImage != null)
@@ -105,11 +105,11 @@ public class UIManager : MonoBehaviour
         if (_messageText != null) _messageText.text = message;
         _onConfirmCallback = onClose;
 
-        if (_batteryChargePanel != null)
+        if (_offLineRewardPanel != null)
         {
-            _batteryChargePanel.SetActive(true);
+            _offLineRewardPanel.SetActive(true);
 
-            Transform target = _t_BatteryCharge != null ? _t_BatteryCharge : _batteryChargePanel.transform;
+            Transform target = _t_OffLineReward != null ? _t_OffLineReward : _offLineRewardPanel.transform;
 
             // 크기 0에서 시작해 튀어오르는 연출 적용함
             target.localScale = Vector3.zero;
@@ -177,7 +177,7 @@ public class UIManager : MonoBehaviour
     /// </summary>
     private void OnConfirmClicked()
     {
-        Transform target = _t_BatteryCharge != null ? _t_BatteryCharge : _batteryChargePanel.transform;
+        Transform target = _t_OffLineReward != null ? _t_OffLineReward : _offLineRewardPanel.transform;
 
         // 작아지면서 사라지는 연출 실행함
         target.DOKill();
@@ -186,7 +186,7 @@ public class UIManager : MonoBehaviour
             .SetUpdate(true)
             .OnComplete(() =>
             {
-                if (_batteryChargePanel != null) _batteryChargePanel.SetActive(false);
+                if (_offLineRewardPanel != null) _offLineRewardPanel.SetActive(false);
 
                 _onConfirmCallback?.Invoke();
                 _onConfirmCallback = null;
