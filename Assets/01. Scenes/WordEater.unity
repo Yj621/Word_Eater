@@ -7438,9 +7438,9 @@ MonoBehaviour:
   _t_BatteryCharge: {fileID: 1747570753}
   _messageText: {fileID: 1510932196}
   _batteryChargeButton: {fileID: 1747570756}
-  _confirmPanel: {fileID: 1136546051}
-  _titleText: {fileID: 548725594}
-  _explanText: {fileID: 1042422140}
+  _itemBuyConfirmPanel: {fileID: 0}
+  _itemTitleText: {fileID: 0}
+  _itemExplanText: {fileID: 0}
   _btnYes: {fileID: 527663724}
   _btnNo: {fileID: 1738086395}
   _itemImg: {fileID: 1704389633}
@@ -21812,7 +21812,7 @@ MonoBehaviour:
   chooserPanel: {fileID: 9008209247488705876}
   targetPanel: {fileID: 75262864}
   folderPanel: {fileID: 1931050331}
-  confirmPanel: {fileID: 8299425700644363074}
+  jamoConfirmPanel: {fileID: 0}
   closePanel: {fileID: 1784411647}
 --- !u!1 &625169005
 GameObject:
@@ -56131,8 +56131,9 @@ MonoBehaviour:
   btnConsonant: {fileID: 7804578967405008338}
   btnVowel: {fileID: 6176019941094287351}
   gridRoot: {fileID: 7419266818509417770}
+  btnBackground: {fileID: 1784411649}
   jamoButtonTemplate: {fileID: 3189205523268529834, guid: af0b250b7faa76c48a2b5460b002a67c, type: 3}
-  confirmPanel: {fileID: 8299425700644363074}
+  jamoConfirmPanel: {fileID: 0}
   confirmText: {fileID: 6705038095600608724}
   btnConfirmYes: {fileID: 8433134373878536004}
   btnConfirmNo: {fileID: 7930729798459839632}
