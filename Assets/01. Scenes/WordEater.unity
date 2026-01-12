@@ -1238,7 +1238,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &67223584
 RectTransform:
   m_ObjectHideFlags: 0
@@ -7438,9 +7438,9 @@ MonoBehaviour:
   _t_BatteryCharge: {fileID: 1747570753}
   _messageText: {fileID: 1510932196}
   _batteryChargeButton: {fileID: 1747570756}
-  _itemBuyConfirmPanel: {fileID: 0}
-  _itemTitleText: {fileID: 0}
-  _itemExplanText: {fileID: 0}
+  _itemBuyConfirmPanel: {fileID: 1136546051}
+  _itemTitleText: {fileID: 548725594}
+  _itemExplanText: {fileID: 1042422140}
   _btnYes: {fileID: 527663724}
   _btnNo: {fileID: 1738086395}
   _itemImg: {fileID: 1704389633}
@@ -24853,7 +24853,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -6.5}
+  m_AnchoredPosition: {x: 0, y: -6.4999695}
   m_SizeDelta: {x: 0, y: -13}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &786972461
@@ -29886,7 +29886,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -6.5}
+  m_AnchoredPosition: {x: 0, y: -6.4999695}
   m_SizeDelta: {x: 0, y: -13}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1000577137
@@ -42388,7 +42388,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -17.390015}
+  m_AnchoredPosition: {x: 0, y: -17.389984}
   m_SizeDelta: {x: 0, y: -245.23}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1564626880
@@ -43115,7 +43115,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 4074110490041680554, guid: 9f8b7065a02afdf4eb317776785e0794, type: 3}
+  m_Sprite: {fileID: -1863859237976802683, guid: 62d28599b42fbac408e58319477d4849, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -52852,7 +52852,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &2016988122
 RectTransform:
   m_ObjectHideFlags: 0
@@ -56133,7 +56133,7 @@ MonoBehaviour:
   gridRoot: {fileID: 7419266818509417770}
   btnBackground: {fileID: 1784411649}
   jamoButtonTemplate: {fileID: 3189205523268529834, guid: af0b250b7faa76c48a2b5460b002a67c, type: 3}
-  jamoConfirmPanel: {fileID: 0}
+  jamoConfirmPanel: {fileID: 8299425700644363074}
   confirmText: {fileID: 6705038095600608724}
   btnConfirmYes: {fileID: 8433134373878536004}
   btnConfirmNo: {fileID: 7930729798459839632}
