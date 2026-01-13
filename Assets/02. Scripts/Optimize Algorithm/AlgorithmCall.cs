@@ -54,13 +54,19 @@ public class AlgorithmCall : MonoBehaviour
                 gameamnager.RelevantResult = new List<string>(result);
                 filemanager.SaveRelevant(gameamnager.RelevantResult);
 
-
                 int idx = Random.Range(0, result.Count);
+                string newRRL = gameamnager.RelevantLine + result[idx] + '|';
+                gameamnager.RelevantLine = newRRL;
+                filemanager.SavaRelevantLine(newRRL);
+
                 resultText.text = $"관련 단어 : {result[idx]}";
             }));
         }
         else {
             int idx = Random.Range(0, gameamnager.RelevantResult.Count);
+            string newRRL = gameamnager.RelevantLine + gameamnager.RelevantResult[idx] + '|';
+            gameamnager.RelevantLine = newRRL;
+            filemanager.SavaRelevantLine(newRRL);
             resultText.text = $"관련 단어 : {gameamnager.RelevantResult[idx]}";
         }
     }

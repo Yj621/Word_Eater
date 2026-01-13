@@ -45,6 +45,7 @@ public class FileManager : MonoBehaviour
         public int Level;
         public string Answer;
         public string History;
+        public string RelevantLine;
         public List<string> Relevant; //관련 단어
         public string Name;
         public string ImgId;
@@ -110,7 +111,7 @@ public class FileManager : MonoBehaviour
     // ========================================================================
     // [Part 1] 워드이터 게임 데이터 (레벨, 정답, 히스토리)
     // ========================================================================
-    public void SaveWordEaterInfo(int le, string an, string hi, List<string> RR , string id)
+    public void SaveWordEaterInfo(int le, string an, string hi, List<string> RR , string id , string RRL)
     {
         WordEaterData data = new WordEaterData
         {
@@ -118,6 +119,7 @@ public class FileManager : MonoBehaviour
             Answer = an,
             History = hi,
             Relevant = RR,
+            RelevantLine = RRL,
             Name = CurrentPlayerName,
             ImgId = id
         };
@@ -151,6 +153,7 @@ public class FileManager : MonoBehaviour
         {
             gamemanager.HistoryLIne = data.History;
             gamemanager.RelevantResult = data.Relevant;
+            gamemanager.RelevantLine = data.RelevantLine;
         }
     }
 
@@ -180,6 +183,16 @@ public class FileManager : MonoBehaviour
         string json = File.ReadAllText(WordEaterPath);
         WordEaterData data = JsonUtility.FromJson<WordEaterData>(json);
         data.Relevant = Rel;
+
+        File.WriteAllText(WordEaterPath, JsonUtility.ToJson(data, true));
+    }
+
+    public void SavaRelevantLine(string RRL) {
+        if (!File.Exists(WordEaterPath)) return;
+
+        string json = File.ReadAllText(WordEaterPath);
+        WordEaterData data = JsonUtility.FromJson<WordEaterData>(json);
+        data.RelevantLine = RRL;
 
         File.WriteAllText(WordEaterPath, JsonUtility.ToJson(data, true));
     }

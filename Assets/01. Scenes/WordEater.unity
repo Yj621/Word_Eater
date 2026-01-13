@@ -32639,7 +32639,7 @@ MonoBehaviour:
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
+          m_IntArgument: 2
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -34138,6 +34138,7 @@ MonoBehaviour:
   StateMsg: {fileID: 741375598}
   BackBtn: {fileID: 1673085093}
   NextBtn: {fileID: 1441863170}
+  page: 0
 --- !u!1 &1223865759
 GameObject:
   m_ObjectHideFlags: 0
@@ -43263,6 +43264,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   inputField: {fileID: 77969608}
   pythonConnectManager: {fileID: 51999060}
+  gamemanager: {fileID: 1076038538945570555}
   wordEater: {fileID: 1461207461}
   batterySystem: {fileID: 1922716698}
   loading: {fileID: 0}

@@ -93,12 +93,20 @@ public class SubmitManager : MonoBehaviour
 
 
                     int randomIndex = UnityEngine.Random.Range(0, result.Count);
+                    string newRRL = gamemanager.RelevantLine + result[randomIndex] + '|';
+                    gamemanager.RelevantLine = newRRL;
+                    filemanager.SavaRelevantLine(newRRL);
+
                     NoticeManager.Instance.ShowSticky($"힌트 단어 : {result[randomIndex]}");
                 }
             }));
         }
         else {
             int randomIndex = UnityEngine.Random.Range(0, gamemanager.RelevantResult.Count);
+            string newRRL = gamemanager.RelevantLine + gamemanager.RelevantResult[randomIndex] + '|';
+            filemanager.SavaRelevantLine(newRRL);
+            gamemanager.RelevantLine = newRRL;
+
             NoticeManager.Instance.ShowSticky($"힌트 단어 : {gamemanager.RelevantResult[randomIndex]}");
         }
     }
