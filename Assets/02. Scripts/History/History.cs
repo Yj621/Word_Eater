@@ -1,14 +1,17 @@
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
-
+using System.Collections;
 public class History : MonoBehaviour
 {
     public GameManager gamemanager;
     public RectTransform content;
+    Vector2 pos = new Vector2(0, 323);
+    public ScrollRect scrollrect;
     public GameObject HistoryViewPrafab;
     public GameObject EmptyWord;
 
+    public float heightNow;
     public TMP_Text StateMsg;
     public Button BackBtn;
     public Button NextBtn;
@@ -18,11 +21,15 @@ public class History : MonoBehaviour
     // 0 -> 이전 페이지 , 1 -> 다음 페이지 , 2 -> 처음 킬 때 페이지 0으로 설정
     public void SetHistory(int type)
     {
-
+        content.anchoredPosition = pos;
+        RectTransform rts = scrollrect.GetComponent<RectTransform>();
+        scrollrect.vertical = false;
+        heightNow = 0;
         // 스크롤 뷰 초기화
         foreach (Transform child in content.transform)
         {
             Destroy(child.gameObject);
+
         }
 
         if (type == 2)
@@ -58,7 +65,7 @@ public class History : MonoBehaviour
 
                 //문자열을 가져와서 | 단위로 나누고
                 string[] items = gamemanager.HistoryLIne.Split('|');
-
+                float sum = 0;
                 foreach (string item in items)
                 {
 
@@ -72,6 +79,7 @@ public class History : MonoBehaviour
 
                     //프리랩을 만들고
                     GameObject obj = Instantiate(HistoryViewPrafab, content);
+                    RectTransform rt = obj.GetComponent<RectTransform>();
 
                     //문자열 적용
                     TMP_Text wordText = obj.transform.Find("word").GetComponent<TMP_Text>();
@@ -79,20 +87,25 @@ public class History : MonoBehaviour
                     wordText.text = word;
                     simText.text = sim;
 
-                    /*
+                    heightNow += rt.rect.height;
+
+
                     // 프리팹 위치 조정
-                    RectTransform rt = obj.GetComponent<RectTransform>();
                     Vector2 pos = rt.anchoredPosition;
                     pos.y = sum * -100f;
                     rt.anchoredPosition = pos;
 
-                    // 스크롤 뷰 길이 조정
+                    // 컨텐츠 뷰 길이 조정
                     Vector2 size = content.sizeDelta;
                     size.y = 100f + (100f * sum);
                     content.sizeDelta = size;
 
                     sum++;
-                    */
+
+                }
+                if (heightNow >= rts.rect.height)
+                {
+                    scrollrect.vertical = true;
                 }
             }
         }
@@ -115,19 +128,38 @@ public class History : MonoBehaviour
 
                 //문자열을 가져와서 | 단위로 나누고
                 string[] items = gamemanager.RelevantLine.Split('|');
-
+                float sum = 0;
                 foreach (string item in items)
                 {
                     if (string.IsNullOrWhiteSpace(item)) continue;
 
                     //프리랩을 만들고
                     GameObject obj = Instantiate(HistoryViewPrafab, content);
+                    RectTransform rt = obj.GetComponent<RectTransform>();
 
                     //문자열 적용
                     TMP_Text wordText = obj.transform.Find("word").GetComponent<TMP_Text>();
                     TMP_Text simText = obj.transform.Find("similarity").GetComponent<TMP_Text>();
                     wordText.text = item;
                     simText.text = "";
+
+                    heightNow += rt.rect.height;
+
+                    // 프리팹 위치 조정
+                    Vector2 pos = rt.anchoredPosition;
+                    pos.y = sum * -100f;
+                    rt.anchoredPosition = pos;
+
+                    // 컨텐츠 뷰 길이 조정
+                    Vector2 size = content.sizeDelta;
+                    size.y = 100f + (100f * sum);
+                    content.sizeDelta = size;
+
+                    sum++;
+                }
+                if (heightNow >= rts.rect.height)
+                {
+                    scrollrect.vertical = true;
                 }
             }
         }
