@@ -133,6 +133,9 @@ public class SoundManager : MonoBehaviour
 
 
     public void BGMStart(int BGMType) {
+        if (bgmSource.isPlaying)
+            bgmSource.Stop();
+
         switch (BGMType)
         {
             case 1:
@@ -141,10 +144,15 @@ public class SoundManager : MonoBehaviour
                 bgmSource.Play();
                 break;
 
+            case 2:
+                break;
+
+            case 3:
+                break;
+
             default:
                 break;
         }
-
     }
 
     public void SFXStart(int SFXType)
