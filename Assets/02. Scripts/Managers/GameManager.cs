@@ -4,6 +4,7 @@ using DG.Tweening;
 using UnityEngine.UI;
 using System.Collections.Generic;
 using WordEater.Core;
+using WordEater.Systems;
 
 public class GameManager : MonoBehaviour
 {
@@ -59,6 +60,12 @@ public class GameManager : MonoBehaviour
     [Header("히스토리 관련")]
     [SerializeField] private RectTransform HistoryPanel;
     [SerializeField] private RectTransform HistoryBtn;
+
+    [Header("잠금 힌트 관련")]
+    [SerializeField] private RectTransform LockPanel;
+    [SerializeField] private RectTransform LockBtn; // 홈화면 아이콘 버튼의 RectTransform
+    [SerializeField] private LockHintAppController lockController;
+
 
     [Header("UI 연결")]
     [SerializeField] private ADPopup sharedAdPopup;
@@ -540,6 +547,23 @@ public class GameManager : MonoBehaviour
 
     public void ShowPanel_Item() => ShowBlurPanelFromButton(ItemFolderPanel, ItemFolderBtn, itemFolderCanvasGroup);
     public void HidePanel_Item() => HideBlurPanelToButton(ItemFolderPanel, ItemFolderBtn, itemFolderCanvasGroup);
+    
+    /// <summary>
+    /// 잠금 패널 열기
+    /// </summary>
+    public void ShowPanel_Lock()
+    {
+        // 패널 애니 (기존과 동일)
+        ShowPanelFromButton(LockPanel, LockBtn);
+
+        // 힌트 로직 실행(배터리 소모+힌트 갱신)
+        lockController.OpenLockHint();
+    }
+
+    public void HidePanel_Lock()
+    {
+        HidePanelToButton(LockPanel, LockBtn);
+    }
 
     // -----------------------------------------------------------------------
     // [핵심 변경 2] 블러 패널 전용 Show/Hide 함수 추가
@@ -602,6 +626,9 @@ public class GameManager : MonoBehaviour
 
         phoneSwiper.isUsingTab = false;
     }
+
+
+
 }
 
 
