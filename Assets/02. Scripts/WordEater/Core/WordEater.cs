@@ -87,6 +87,7 @@ namespace WordEater.Core
         {
             // 히스토리 초기화함
             gamemanager.HistoryLIne = "";
+            gamemanager.RelevantLine = "";
             gamemanager.RelevantResult.Clear();
 
             if (algoMessage != null)
