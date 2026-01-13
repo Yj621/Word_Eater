@@ -12,6 +12,7 @@ public class AlgorithmMessage : MonoBehaviour
     [Header("UI 참조")]
     [SerializeField] private TMP_InputField inputField;
     [SerializeField] private PythonConnectManager pythonConnectManager;
+    [SerializeField] private GameManager gamemanager;
     [SerializeField] private WordEater.Core.WordEater wordEater;
     [SerializeField] private BatterySystem batterySystem;
     [SerializeField] private UILoadingText loading;
@@ -224,6 +225,11 @@ public class AlgorithmMessage : MonoBehaviour
                 {
                     finalResultText = $"유사도 : {(similarity.Value * 100f).ToString("F0")}%";
                 }
+
+                // 파일에 저장 ( 히스토리에서 확인 가능)
+                gamemanager.HistoryLIne += userInput + "," + (similarity.Value * 100f).ToString("F0") + "%" + "|";
+                gamemanager.UpdateHistoryLineInFile(gamemanager.HistoryLIne);
+
             }
             else
             {

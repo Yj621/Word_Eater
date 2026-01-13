@@ -71,6 +71,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private ADPopup sharedAdPopup;
 
     public string HistoryLIne = "";
+    public string RelevantLine = "";
     public List<string> RelevantResult = new List<string>();
 
 
