@@ -33,8 +33,9 @@ public class SoundManager : MonoBehaviour
     public Slider seSlider;
 
     // 브금
-    public AudioClip MainBGM; 
-
+    public AudioClip MainBGM1;
+    public AudioClip MainBGM2;
+    public AudioClip MainBGM3;
     //효과음
 
 
@@ -139,20 +140,23 @@ public class SoundManager : MonoBehaviour
         switch (BGMType)
         {
             case 1:
-                bgmSource.clip = MainBGM;
-                bgmSource.loop = true;
-                bgmSource.Play();
+                bgmSource.clip = MainBGM1;
                 break;
 
             case 2:
+                bgmSource.clip = MainBGM2;
                 break;
 
             case 3:
+                bgmSource.clip = MainBGM3;
                 break;
 
             default:
                 break;
         }
+
+        bgmSource.loop = true;
+        bgmSource.Play();
     }
 
     public void SFXStart(int SFXType)
