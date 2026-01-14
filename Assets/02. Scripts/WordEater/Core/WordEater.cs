@@ -110,7 +110,6 @@ namespace WordEater.Core
             SaveCheckpoint();
 
             // 현재 상태를 파일에 저장함
-            Debug.Log(wordImgString + "비긴 스테이지에서");
             filemanager.SaveWordEaterInfo((int)stage, currentAnswer, gamemanager.HistoryLIne , gamemanager.RelevantResult, wordImgString,gamemanager.RelevantLine);
             NotifyNewWordAssigned();
         }
@@ -584,7 +583,8 @@ namespace WordEater.Core
                 displayName = currentEntry.word,
                 desc = GetDisplayTopic(currentEntry),
                 thumbPath = finalS2Path,
-                dateCaught = System.DateTime.Now.ToString("yyyy-MM-dd")
+                dateCaught = System.DateTime.Now.ToString("yyyy-MM-dd"),
+                spriteid = wordImgString
             };
 
             if (FileManager.Instance != null)
