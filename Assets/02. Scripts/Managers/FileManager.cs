@@ -20,6 +20,9 @@ public class FileManager : MonoBehaviour
     // 히스토리
     // 배경화면
 
+    // ++ 튜토리얼 여부
+    
+
     public static FileManager Instance { get; private set; }
     public string CurrentPlayerName { get; private set; } = "워드이터";
     public event Action<string> OnNameChanged;
@@ -45,6 +48,7 @@ public class FileManager : MonoBehaviour
         public int Level;
         public string Answer;
         public string History;
+        public string RelevantLine;
         public List<string> Relevant; //관련 단어
         public string Name;
         public string ImgId;
@@ -110,7 +114,7 @@ public class FileManager : MonoBehaviour
     // ========================================================================
     // [Part 1] 워드이터 게임 데이터 (레벨, 정답, 히스토리)
     // ========================================================================
-    public void SaveWordEaterInfo(int le, string an, string hi, List<string> RR , string id)
+    public void SaveWordEaterInfo(int le, string an, string hi, List<string> RR , string id , string RRL)
     {
         WordEaterData data = new WordEaterData
         {
@@ -118,6 +122,7 @@ public class FileManager : MonoBehaviour
             Answer = an,
             History = hi,
             Relevant = RR,
+            RelevantLine = RRL,
             Name = CurrentPlayerName,
             ImgId = id
         };
@@ -151,6 +156,7 @@ public class FileManager : MonoBehaviour
         {
             gamemanager.HistoryLIne = data.History;
             gamemanager.RelevantResult = data.Relevant;
+            gamemanager.RelevantLine = data.RelevantLine;
         }
     }
 
@@ -180,6 +186,16 @@ public class FileManager : MonoBehaviour
         string json = File.ReadAllText(WordEaterPath);
         WordEaterData data = JsonUtility.FromJson<WordEaterData>(json);
         data.Relevant = Rel;
+
+        File.WriteAllText(WordEaterPath, JsonUtility.ToJson(data, true));
+    }
+
+    public void SavaRelevantLine(string RRL) {
+        if (!File.Exists(WordEaterPath)) return;
+
+        string json = File.ReadAllText(WordEaterPath);
+        WordEaterData data = JsonUtility.FromJson<WordEaterData>(json);
+        data.RelevantLine = RRL;
 
         File.WriteAllText(WordEaterPath, JsonUtility.ToJson(data, true));
     }
@@ -264,6 +280,26 @@ public class FileManager : MonoBehaviour
         {
             galleryData = new GalleryData();
         }
+    }
+
+    public string LoadGallerySpriteId() {
+        string rets = "";
+        if (File.Exists(GalleryPath))
+        {
+
+            var json = File.ReadAllText(GalleryPath);
+            galleryData = JsonUtility.FromJson<GalleryData>(json) ?? new GalleryData();
+
+            foreach (var item in galleryData.items) {
+                rets += item.spriteid;
+            }
+        }
+        else
+        {
+            galleryData = new GalleryData();
+        }
+
+        return rets;
     }
 
     public void SaveGallery()

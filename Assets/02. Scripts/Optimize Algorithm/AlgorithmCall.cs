@@ -18,49 +18,58 @@ public class AlgorithmCall : MonoBehaviour
     /// <summary>
     /// 관련 단어 찾기 요청 메서드
     /// </summary>
-    public void OnShowSimilarWord()
+    public async void OnShowSimilarWord()
     {
         GameManager.Instance.StopRingingEffect();
-        // 배터리 부족 시 네트워크 호출 자체를 막음
+        // 배터리 체크 등 기존 로직 유지
         if (!AlgoGuards.EnsureBattery(batterySystem, ActionType.OptimizeAlgoCall, resultText))
             return;
 
-        if (gameamnager.RelevantResult.Count == 0) // 사실 0 일 경우는 없긴 해
+        if (gameamnager.RelevantResult.Count == 0)
         {
             loading?.StartAnim("관련 단어 찾는 중");
-
             string answerWord = wordEater ? wordEater.Answer : string.Empty;
 
-            StartCoroutine(pythonConnectManager.MostSimilarty(answerWord, 5, (result) =>
+            // StartCoroutine 제거 -> await 사용
+            // 콜백 함수 내용을 아래로 풀어서 작성
+            List<string> result = await pythonConnectManager.MostSimilarty(answerWord, 5);
+
+            loading?.StopAnim();
+
+            if (result == null || result.Count == 0)
             {
-                loading?.StopAnim();
+                resultText.text = "결과 없음";
+                return;
+            }
 
-                if (result == null || result.Count == 0)
-                {
-                    resultText.text = "결과 없음";
-                    return;
-                }
+            if (result.Count == 1 && result[0] == "요청 실패")
+            {
+                resultText.text = "Connect Error!";
+                return;
+            }
+            if (result.Count == 1 && result[0] == "부정확한 단어")
+            {
+                resultText.text = "부정확한 단어";
+                return;
+            }
 
-                if (result.Count == 1 && result[0] == "요청 실패")
-                {
-                    resultText.text = "Connect Error!";
-                    return;
-                }
-                if (result.Count == 1 && result[0] == "부정확한 단어")
-                {
-                    resultText.text = "부정확한 단어";
-                    return;
-                }
-                gameamnager.RelevantResult = new List<string>(result);
-                filemanager.SaveRelevant(gameamnager.RelevantResult);
+            gameamnager.RelevantResult = new List<string>(result);
+            filemanager.SaveRelevant(gameamnager.RelevantResult);
 
+            int idx = UnityEngine.Random.Range(0, result.Count);
+            string newRRL = gameamnager.RelevantLine + result[idx] + '|';
+            gameamnager.RelevantLine = newRRL;
+            filemanager.SavaRelevantLine(newRRL);
 
-                int idx = Random.Range(0, result.Count);
-                resultText.text = $"관련 단어 : {result[idx]}";
-            }));
+            resultText.text = $"관련 단어 : {result[idx]}";
         }
-        else {
-            int idx = Random.Range(0, gameamnager.RelevantResult.Count);
+        else
+        {
+            // 기존 로직 유지
+            int idx = UnityEngine.Random.Range(0, gameamnager.RelevantResult.Count);
+            string newRRL = gameamnager.RelevantLine + gameamnager.RelevantResult[idx] + '|';
+            gameamnager.RelevantLine = newRRL;
+            filemanager.SavaRelevantLine(newRRL);
             resultText.text = $"관련 단어 : {gameamnager.RelevantResult[idx]}";
         }
     }

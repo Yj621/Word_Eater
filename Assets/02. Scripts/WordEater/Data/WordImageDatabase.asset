@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: ad12ea7b136137247be2c5f1b6b65a9c, type: 3}
   m_Name: WordImageDatabase
   m_EditorClassIdentifier: Assembly-CSharp::WordImageDatabase
   entries:

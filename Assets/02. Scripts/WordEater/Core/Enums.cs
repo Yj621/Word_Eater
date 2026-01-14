@@ -13,6 +13,7 @@ namespace WordEater.Core
 
         OptimizeAlgoCall,  // 최적 알고리즘(미니게임 자리, 힌트/버프 획득
         OptimizeAlgoMessage,                // 유사 단어 지급(메세지) / 단어에 대한 힌트(전화)
+        OptimizeLock, //  잠금 힌트 앱 진입(10% 소모)
 
         CleanNoise,     // 노이즈 제거(2턴 소모, 배율/보상 버프)
         MinigameStart // 미니게임 시작

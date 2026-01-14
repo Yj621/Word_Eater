@@ -12,6 +12,7 @@ public class AlgorithmMessage : MonoBehaviour
     [Header("UI 참조")]
     [SerializeField] private TMP_InputField inputField;
     [SerializeField] private PythonConnectManager pythonConnectManager;
+    [SerializeField] private GameManager gamemanager;
     [SerializeField] private WordEater.Core.WordEater wordEater;
     [SerializeField] private BatterySystem batterySystem;
     [SerializeField] private UILoadingText loading;
@@ -136,8 +137,8 @@ public class AlgorithmMessage : MonoBehaviour
         UpdateCountText();
 
         // 날짜 구분선은 다시 띄워주기
-         lastDateKey = ""; // 날짜 키를 초기화해서 다시 뜨게 하거나
-         CheckAndShowDate(); // 바로 다시 생성
+        lastDateKey = ""; // 날짜 키를 초기화해서 다시 뜨게 하거나
+        CheckAndShowDate(); // 바로 다시 생성
     }
 
     private void SpawnMessage(GameObject prefab, string message, bool animate)
@@ -187,7 +188,7 @@ public class AlgorithmMessage : MonoBehaviour
         StartCoroutine(CoScrollToBottom());
     }
 
-    public void OnCheckSimilarity()
+    public async void OnCheckSimilarity()
     {
         string userInput = inputField ? inputField.text : string.Empty;
         if (string.IsNullOrEmpty(userInput)) return;
@@ -196,7 +197,11 @@ public class AlgorithmMessage : MonoBehaviour
         if (currentTryCount == 0)
         {
             if (!AlgoGuards.EnsureBattery(batterySystem, ActionType.OptimizeAlgoMessage, null))
-                return;
+            {
+                // 이미 있는 알림 시스템 호출
+                NoticeManager.Instance.ShowSticky("배터리가 부족합니다");
+                return; // 함수 종료 (메시지 전송 안 함)
+            }
         }
 
         currentTryCount++;
@@ -208,36 +213,41 @@ public class AlgorithmMessage : MonoBehaviour
 
         string answerWord = wordEater ? wordEater.Answer : string.Empty;
 
-        StartCoroutine(pythonConnectManager.SimilartyTwoWord(answerWord, userInput, (similarity) =>
-        {
-            loading?.StopAnim();
+        float? similarity = await pythonConnectManager.SimilartyTwoWord(answerWord, userInput);
 
-            string finalResultText = "";
-            if (similarity.HasValue)
+        loading?.StopAnim();
+
+        string finalResultText = "";
+        if (similarity.HasValue)
+        {
+            if (similarity.Value == 1)
             {
-                if (similarity.Value == 1)
-                {
-                    finalResultText = "정답!";
-                    Handheld.Vibrate();
-                }
-                else
-                {
-                    finalResultText = $"유사도 : {(similarity.Value * 100f).ToString("F0")}%";
-                }
+                finalResultText = "정답!";
+                Handheld.Vibrate();
             }
             else
             {
-                finalResultText = "오류 발생";
+                finalResultText = $"유사도 : {(similarity.Value * 100f).ToString("F0")}%";
             }
 
-            SpawnMessage(resultPanelPrefab, finalResultText, true);
+            // 파일에 저장 ( 히스토리에서 확인 가능)
+            gamemanager.HistoryLIne += userInput + "," + (similarity.Value * 100f).ToString("F0") + "%" + "|";
+            gamemanager.UpdateHistoryLineInFile(gamemanager.HistoryLIne);
 
-            // 10회 다 썼으면 초기화
-            if (currentTryCount >= MaxTryCount)
-            {
-                currentTryCount = 0;
-                UpdateCountText();
-            }
-        }));
+        }
+        else
+        {
+            finalResultText = "오류 발생";
+        }
+
+        SpawnMessage(resultPanelPrefab, finalResultText, true);
+
+        // 10회 다 썼으면 초기화
+        if (currentTryCount >= MaxTryCount)
+        {
+            currentTryCount = 0;
+            UpdateCountText();
+        }
+
     }
 }

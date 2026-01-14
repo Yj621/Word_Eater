@@ -87,6 +87,7 @@ namespace WordEater.Core
         {
             // 히스토리 초기화함
             gamemanager.HistoryLIne = "";
+            gamemanager.RelevantLine = "";
             gamemanager.RelevantResult.Clear();
 
             if (algoMessage != null)
@@ -109,8 +110,7 @@ namespace WordEater.Core
             SaveCheckpoint();
 
             // 현재 상태를 파일에 저장함
-            Debug.Log(wordImgString + "비긴 스테이지에서");
-            filemanager.SaveWordEaterInfo((int)stage, currentAnswer, gamemanager.HistoryLIne , gamemanager.RelevantResult, wordImgString);
+            filemanager.SaveWordEaterInfo((int)stage, currentAnswer, gamemanager.HistoryLIne , gamemanager.RelevantResult, wordImgString,gamemanager.RelevantLine);
             NotifyNewWordAssigned();
         }
 
@@ -250,13 +250,8 @@ namespace WordEater.Core
                 // 즉시 성공 로직 실행 (서버 통신 시작)
                 onSuccess?.Invoke();
 
-                // [삭제함] 여기서 사망 체크를 하면 안 됩니다! 
-                // 서버 응답(정답 확인)이 오기 전에 체크해버려서, 
-                // 정답을 맞췄음에도 배터리가 0이라서 죽는 문제가 발생합니다.
-
-                // CheckBatteryDeath();  <-- 이 줄을 지웠습니다.
             }
-            // 2. 배터리가 부족한 경우 (팝업 띄우기)
+            // 배터리가 부족한 경우 (팝업 띄우기)
             else
             {
                 adPopup.Configure("배터리 부족 경고", "강제 제출", "닫기");
@@ -583,7 +578,8 @@ namespace WordEater.Core
                 displayName = currentEntry.word,
                 desc = GetDisplayTopic(currentEntry),
                 thumbPath = finalS2Path,
-                dateCaught = System.DateTime.Now.ToString("yyyy-MM-dd")
+                dateCaught = System.DateTime.Now.ToString("yyyy-MM-dd"),
+                spriteid = wordImgString
             };
 
             if (FileManager.Instance != null)
