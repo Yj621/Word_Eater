@@ -16,4 +16,5 @@ public class GalleryItem
     public string thumbPath;       // 썸네일 PNG 파일 경로 (persistentDataPath 하위)
     public string dateCaught;      // 잡은 날짜 (yyyy-MM-dd)
     public int meetCount;          // 만난 횟수 (중복 등록 시 +=1)
+    public string spriteid;        // 도감을 위한 스프라이트 아이디
 }

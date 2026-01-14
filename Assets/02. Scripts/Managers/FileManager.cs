@@ -20,6 +20,9 @@ public class FileManager : MonoBehaviour
     // 히스토리
     // 배경화면
 
+    // ++ 튜토리얼 여부
+    
+
     public static FileManager Instance { get; private set; }
     public string CurrentPlayerName { get; private set; } = "워드이터";
     public event Action<string> OnNameChanged;
@@ -277,6 +280,26 @@ public class FileManager : MonoBehaviour
         {
             galleryData = new GalleryData();
         }
+    }
+
+    public string LoadGallerySpriteId() {
+        string rets = "";
+        if (File.Exists(GalleryPath))
+        {
+
+            var json = File.ReadAllText(GalleryPath);
+            galleryData = JsonUtility.FromJson<GalleryData>(json) ?? new GalleryData();
+
+            foreach (var item in galleryData.items) {
+                rets += item.spriteid;
+            }
+        }
+        else
+        {
+            galleryData = new GalleryData();
+        }
+
+        return rets;
     }
 
     public void SaveGallery()
