@@ -6750,7 +6750,9 @@ MonoBehaviour:
   Svalue: 0
   bgmSlider: {fileID: 2132194730}
   seSlider: {fileID: 704072760}
-  MainBGM: {fileID: 8300000, guid: bd8537b3c9ec65c44ad763865263f1dc, type: 3}
+  MainBGM1: {fileID: 8300000, guid: 870b211e84c2f964588b65a449a97b86, type: 3}
+  MainBGM2: {fileID: 8300000, guid: 8d6b934c6c612da4e8b690dd82bcc634, type: 3}
+  MainBGM3: {fileID: 8300000, guid: d19122042af48cc469f9043c8ccf12a1, type: 3}
 --- !u!1 &244407811
 GameObject:
   m_ObjectHideFlags: 0
@@ -28345,7 +28347,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -6.4999695}
+  m_AnchoredPosition: {x: 0, y: -6.5}
   m_SizeDelta: {x: 0, y: -13}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &786972461
@@ -33878,7 +33880,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -6.4999695}
+  m_AnchoredPosition: {x: 0, y: -6.5}
   m_SizeDelta: {x: 0, y: -13}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1000577137
@@ -48593,7 +48595,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -17.389984}
+  m_AnchoredPosition: {x: 0, y: -17.390015}
   m_SizeDelta: {x: 0, y: -245.23}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1564626880
@@ -64792,7 +64794,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a82eea42e722eb44b90dd0c5132ceaf1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AdsManager
-  rewardedAdRevivalId: ca-app-apub-1881501262849586/3221896109
+  rewardedAdUnitId: unused
 --- !u!224 &4387353267101508220
 RectTransform:
   m_ObjectHideFlags: 0
