@@ -197,7 +197,11 @@ public class AlgorithmMessage : MonoBehaviour
         if (currentTryCount == 0)
         {
             if (!AlgoGuards.EnsureBattery(batterySystem, ActionType.OptimizeAlgoMessage, null))
-                return;
+            {
+                // 이미 있는 알림 시스템 호출
+                NoticeManager.Instance.ShowSticky("배터리가 부족합니다");
+                return; // 함수 종료 (메시지 전송 안 함)
+            }
         }
 
         currentTryCount++;

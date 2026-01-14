@@ -23,8 +23,8 @@ public class LockHintAppController : MonoBehaviour
         }
 
         // 배터리 소모 시도함 (성공 시 true 반환)
-        // HintLockApp 타입은 보통 배터리 10% 소모함
-        if (!battery.TryConsume(ActionType.HintLockApp))
+        // OptimizeLock 타입은 보통 배터리 10% 소모함
+        if (!battery.TryConsume(ActionType.OptimizeLock))
         {
             // 배터리 없으면 광고 팝업 띄우고 끝냄
             battery.ShowBatteryAdPopup();

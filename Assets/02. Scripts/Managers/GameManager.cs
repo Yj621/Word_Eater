@@ -11,7 +11,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private WordEater.Core.WordEater wordeater;
     [SerializeField] private GameObject touchblockPanel;
     public GameObject wordEaterNamePanel;
-
+    [SerializeField] private BatterySystem batterySystem;
     [SerializeField] private FileManager filemanager;
     [SerializeField] private PhoneSwiper phoneSwiper;
 
@@ -554,6 +554,12 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void ShowPanel_Lock()
     {
+        if (!AlgoGuards.EnsureBattery(batterySystem, ActionType.OptimizeLock, null))
+        {
+            // 이미 있는 알림 시스템 호출
+            NoticeManager.Instance.ShowSticky("배터리가 부족합니다");
+            return; 
+        }
         // 패널 애니 (기존과 동일)
         ShowPanelFromButton(LockPanel, LockBtn);
 
