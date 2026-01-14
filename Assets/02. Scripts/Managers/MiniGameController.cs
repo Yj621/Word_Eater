@@ -63,31 +63,17 @@ public class MiniGameController : MonoBehaviour
         }
     }
 
-    [Header("시간 연장 설정")]
-    public string bonusTimeGameName = "TargetGameName"; // 이 이름이 포함된 게임은 시간을 더 줌
-    public float bonusTimeAmount = 5f;
-
     // [New] 실제 게임 시작 (패널 열린 후 호출)
     public void StartGame()
     {
         _running = true;
 
-        // 첫 게임 시작 (인덱스 결정됨)
-        StartRandomGame(skipIndex: -1);
-
         // 모드에 따라 타이머 세팅
         float limit = algorithmPanel != null && algorithmPanel.Mode ? _timeLimitEasy : _timeLimitHard;
-
-        // [추가] 특정 게임이면 시간 추가
-        if (_currentIndex >= 0 && _currentIndex < minigames.Length)
-        {
-            if (minigames[_currentIndex].name.Contains(bonusTimeGameName))
-            {
-                limit += bonusTimeAmount;
-            }
-        }
-
         SetupTimer(limit);
+
+        // 첫 게임 시작
+        StartRandomGame(skipIndex: -1);
     }
 
     // [Deprecated] 내부 호출용이었던 것 -> StartGame으로 대체
