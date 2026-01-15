@@ -5,6 +5,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using WordEater.Core;
+using WordEater.Systems;
 
 /// <summary>
 /// 게임 내 모든 UI(팝업, 알림, 키보드 패널 등)를 총괄하는 매니저임
@@ -119,6 +120,12 @@ public class UIManager : MonoBehaviour
                 .SetUpdate(true); // 일시정지 상태에서도 동작하게 함
         }
     }
+
+    public void ReviveTicket()
+    {
+        ItemManager.Instance.AddItem(ItemType.ReviveTicket, 1);
+    }
+
 
     /// <summary>
     /// 상단 긴급 알림창을 표시함 아이콘 지정 가능함

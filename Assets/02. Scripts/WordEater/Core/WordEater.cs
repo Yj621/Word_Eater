@@ -138,12 +138,12 @@ namespace WordEater.Core
 
             // 초기 썸네일 캡처함
             CaptureThumbnail($"thumb_{pendingEvoId}_s0");
-
+/*
             // 튜토리얼 씬이 아니면 관련 단어 버튼 활성화함
             if (SceneManager.GetActiveScene().name != "TutoScene")
             {
                 submitmanager.OnRelevantButton();
-            }
+            }*/
         }
 
         /// <summary>
@@ -346,13 +346,13 @@ namespace WordEater.Core
             {
                 // 오답이면 피드백 줌
                 HandleMistake();
+                // 오답인 경우에만 배터리를 확인하여 사망 처리
+                if (battery.CurrentPercent <= 0)
+                {
+                    StartCoroutine(DieSequenceRoutine());
+                }
             }
 
-            // 행동 후 배터리가 방전되었는지 한번 더 체크함
-            if (battery.CurrentPercent <= 0)
-            {
-                StartCoroutine(DieSequenceRoutine());
-            }
         }
 
         /// <summary>
@@ -398,6 +398,11 @@ namespace WordEater.Core
 
             // 다음 단계 시작함
             BeginStage(stage);
+            // 진화가 완료되었으므로, 새로운 단어에 대한 힌트(연관어)를 서버에 요청합니다.
+            if (submitmanager != null)
+            {
+                submitmanager.OnRelevantButton();
+            }
         }
 
         /// <summary>
@@ -481,7 +486,7 @@ namespace WordEater.Core
             if (ItemManager.Instance.TryUseItem(ItemType.ReviveTicket))
             {
                 RevivePlayer();
-                NoticeManager.Instance.ShowSticky("부활권 사용! 단어를 다시 맞춰보세요.");
+                UIManager.Instance.Show("부활권 사용!\n단어를 다시 맞춰보세요.");
             }
             else
             {
