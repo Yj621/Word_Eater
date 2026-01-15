@@ -39,7 +39,6 @@ namespace WordEater.Systems
                     break;
 
                 case ItemType.HintChosung:
-                    // [수정] wordEater.CurrentAnswer -> wordEater.Answer
                     string answer = wordEater.Answer;
                     string chosung = KoreanUtils.GetChosungString(answer);
                     UIManager.Instance.Show($"정답의 초성은 [{chosung}] 입니다!");
@@ -48,7 +47,6 @@ namespace WordEater.Systems
                 case ItemType.ReviveTicket:
                     if (wordEater.isDead)
                     {
-                        // [수정] Reactivate -> RevivePlayer
                         wordEater.RevivePlayer();
                         batterySystem.RefillToMax();
                     }

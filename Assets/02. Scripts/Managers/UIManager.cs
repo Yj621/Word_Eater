@@ -1,5 +1,6 @@
 using System;
 using DG.Tweening;
+using DG.Tweening.Core.Easing;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -15,6 +16,7 @@ public class UIManager : MonoBehaviour
     private float _animationDuration = 0.5f;              // 애니메이션 시간
 
     private bool _isKeyboardOpen = false;                 // 키보드 열림 상태 플래그
+    public GameObject InteractPanel;
     PhoneSwiper phoneSwiper;
     public KeyBoardManager KeyBoardManager;
     public GameObject PageIcon;                           // 페이지 아이콘 (키보드 열리면 숨김)
@@ -33,15 +35,15 @@ public class UIManager : MonoBehaviour
     private Sprite _defaultAlarmSprite;                       // 기본 아이콘 저장용
 
     [Header("UI 연결")]
-    [SerializeField] private GameObject _batteryChargePanel;   // 배터리 팝업 부모 패널
-    [SerializeField] private Transform _t_BatteryCharge;       // 팝업 본체 (애니메이션용)
+    [SerializeField] private GameObject _offLineRewardPanel;   // 배터리 팝업 부모 패널
+    [SerializeField] private Transform _t_OffLineReward;       // 팝업 본체 (애니메이션용)
     [SerializeField] private TextMeshProUGUI _messageText;     // 메시지 표시 텍스트
-    [SerializeField] private Button _batteryChargeButton;      // 확인 버튼
+    [SerializeField] private Button _offLineRewardButton;      // 확인 버튼
 
     [Header("아이템 사용 확인 팝업")]
-    [SerializeField] private GameObject _confirmPanel;         // 확인 팝업 패널
-    [SerializeField] private TextMeshProUGUI _titleText;       // 팝업 제목
-    [SerializeField] private TextMeshProUGUI _explanText;      // 팝업 설명
+    [SerializeField] private GameObject _itemBuyConfirmPanel;         // 확인 팝업 패널
+    [SerializeField] private TextMeshProUGUI _itemTitleText;       // 팝업 제목
+    [SerializeField] private TextMeshProUGUI _itemExplanText;      // 팝업 설명
     [SerializeField] private Button _btnYes;                   // 예 버튼
     [SerializeField] private Button _btnNo;                    // 아니오 버튼
     [SerializeField] private Image _itemImg;                   // 아이콘 이미지
@@ -52,18 +54,22 @@ public class UIManager : MonoBehaviour
     private Vector2 _showPosition = new Vector2(0, 0);         // 키보드 보임 위치
     private Vector2 _hidePosition = new Vector2(0, -450);      // 키보드 숨김 위치
 
+    [SerializeField] private SlideManager slidemanager;
+
     public static UIManager Instance;
 
     private void Awake()
     {
         Instance = this;
         // 씬 시작 시 배터리 팝업 숨김 처리함
-        if (_batteryChargePanel != null)
-            _batteryChargePanel.SetActive(false);
+        InteractPanel.SetActive(false);
+
+        if (_offLineRewardPanel != null)
+            _offLineRewardPanel.SetActive(false);
 
         // 배터리 팝업 버튼 리스너 연결함
-        if (_batteryChargeButton != null)
-            _batteryChargeButton.onClick.AddListener(OnConfirmClicked);
+        if (_offLineRewardButton != null)
+            _offLineRewardButton.onClick.AddListener(OnConfirmClicked);
 
         // 기본 알림 아이콘 저장함
         if (_alarmIconImage != null)
@@ -99,11 +105,11 @@ public class UIManager : MonoBehaviour
         if (_messageText != null) _messageText.text = message;
         _onConfirmCallback = onClose;
 
-        if (_batteryChargePanel != null)
+        if (_offLineRewardPanel != null)
         {
-            _batteryChargePanel.SetActive(true);
+            _offLineRewardPanel.SetActive(true);
 
-            Transform target = _t_BatteryCharge != null ? _t_BatteryCharge : _batteryChargePanel.transform;
+            Transform target = _t_OffLineReward != null ? _t_OffLineReward : _offLineRewardPanel.transform;
 
             // 크기 0에서 시작해 튀어오르는 연출 적용함
             target.localScale = Vector3.zero;
@@ -171,7 +177,7 @@ public class UIManager : MonoBehaviour
     /// </summary>
     private void OnConfirmClicked()
     {
-        Transform target = _t_BatteryCharge != null ? _t_BatteryCharge : _batteryChargePanel.transform;
+        Transform target = _t_OffLineReward != null ? _t_OffLineReward : _offLineRewardPanel.transform;
 
         // 작아지면서 사라지는 연출 실행함
         target.DOKill();
@@ -180,7 +186,7 @@ public class UIManager : MonoBehaviour
             .SetUpdate(true)
             .OnComplete(() =>
             {
-                if (_batteryChargePanel != null) _batteryChargePanel.SetActive(false);
+                if (_offLineRewardPanel != null) _offLineRewardPanel.SetActive(false);
 
                 _onConfirmCallback?.Invoke();
                 _onConfirmCallback = null;
@@ -192,37 +198,60 @@ public class UIManager : MonoBehaviour
     /// </summary>
     public void ShowConfirmPopup(string title, string message, Action onYes, Action onNo, Sprite itemIcon = null)
     {
-        if (_confirmPanel == null)
+        if (_itemBuyConfirmPanel == null)
         {
             Debug.LogError("Confirm Panel 미할당됨");
             onNo?.Invoke();
             return;
         }
 
-        _confirmPanel.SetActive(true);
+        _itemBuyConfirmPanel.SetActive(true);
 
-        if (_titleText != null) _titleText.text = title;
-        if (_explanText != null) _explanText.text = message;
+        if (_itemTitleText != null) _itemTitleText.text = title;
+        if (_itemExplanText != null) _itemExplanText.text = message;
 
-        // 예 버튼 이벤트 연결함
+        void ClosePanelWithAnimation(Action onCompleteAction)
+        {
+            // 버튼 중복 클릭 방지를 위해 잠시 인터랙션 끄기 (선택 사항)
+            if (_btnYes != null) _btnYes.interactable = false;
+            if (_btnNo != null) _btnNo.interactable = false;
+
+            // 크기를 0으로 줄이는 애니메이션 (0.2초)
+            _itemBuyConfirmPanel.transform.DOScale(0f, 0.2f)
+                .SetEase(Ease.InBack)
+                .SetUpdate(true) // 타임스케일 0일 때도 작동하도록
+                .OnComplete(() =>
+                {
+                    _itemBuyConfirmPanel.SetActive(false);
+
+                    // 버튼 인터랙션 복구
+                    if (_btnYes != null) _btnYes.interactable = true;
+                    if (_btnNo != null) _btnNo.interactable = true;
+
+                    // 애니메이션이 다 끝난 뒤에 실제 기능(Action) 실행
+                    onCompleteAction?.Invoke();
+                });
+        }
+
+        // 예 버튼 이벤트 연결
         if (_btnYes != null)
         {
             _btnYes.onClick.RemoveAllListeners();
             _btnYes.onClick.AddListener(() =>
             {
-                _confirmPanel.SetActive(false);
-                onYes?.Invoke();
+                // '예'를 눌렀을 때도 부드럽게 닫히게 하려면 이 함수 사용
+                ClosePanelWithAnimation(onYes);
             });
         }
 
-        // 아니오 버튼 이벤트 연결함
+        // 아니오 버튼 이벤트 연결 (여기가 질문하신 부분!)
         if (_btnNo != null)
         {
             _btnNo.onClick.RemoveAllListeners();
             _btnNo.onClick.AddListener(() =>
             {
-                _confirmPanel.SetActive(false);
-                onNo?.Invoke();
+                //그냥 끄지 않고 애니메이션 함수 호출
+                ClosePanelWithAnimation(onNo);
             });
         }
 
@@ -241,8 +270,8 @@ public class UIManager : MonoBehaviour
         }
 
         // 팝업 등장 애니메이션 실행함
-        _confirmPanel.transform.localScale = Vector3.zero;
-        _confirmPanel.transform.DOScale(1f, 0.3f).SetEase(Ease.OutBack).SetUpdate(true);
+        _itemBuyConfirmPanel.transform.localScale = Vector3.zero;
+        _itemBuyConfirmPanel.transform.DOScale(1f, 0.3f).SetEase(Ease.OutBack).SetUpdate(true);
     }
 
     /// <summary>
@@ -306,11 +335,13 @@ public class UIManager : MonoBehaviour
         if (_isKeyboardOpen)
         {
             phoneSwiper.isUsingTab = false;
+            InteractPanel.SetActive(false);
             CloseKeyboard();
         }
         else
         {
             phoneSwiper.isUsingTab = true;
+            InteractPanel.SetActive(true);
             OpenKeyboard();
         }
     }
@@ -320,6 +351,8 @@ public class UIManager : MonoBehaviour
     /// </summary>
     public void OpenKeyboard()
     {
+        slidemanager.isOK = false;
+
         PageIcon.SetActive(false);
         if (_isKeyboardOpen) return;
         _isKeyboardOpen = true;
@@ -334,6 +367,11 @@ public class UIManager : MonoBehaviour
     /// </summary>
     public void CloseKeyboard()
     {
+        slidemanager.isOK = true;
+        
+        // [수정] 키보드 닫을 때 스와이프 잠금 해제
+        if (phoneSwiper != null) phoneSwiper.isUsingTab = false;
+
         KeyBoardManager.ClosePanelAndRestore();
         PageIcon.SetActive(true);
         if (!_isKeyboardOpen) return;
@@ -348,9 +386,10 @@ public class UIManager : MonoBehaviour
 
     public void OnClickResetButton()
     {
+        // 데이터 삭제
         FileManager.Instance.ClearAllData();
 
-        // 배터리 시스템 등 Start()에서 초기화되는 녀석들을 위해 씬을 새로고침 해주는 것이 좋습니다.
+        // 씬 재시작 (이때 GameManager.Start가 다시 실행되면서 패널을 켤지 말지 결정함)
         UnityEngine.SceneManagement.SceneManager.LoadScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene().name);
     }
 }

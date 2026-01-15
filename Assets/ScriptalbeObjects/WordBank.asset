@@ -11,7 +11,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 477f4c93d80bb054ba7ed1c744269fa2, type: 3}
   m_Name: WordBank
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier: Assembly-CSharp::WordEater.Data.WordBank
   entries:
   - word: "\uC8FC\uC0AC\uC704"
     stage: 0
@@ -35,8 +35,8 @@ MonoBehaviour:
     stage: 0
     related:
     - "\uC911\uB825"
-    - "\uCC9C\uBB38"
     - "\uC6B4\uBA85"
+    - "\uC5D0\uB108\uC9C0"
   - word: "\uBC14\uB78C"
     stage: 0
     related:
@@ -54,25 +54,76 @@ MonoBehaviour:
     related:
     - "\uC131\uC7A5"
     - "\uC21C\uD658"
-    - "\uC0DD\uD0DC"
+    - "\uC870\uAC01"
   - word: "\uB300\uD654"
     stage: 0
     related:
     - "\uC18C\uD1B5"
     - "\uAD6C\uC870"
-    - "\uC0AC\uD68C"
+  - word: "\uBE5B"
+    stage: 0
+    related:
+    - "\uBC18\uC0AC"
+    - "\uAD11\uC120"
+    - "\uD30C\uB3D9"
+  - word: "\uAC00\uC744"
+    stage: 0
+    related:
+    - "\uB0A0\uC528"
+    - "\uC0DD\uBA85"
+    - "\uC131\uC7A5"
+  - word: "\uCEF4\uD4E8\uD130"
+    stage: 0
+    related:
+    - "\uB17C\uB9AC"
+    - "\uC5F0\uC0B0"
+    - "\uC815\uBCF4"
+  - word: "\uB3D9\uC0C1"
+    stage: 0
+    related:
+    - "\uC0C1\uC9D5"
+    - "\uBBFC\uC18D"
+    - "\uC870\uAC01"
+  - word: "\uC5BC\uC74C"
+    stage: 0
+    related:
+    - "\uBC18\uC0AC"
+    - "\uC9C0\uD615"
+    - "\uC870\uAC01"
+    - "\uC74C\uC2DD"
+  - word: "\uC57C\uAD6C"
+    stage: 0
+    related:
+    - "\uAC8C\uC784"
+    - "\uC6B4"
+    - "\uC6B4\uB3D9"
+  - word: "\uAE40\uCE58"
+    stage: 0
+    related:
+    - "\uBBFC\uC18D"
+    - "\uC74C\uC2DD"
+    - "\uC5D0\uB108\uC9C0"
+  - word: "\uAC1C\uBBF8"
+    stage: 0
+    related:
+    - "\uB3D9\uBB3C"
+    - "\uC0DD\uBA85"
+  - word: "\uB3C5\uC11C"
+    stage: 0
+    related:
+    - "\uC131\uC7A5"
+    - "\uC815\uBCF4"
+    - "\uB17C\uB9AC"
   - word: "\uD655\uB960"
     stage: 1
     related:
     - "\uC218\uD559"
     - "\uD1B5\uACC4"
-    - "\uAC8C\uC784"
   - word: "\uC6B4"
     stage: 1
     related:
     - "\uC218\uD559"
     - "\uD1B5\uACC4"
-    - "\uAC8C\uC784"
   - word: "\uAC8C\uC784"
     stage: 1
     related:
@@ -205,12 +256,24 @@ MonoBehaviour:
     - "\uC5B8\uC5B4"
     - "\uC0AC\uD68C"
     - "\uBB38\uD654"
-  - word: "\uB370\uC774\uD130"
+  - word: "\uC870\uAC01"
     stage: 1
     related:
-    - "\uACF5\uD559"
-    - "\uC218\uD559"
-    - "\uD1B5\uACC4"
+    - "\uC608\uC220"
+    - "\uCCA0\uD559"
+    - "\uC5ED\uC0AC"
+  - word: "\uC6B4\uB3D9"
+    stage: 1
+    related:
+    - "\uBB38\uD654"
+    - "\uC0DD\uBB3C"
+    - "\uC608\uC220"
+  - word: "\uC74C\uC2DD"
+    stage: 1
+    related:
+    - "\uBB38\uD654"
+    - "\uC0DD\uBB3C"
+    - "\uC5ED\uC0AC"
   - word: "\uC218\uD559"
     stage: 2
     related: []

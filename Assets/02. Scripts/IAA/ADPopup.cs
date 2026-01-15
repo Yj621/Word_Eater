@@ -10,7 +10,8 @@ public class ADPopup : MonoBehaviour
     [SerializeField] private CanvasGroup canvasGroup;
     [SerializeField] private Button watchAdButton;
     [SerializeField] private Button noThanksButton;
-    [SerializeField] private GameObject blockPanel;
+    [SerializeField] private CanvasGroup blockPanelGroup; 
+    [SerializeField] private Button backgroundButton;
 
     [Header("텍스트")]
     [SerializeField] private TextMeshProUGUI titleText;
@@ -22,6 +23,8 @@ public class ADPopup : MonoBehaviour
     [SerializeField] private Ease showEase = Ease.OutBack; // 나타날 때 효과 (통통 튀는 느낌)
     [SerializeField] private Ease hideEase = Ease.InBack;  // 사라질 때 효과
 
+    // 광고 모드인지, 단순 확인 모드인지 구분하는 플래그
+    private bool _isAdMode = true;
     private Action _onAccept;
     private Action _onDecline;
     private bool _visible;
@@ -30,6 +33,10 @@ public class ADPopup : MonoBehaviour
     {
         if (watchAdButton != null) watchAdButton.onClick.AddListener(OnClickWatchAd);
         if (noThanksButton != null) noThanksButton.onClick.AddListener(OnClickNoThanks);
+        if (backgroundButton != null)
+        {
+            backgroundButton.onClick.AddListener(OnClickNoThanks);
+        }
         HideImmediate();
     }
 
@@ -43,65 +50,84 @@ public class ADPopup : MonoBehaviour
         if (noThanksLabel != null) noThanksLabel.text = noThanksText;
     }
 
-    public void Show(Action onAccept, Action onDecline)
+    /// <summary>
+    ///  팝업의 모드를 설정 (true: 광고 보기, false: 그냥 확인)
+    /// </summary>
+    public void SetAdMode(bool isAd)
+    {
+        _isAdMode = isAd;
+    }
+
+    public void YesNoPanelShow(Action onAccept, Action onDecline)
     {
         _onAccept = onAccept;
         _onDecline = onDecline;
         _visible = true;
 
         // 초기화 및 활성화
-        blockPanel.SetActive(true);
+        if (blockPanelGroup != null)
+        {
+            blockPanelGroup.gameObject.SetActive(true);
+            blockPanelGroup.alpha = 0f; // 투명하게 시작
+            blockPanelGroup.blocksRaycasts = true; // 터치 방지 켜기
+        }
         gameObject.SetActive(true);
-
-        // 애니메이션 충돌 방지를 위해 기존 트윈 제거
-        KillTweens();
-
-        // 시작 상태 설정 (투명하고 조금 작게 시작)
         canvasGroup.alpha = 0f;
         transform.localScale = Vector3.one * 0.8f;
 
-        // 상호작용은 애니메이션이 끝난 후 켜는 것이 안전함 (선택사항)
+        // 클릭 방지
         canvasGroup.interactable = false;
-        canvasGroup.blocksRaycasts = true;
-
-        // Canvas Sorting 설정 (기존 로직 유지)
-        var canvas = GetComponentInParent<Canvas>();
-        if (canvas != null)
-        {
-            canvas.overrideSorting = true;
-            canvas.sortingOrder = 10000;
-        }
-
-        // DOTween 시퀀스 실행 (페이드 인 + 스케일 업)
+        if (backgroundButton != null) backgroundButton.interactable = false;
+        // 애니메이션 충돌 방지를 위해 기존 트윈 제거
+        KillTweens();
         Sequence seq = DOTween.Sequence();
 
-        seq.Append(canvasGroup.DOFade(1f, animDuration)); // 알파값 0 -> 1
-        seq.Join(transform.DOScale(1f, animDuration).SetEase(showEase)); // 크기 0.8 -> 1
+        // [중요] 메인 팝업을 Append로 먼저 등록 (시간의 기준)
+        seq.Append(canvasGroup.DOFade(1f, animDuration));
+
+        // 나머지(스케일, 배경)는 Join으로 동시에 실행
+        seq.Join(transform.DOScale(1f, animDuration).SetEase(showEase));
+        if (blockPanelGroup != null)
+        {
+            seq.Join(blockPanelGroup.DOFade(1f, animDuration));
+        }
+
         seq.SetUpdate(true);
         seq.OnComplete(() =>
         {
-            canvasGroup.interactable = true; // 애니메이션 종료 후 버튼 클릭 가능하게
+            canvasGroup.interactable = true;
+            if (backgroundButton != null) backgroundButton.interactable = true;
         });
     }
 
     public void Hide()
     {
         _visible = false;
-        canvasGroup.interactable = false; // 클릭 방지
 
-        // 애니메이션 충돌 방지
+        // 즉시 클릭 차단
+        canvasGroup.interactable = false;
+        if (backgroundButton != null) backgroundButton.interactable = false;
+
         KillTweens();
 
-        // DOTween 시퀀스 실행 (페이드 아웃 + 스케일 다운)
         Sequence seq = DOTween.Sequence();
 
-        seq.Append(canvasGroup.DOFade(0f, animDuration)); // 알파값 1 -> 0
-        seq.Join(transform.DOScale(0.8f, animDuration).SetEase(hideEase)); // 크기 1 -> 0.8
+        // [핵심 수정] 
+        // 1. 팝업 본체가 사라지는 것을 기준(Append)으로 잡습니다.
+        seq.Append(canvasGroup.DOFade(0f, animDuration));
 
-        // 애니메이션이 '완료된 후'에 비활성화
+        // 2. 스케일 줄어드는 것도 동시에(Join)
+        seq.Join(transform.DOScale(0.8f, animDuration).SetEase(hideEase));
+
+        // 3. 배경이 사라지는 것도 동시에(Join) -> 같은 animDuration 사용
+        if (blockPanelGroup != null)
+        {
+            seq.Join(blockPanelGroup.DOFade(0f, animDuration));
+        }
+
         seq.OnComplete(() =>
         {
-            blockPanel.SetActive(false);
+            if (blockPanelGroup != null) blockPanelGroup.gameObject.SetActive(false);
             gameObject.SetActive(false);
         });
     }
@@ -112,7 +138,11 @@ public class ADPopup : MonoBehaviour
         _visible = false;
         canvasGroup.alpha = 0f;
         gameObject.SetActive(false);
-        blockPanel.SetActive(false);
+        if (blockPanelGroup != null)
+        {
+            blockPanelGroup.alpha = 0f;
+            blockPanelGroup.gameObject.SetActive(false);
+        }
     }
 
     // 실행 중인 DOTween이 있다면 즉시 종료 (중복 실행 방지)
@@ -120,27 +150,35 @@ public class ADPopup : MonoBehaviour
     {
         canvasGroup.DOKill();
         transform.DOKill();
+        if (blockPanelGroup != null) blockPanelGroup.DOKill();
     }
 
     private void OnClickWatchAd()
     {
         if (!_visible) return;
+        SetButtonsInteractable(false);
 
-        watchAdButton.interactable = false;
-        noThanksButton.interactable = false;
+        // 1. 광고 모드가 아니면 바로 수락 처리 (강제 제출 등)
+        if (!_isAdMode)
+        {
+            _onAccept?.Invoke();
+            Hide();
+            SetButtonsInteractable(true);
+            return;
+        }
 
+        // 2. 광고 모드면 기존 로직(AdsManager) 실행
         AdsManager.Instance.ShowRewarded(
             onRewardEarned: () =>
             {
                 _onAccept?.Invoke();
-                Hide(); // 애니메이션과 함께 닫기
-                ResetButtons();
+                Hide();
+                SetButtonsInteractable(true);
             },
             onUnavailable: () =>
             {
-                watchAdButton.interactable = true;
-                noThanksButton.interactable = true;
-                Debug.LogWarning("[Ads] 광고가 준비되지 않았습니다.");
+                SetButtonsInteractable(true);
+                Debug.LogWarning("[Ads] 광고 준비 안됨");
             }
         );
     }
@@ -151,7 +189,12 @@ public class ADPopup : MonoBehaviour
         Hide(); // 애니메이션과 함께 닫기
         ResetButtons();
     }
-
+    private void SetButtonsInteractable(bool interactable)
+    {
+        watchAdButton.interactable = interactable;
+        noThanksButton.interactable = interactable;
+        if (backgroundButton != null) backgroundButton.interactable = interactable;
+    }
     private void ResetButtons()
     {
         watchAdButton.interactable = true;

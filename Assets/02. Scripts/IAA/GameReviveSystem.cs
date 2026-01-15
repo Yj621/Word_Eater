@@ -63,7 +63,7 @@ public class GameReviveSystem : MonoBehaviour
             noThanksText: "아니오"
         );
 
-        revivePopup.Show(
+        revivePopup.YesNoPanelShow(
             onAccept: () =>
             {
                 // 광고 시청 완료 시 부활함

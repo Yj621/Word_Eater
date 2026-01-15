@@ -47,6 +47,9 @@ public class KeyBoardManager : MonoBehaviour
     public RectTransform allowedArea;           // 유효 영역(이 안에 있어야 제출)
     public RectTransform trashArea;             // 쓰레기통(여기 떨구면 삭제)
 
+    [Header("롱프레스 스폰 보정")]
+    public Vector2 longPressSpawnOffset = new Vector2(0f, 120f);
+
     [Header("디버그/출력용")]
     public TextMeshProUGUI resultText;          // 제출 결과 표시용
 
@@ -54,6 +57,9 @@ public class KeyBoardManager : MonoBehaviour
     bool InRange(int i) => (longPressKeys != null && i >= 0 && i < longPressKeys.Length);
     public int GetCount(int index) => (KeyCount.isReady ? KeyCount.Get(index) : 0);
 
+    Vector2 lastPointerScreenPos;
+    Vector2 _dragOffset;
+   
     // -----------------------------
     // 초기화
     // -----------------------------
@@ -124,7 +130,7 @@ public class KeyBoardManager : MonoBehaviour
         if (!IsValidIndex(index, SingleWordButtons, SingleWords)) return;
         if (!TryConsumeAndRefresh(index, 1)) return;
 
-        BeginDragSpawn(SingleWordButtons[index], SingleWords[index], ev, index, 1);
+        BeginDragSpawn(SingleWordButtons[index], SingleWords[index], ev, index, 1, isLongPress: false);
     }
 
     public void PressDouble(int index, PointerEventData ev)
@@ -144,8 +150,7 @@ public class KeyBoardManager : MonoBehaviour
             NotEnoughFeedback(index);
             return;
         }
-
-        BeginDragSpawn(btn, prefab, ev, index, cost);
+        BeginDragSpawn(btn, prefab, ev, index, cost, isLongPress: false);
     }
 
     public void PressShift()
@@ -303,11 +308,13 @@ public class KeyBoardManager : MonoBehaviour
             return;
         }
 
+        lastPointerScreenPos = screenPos;
+
         if (dragIsUI && dragUIRect)
         {
             var root = ResolveUISpawnRoot();
             if (RectTransformUtility.ScreenPointToLocalPointInRectangle(root, screenPos, uiCamera, out var local))
-                dragUIRect.anchoredPosition = local;
+                dragUIRect.anchoredPosition = local + _dragOffset;
         }
         else if (dragWorldTr)
         {
@@ -319,37 +326,82 @@ public class KeyBoardManager : MonoBehaviour
 
         if (IsPointerReleased(activePointerId))
         {
+            HandleInitialDropForUI();
             EndDrag();
         }
     }
+
+    void HandleInitialDropForUI()
+    {
+        if (!dragIsUI || !dragUIRect) return;
+
+        var drag = dragUIRect.GetComponent<DraggableWordUI>();
+
+        // 1) 쓰레기통 위 → 환불 + 삭제
+        if (trashArea &&
+            RectTransformUtility.RectangleContainsScreenPoint(
+                trashArea, lastPointerScreenPos, uiCamera))
+        {
+            if (drag != null) drag.RefundAndDestroy();
+            else Destroy(dragUIRect.gameObject);
+            return;
+        }
+
+        // 2) 허용 영역 밖 → 환불 + 삭제
+        if (allowedArea &&
+            !RectTransformUtility.RectangleContainsScreenPoint(
+                allowedArea, lastPointerScreenPos, uiCamera))
+        {
+            if (drag != null) drag.RefundAndDestroy();
+            else Destroy(dragUIRect.gameObject);
+            return;
+        }
+
+        // 3) 허용 영역 안이라면 그냥 그 자리에 남겨둠
+    }
+
 
     // -----------------------------
     // 프리팹 스폰 & 드래그 시작
     // -----------------------------
 
-    void BeginDragSpawn(Button button, GameObject prefab, PointerEventData ev, int invIndex, int amount)
+    void BeginDragSpawn(Button button, GameObject prefab, PointerEventData ev, int invIndex, int amount, bool isLongPress)
     {
         var buttonRT = button.GetComponent<RectTransform>();
-        Vector2 buttonScreen = RectTransformUtility.WorldToScreenPoint(uiCamera, buttonRT.position);
-        Vector2 startScreen = ev != null ? ev.position : buttonScreen;
+
+        Vector2 startScreen = ev != null
+            ? ev.position
+            : RectTransformUtility.WorldToScreenPoint(uiCamera, buttonRT.position);
 
         bool isUIPrefab = prefab.GetComponent<RectTransform>() && prefab.GetComponent<CanvasRenderer>();
 
         if (isUIPrefab)
         {
-            // UI 프리팹 스폰 + 드래그 시작
             var root = ResolveUISpawnRoot();
+
             RectTransformUtility.ScreenPointToLocalPointInRectangle(root, startScreen, uiCamera, out var local);
+
+            _dragOffset = longPressSpawnOffset;
+
             var go = Instantiate(prefab, root);
             var rt = go.GetComponent<RectTransform>();
+
             rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
             rt.pivot = new Vector2(0.5f, 0.5f);
-            rt.anchoredPosition = local + (Vector2)spawnOffset;
+
+            rt.anchoredPosition = local + (Vector2)spawnOffset + _dragOffset;
             rt.localScale = Vector3.one;
+            rt.SetAsLastSibling();
+
+            var jamo = go.GetComponent<JamoMagnet>();
+            if (jamo) jamo.PlaySpawnAnim();
 
             var drag = go.GetComponent<DraggableWordUI>();
-            drag.Init(root, allowedArea, trashArea, uiCamera);
-            drag.BindSource(this, invIndex, amount);
+            if (drag)
+            {
+                drag.Init(root, allowedArea, trashArea, uiCamera);
+                drag.BindSource(this, invIndex, amount);
+            }
 
             dragIsUI = true;
             dragUIRect = rt;
@@ -357,27 +409,23 @@ public class KeyBoardManager : MonoBehaviour
         }
         else
         {
-            // 월드 프리팹 스폰 + 드래그 시작
             var cam = Camera.main;
             var sp = new Vector3(startScreen.x, startScreen.y, worldDepth);
             var worldPos = cam ? cam.ScreenToWorldPoint(sp) : buttonRT.position;
-            var go = Instantiate(prefab, worldPos + spawnOffset, Quaternion.identity);
 
-            var drag = go.GetComponent<DraggableWordUI>();
-            if (drag != null)
-            {
-                drag.Init(null, null, null, null);
-                drag.BindSource(this, invIndex, amount);
-            }
+            var go = Instantiate(prefab, worldPos + spawnOffset, Quaternion.identity);
 
             dragIsUI = false;
             dragUIRect = null;
             dragWorldTr = go.transform;
+
+            _dragOffset = Vector2.zero;
         }
 
         dragging = true;
         activePointerId = ev != null ? ev.pointerId : -1;
     }
+
 
     RectTransform ResolveUISpawnRoot()
     {
@@ -392,15 +440,102 @@ public class KeyBoardManager : MonoBehaviour
 
     void EndDrag()
     {
+        if (dragging && dragIsUI && dragUIRect)
+        {
+            var drag = dragUIRect.GetComponent<DraggableWordUI>();
+
+            if (drag && EventSystem.current != null &&
+                TryGetPointerScreenPos(activePointerId, out var screenPos))
+            {
+                var root = ResolveUISpawnRoot();
+                Vector2 screenOffset = Vector2.zero;
+
+                if (root)
+                {
+                    Vector2 p0 = RectTransformUtility.WorldToScreenPoint(uiCamera, root.TransformPoint(Vector3.zero));
+                    Vector2 p1 = RectTransformUtility.WorldToScreenPoint(uiCamera, root.TransformPoint((Vector3)_dragOffset));
+                    screenOffset = p1 - p0;
+                }
+
+                var fakeEvent = new PointerEventData(EventSystem.current)
+                {
+                    position = screenPos + screenOffset  
+                };
+
+                drag.OnEndDrag(fakeEvent);
+            }
+        }
+
         dragging = false;
         activePointerId = int.MinValue;
         dragUIRect = null;
         dragWorldTr = null;
+        // _dragOffset은 여기서 0으로 꺼도 됨
+        _dragOffset = Vector2.zero;
     }
 
-    // -----------------------------
-    // 인벤토리 조작 (Add/Consume/Refund)
-    // -----------------------------
+
+    public bool AddKeyByGlyph(string glyph, int amount = 1)
+    {
+        if (!KeyCount.isReady || string.IsNullOrEmpty(glyph))
+            return false;
+
+        int index = FindSlotIndexByGlyph(glyph);
+        if (index < 0)
+        {
+            Debug.LogWarning($"[KeyBoardManager] '{glyph}' 에 해당하는 슬롯을 찾지 못했어.");
+            return false;
+        }
+
+        KeyCount.AddAt(index, amount);
+        // 아이템으로 준 거라서 _sessionSpent 에는 기록 안 함
+        return true;
+    }
+
+    public bool CanAddKey(string glyph)
+    {
+        if (!KeyCount.isReady || string.IsNullOrEmpty(glyph)) return false;
+        int index = FindSlotIndexByGlyph(glyph);
+        if (index < 0) return false;
+        
+        return KeyCount.Get(index) < KeyCount.MaxCount;
+    }
+
+    // 🔹 prefab들에서 glyph를 보고 longPressKeys 인덱스 찾기
+    int FindSlotIndexByGlyph(string glyph)
+    {
+        if (longPressKeys == null) return -1;
+        glyph = glyph.Trim();
+
+        for (int i = 0; i < longPressKeys.Length; i++)
+        {
+            GameObject prefab = null;
+
+            // 이 인덱스가 싱글키면 SingleWords 쪽에서 찾고
+            if (i < SingleWords.Length && SingleWords[i] != null)
+            {
+                prefab = SingleWords[i];
+            }
+            // 아니면 더블키(자/모)에서 찾고
+            else if (i < DSWords.Length && DSWords[i] != null)
+            {
+                prefab = DSWords[i];   // 기본(Shift OFF) 자모 기준
+            }
+            else if (i < DDWords.Length && DDWords[i] != null)
+            {
+                prefab = DDWords[i];   // 필요하면 이쪽도 사용
+            }
+
+            if (!prefab) continue;
+
+            var mag = prefab.GetComponent<JamoMagnet>();
+            if (mag != null && mag.glyph == glyph)
+                return i;
+        }
+
+        return -1;
+    }
+
 
     public void AddRandomKeys(int amount)
     {
@@ -582,4 +717,17 @@ public class KeyBoardManager : MonoBehaviour
         if (buttons[index] == null || prefabs[index] == null) return false;
         return true;
     }
+
+    // KeyBoardManager 클래스 안 어딘가(public 메서드들 근처)에 추가
+    /// <summary>
+    /// 단어 제출 등으로 키 사용을 확정할 때 호출.
+    /// - 지금 세션에서 쓴 키(_sessionSpent)는 환불하지 않고 버린다.
+    /// - 화면 위에 놓인 조각들은 정리만 한다.
+    /// </summary>
+    public void ConfirmUse()
+    {
+        _sessionSpent.Clear();   // 환불 기록 버리기 (다시는 돌려주지 않음)
+        ClearAllSpawnedPieces(); // 화면에 남은 자모/Syl 블럭 제거
+    }
+
 }

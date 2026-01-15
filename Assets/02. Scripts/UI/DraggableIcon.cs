@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using System.Collections;
 
 [RequireComponent(typeof(CanvasGroup))]
 public class DraggableIcon : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
@@ -15,6 +16,8 @@ public class DraggableIcon : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
     // 빈 공간을 유지해줄 가짜 객체
     private GameObject _placeholder;
+
+    public SlideManager slidemanager;
 
     private void Awake()
     {
@@ -40,6 +43,8 @@ public class DraggableIcon : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
     public void OnDrag(PointerEventData eventData)
     {
+        slidemanager.isOK = false;
+
         // 아이콘을 마우스 따라 이동
         _rt.anchoredPosition += eventData.delta / canvas.scaleFactor;
 
@@ -55,6 +60,8 @@ public class DraggableIcon : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
     public void OnEndDrag(PointerEventData eventData)
     {
+        StartCoroutine(SetIsOKNextFrame());
+
         // 아이콘 상태 복구
         _canvasGroup.blocksRaycasts = true;
         _canvasGroup.alpha = 1.0f;
@@ -68,6 +75,12 @@ public class DraggableIcon : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
         // Placeholder 삭제
         Destroy(_placeholder);
+    }
+
+    IEnumerator SetIsOKNextFrame()
+    {
+        yield return null; // 1 frame 대기
+        slidemanager.isOK = true;
     }
 
     /// <summary>

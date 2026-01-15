@@ -45,6 +45,13 @@ public class Item : MonoBehaviour
     /// </summary>
     private void OnClickSlot()
     {
+        // 부활권은 인벤토리에서 직접 사용할 수 없으므로 클릭 무시
+        if (_myType == ItemType.ReviveTicket)
+        {
+            NoticeManager.Instance.ShowSticky("부활권은 사망 시\n사용 가능합니다.");
+            GameManager.Instance.HidePanel_Item();
+            return;
+        }
         string itemName = ItemUtils.GetItemNameKR(_myType);
 
         GameManager.Instance.HidePanel_Item();

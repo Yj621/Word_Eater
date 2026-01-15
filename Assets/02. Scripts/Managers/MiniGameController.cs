@@ -2,6 +2,8 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
+using WordEater.Core;
+using WordEater.Systems;
 
 public class MiniGameController : MonoBehaviour
 {
@@ -24,6 +26,8 @@ public class MiniGameController : MonoBehaviour
 
     public int ClearCount = 0;
 
+    public WordEater.Core.WordEater wordeater;
+
     private void Awake()
     {
         algorithmPanel = GetComponentInParent<AlgorithmPanel>();
@@ -37,6 +41,31 @@ public class MiniGameController : MonoBehaviour
     public void Begin()
     {
         if (_running) return;
+
+        // [Legacy] 기존 호출 대응 (바로 결제 후 시작)
+        CheckPayment(() => StartGame());
+    }
+
+    // [New] 결제만 먼저 시도 (패널 열기 전에 호출)
+    public void CheckPayment(System.Action onPaid)
+    {
+        if (wordeater != null)
+        {
+            wordeater.TryPayForMiniGame(() =>
+            {
+                onPaid?.Invoke();
+            });
+        }
+        else
+        {
+            // 워드이터 없으면 프리패스
+            onPaid?.Invoke();
+        }
+    }
+
+    // [New] 실제 게임 시작 (패널 열린 후 호출)
+    public void StartGame()
+    {
         _running = true;
 
         // 모드에 따라 타이머 세팅
@@ -47,6 +76,8 @@ public class MiniGameController : MonoBehaviour
         StartRandomGame(skipIndex: -1);
     }
 
+    // [Deprecated] 내부 호출용이었던 것 -> StartGame으로 대체
+    private void RealStartGame() => StartGame();
     public void StopAllGames()
     {
         _running = false;
@@ -73,6 +104,15 @@ public class MiniGameController : MonoBehaviour
         if (!_running) return;
         // 실패 처리: 탭 닫기
         FailAndClose();
+    }
+
+    public bool CanStartMiniGame()
+    {
+        if (wordeater == null) return true;
+
+        if (wordeater.isDead) return false;
+
+        return true;
     }
 
     // === 내부 구현 ===
@@ -150,33 +190,46 @@ public class MiniGameController : MonoBehaviour
         }
     }
 
-    private void CheckItemReward()
+    // [변경] UI 표시를 여기서 하지 않고, 획득한 아이템 타입을 리턴해서 AlgorithmPanel이 통합 표시하게 함
+    public ItemType CheckItemReward()
     {
         // 보상을 받을지 여부
         bool getReward = false;
-        bool isHard = (algorithmPanel != null && !algorithmPanel.Mode); // Mode가 true면 Easy, false면 Hard라고 가정
+        bool isHard = (algorithmPanel != null && !algorithmPanel.Mode); 
 
-        // 조건 1: 하드모드일 때 (확률적으로 지급)
-        if (isHard && ClearCount > 1) // 최소 2개는 깼어야 함
+        if (isHard && ClearCount > 0)
         {
-            // 예: 30% 확률
-            if (Random.value <= 0.5f) getReward = true;
+            if (Random.value <= 1f) getReward = true; 
         }
-        // 조건 2: 일반모드인데 많이 깼을 때 (예: 5개 이상)
         else if (ClearCount >= 5)
         {
             getReward = true;
         }
 
-        // 보상 지급
+        // 보상 지급 로직
         if (getReward)
         {
-            // 아이템 획득 매니저 호출
-            // (ItemDropManager는 앞서 설명드린 새 스크립트입니다)
-            if (ItemDropManager.Instance != null)
+            if (isHard)
             {
-                ItemDropManager.Instance.ObtainRandomItem(showUI: true);
+                 // 하드모드 -> 자음/모음 선택권
+                 if (ItemManager.Instance != null)
+                 {
+                     ItemManager.Instance.AddItem(ItemType.JamoSelectionTicket, 1);
+                     return ItemType.JamoSelectionTicket;
+                 }
+            }
+            else
+            {
+                // 일반모드 -> 기존 랜덤 로직
+                if (ItemDropManager.Instance != null)
+                {
+                    // showUI = false로 해서 여기서 팝업 안 띄우고 타입만 받아옴
+                    return ItemDropManager.Instance.ObtainRandomItem(showUI: false);
+                }
             }
         }
+
+        // 획득 실패 혹은 조건 미달
+        return (ItemType)(-1); // -1 or generic invalid
     }
 }
