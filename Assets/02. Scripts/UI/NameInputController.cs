@@ -21,6 +21,8 @@ public class NameInputController : MonoBehaviour
     [SerializeField] private WordEater.Core.WordEater wordEater;
     [SerializeField] private InfoPanelController infoPanel;
 
+    [SerializeField] private SubmitManager submitManager;
+
     private Coroutine blinkCoroutine;
     private bool isCursorVisible = true;
 
@@ -131,6 +133,17 @@ public class NameInputController : MonoBehaviour
         if (infoPanel != null)
         {
             infoPanel.UpdateInfoUI();
+        }
+
+        if (submitManager != null)
+        {
+            submitManager.OnRelevantButton();
+        }
+        else
+        {
+            // 혹시 인스펙터 연결을 깜빡했을 경우를 대비해 Find로 찾기 (안전장치)
+            var sm = FindAnyObjectByType<SubmitManager>();
+            if (sm != null) sm.OnRelevantButton();
         }
 
         // 패널 닫기
