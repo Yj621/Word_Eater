@@ -117,6 +117,7 @@ public class UIManager : MonoBehaviour
             target.DOScale(1f, 0.4f)
                 .SetEase(Ease.OutBack)
                 .SetUpdate(true); // 일시정지 상태에서도 동작하게 함
+            phoneSwiper.isUsingTab = true;
         }
     }
 
@@ -190,6 +191,7 @@ public class UIManager : MonoBehaviour
 
                 _onConfirmCallback?.Invoke();
                 _onConfirmCallback = null;
+                phoneSwiper.isUsingTab = false;
             });
     }
 

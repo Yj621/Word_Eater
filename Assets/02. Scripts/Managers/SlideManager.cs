@@ -77,7 +77,7 @@ public class SlideManager : MonoBehaviour
             if (!isSlide)
             {
 
-                if (swipeY > swipeThreshold && isOK && phoneswiper.current == 0)
+                if (swipeY > swipeThreshold && isOK && !phoneswiper.isUsingTab)
                 {
                     BlockJJS = true;
 
@@ -110,7 +110,7 @@ public class SlideManager : MonoBehaviour
             //위에서 아래로 슬라이드
             if (swipeY > swipeThreshold)
             {
-                if (isOK && phoneswiper.current == 0)
+                if (isOK && !phoneswiper.isUsingTab)
                 {
 
                     BlockJJS = true;
