@@ -183,7 +183,7 @@ public class MiniGameController : MonoBehaviour
         StopAllGames();
         if (algorithmPanel != null)
         {
-            CheckItemReward();
+            // CheckItemReward(); // [수정] AlgorithmPanel에서 처리하므로 중복 호출 제거
             // 패널 쪽 애니메이션/상태는 기존 함수 그대로 사용
             algorithmPanel.StartCoroutine(algorithmPanel.CloasePageTab());
             int added = keyboard.GrantRandomLetters(ClearCount);
@@ -197,34 +197,46 @@ public class MiniGameController : MonoBehaviour
         bool getReward = false;
         bool isHard = (algorithmPanel != null && !algorithmPanel.Mode); 
 
-        if (isHard && ClearCount > 0)
+        // [변경] 사용자 요청: 
+        // 1. 하드모드: ClearCount만큼 자음선택권 지급 (기존 유지)
+        // 2. 이지모드: 3단계부터 매 단계 70% 확률로 아이템 개수 누적 (스택)
+        if (isHard)
         {
-            if (Random.value <= 1f) getReward = true; 
+             // 하드모드 (기존 로직: 100% 지급, 개수는 ClearCount)
+             if (ItemManager.Instance != null && ClearCount > 0)
+             {
+                 ItemManager.Instance.AddItem(ItemType.JamoSelectionTicket, ClearCount);
+                 return ItemType.JamoSelectionTicket;
+             }
         }
-        else if (ClearCount >= 5)
+        else
         {
-            getReward = true;
-        }
-
-        // 보상 지급 로직
-        if (getReward)
-        {
-            if (isHard)
+            // 이지모드
+            int earnedCount = 0;
+            // "3개 이상 깨면 한 문제마다 70퍼센트의 확률로" -> 3, 4, 5... 단계에 대해 각각 롤링
+            for (int i = 1; i <= ClearCount; i++)
             {
-                 // 하드모드 -> 자음/모음 선택권
-                 if (ItemManager.Instance != null)
-                 {
-                     ItemManager.Instance.AddItem(ItemType.JamoSelectionTicket, 1);
-                     return ItemType.JamoSelectionTicket;
-                 }
+                if (i >= 3) // 3단계부터 시작
+                {
+                    if (Random.value <= 0.7f) earnedCount++;
+                }
             }
-            else
+
+            if (earnedCount > 0)
             {
-                // 일반모드 -> 기존 랜덤 로직
                 if (ItemDropManager.Instance != null)
                 {
-                    // showUI = false로 해서 여기서 팝업 안 띄우고 타입만 받아옴
-                    return ItemDropManager.Instance.ObtainRandomItem(showUI: false);
+                    // [변경] 골고루 지급: 획득한 개수(earnedCount)만큼 반복해서 따로따로 뽑는다.
+                    ItemType lastType = (ItemType)(-1);
+                    
+                    for (int k = 0; k < earnedCount; k++)
+                    {
+                        // showUI = false (나중에 통합 알림 혹은 알림 생략)
+                        lastType = ItemDropManager.Instance.ObtainRandomItem(showUI: false);
+                    }
+
+                    Debug.Log($"[MiniGame] 이지모드 보상: 총 {earnedCount}회 가챠 실행 완료");
+                    return lastType; // 마지막 획득한 타입을 리턴 (대표용)
                 }
             }
         }

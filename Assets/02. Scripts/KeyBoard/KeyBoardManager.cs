@@ -60,6 +60,21 @@ public class KeyBoardManager : MonoBehaviour
     Vector2 lastPointerScreenPos;
     Vector2 _dragOffset;
    
+    /// <summary>
+    /// Canvas 모드에 따라 적절한 카메라(Overlay면 null, 아니면 worldCamera/uiCamera)를 반환
+    /// </summary>
+    Camera GetRefinedCamera(RectTransform root)
+    {
+        if (!root) return uiCamera;
+        var canvas = root.GetComponentInParent<Canvas>();
+        if (!canvas) return uiCamera;
+
+        if (canvas.renderMode == RenderMode.ScreenSpaceOverlay)
+            return null;
+
+        return canvas.worldCamera ? canvas.worldCamera : uiCamera;
+    }
+
     // -----------------------------
     // 초기화
     // -----------------------------
@@ -87,6 +102,17 @@ public class KeyBoardManager : MonoBehaviour
     void Start()
     {
         _sessionSpent.Clear();
+
+        // [추가] FileManager에서 로드된 키 개수가 있으면 적용
+        if (FileManager.Instance != null && FileManager.Instance.tempLoadedKeyCounts != null)
+        {
+            var loaded = FileManager.Instance.tempLoadedKeyCounts.ToArray();
+            if (loaded.Length > 0)
+            {
+                KeyCount.SetAllCounts(loaded);
+                Debug.Log("[KeyBoard] 저장된 자모 개수 불러오기 완료");
+            }
+        }
     }
 
     void OnEnable()
@@ -217,8 +243,10 @@ public class KeyBoardManager : MonoBehaviour
             var rt = b.GetComponent<RectTransform>();
             if (!rt) continue;
 
-            var sp = RectTransformUtility.WorldToScreenPoint(uiCamera, rt.position);
-            if (RectTransformUtility.RectangleContainsScreenPoint(allowedArea, sp, uiCamera))
+            // [수정] 헬퍼 사용
+            Camera camToUse = GetRefinedCamera(uiSpawnRoot);
+            var sp = RectTransformUtility.WorldToScreenPoint(camToUse, rt.position);
+            if (RectTransformUtility.RectangleContainsScreenPoint(allowedArea, sp, camToUse))
                 result.Add(b);
         }
 
@@ -231,6 +259,8 @@ public class KeyBoardManager : MonoBehaviour
         word = null;
         if (blocks == null || blocks.Count == 0) return false;
 
+        Camera camToUse = GetRefinedCamera(uiSpawnRoot);
+
         // 1) 고아 JamoMagnet이 있는지 검사 (블럭에 안 붙어 있는 자모가 있으면 실패)
         var magnets = uiSpawnRoot.GetComponentsInChildren<JamoMagnet>(includeInactive: false);
         foreach (var m in magnets)
@@ -240,8 +270,8 @@ public class KeyBoardManager : MonoBehaviour
             var rt = m.GetComponent<RectTransform>();
             if (!rt) continue;
 
-            var sp = RectTransformUtility.WorldToScreenPoint(uiCamera, rt.position);
-            if (!RectTransformUtility.RectangleContainsScreenPoint(allowedArea, sp, uiCamera))
+            var sp = RectTransformUtility.WorldToScreenPoint(camToUse, rt.position);
+            if (!RectTransformUtility.RectangleContainsScreenPoint(allowedArea, sp, camToUse))
                 continue;
 
             var parentBlock = m.GetComponentInParent<SyllableBlock>();
@@ -263,8 +293,8 @@ public class KeyBoardManager : MonoBehaviour
             }
 
             var brt = b.GetComponent<RectTransform>();
-            Vector2 sp = RectTransformUtility.WorldToScreenPoint(uiCamera, brt.position);
-            RectTransformUtility.ScreenPointToLocalPointInRectangle(allowedArea, sp, uiCamera, out var local);
+            Vector2 sp = RectTransformUtility.WorldToScreenPoint(camToUse, brt.position);
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(allowedArea, sp, camToUse, out var local);
             ordered.Add((b, local.x));
         }
 
@@ -313,7 +343,17 @@ public class KeyBoardManager : MonoBehaviour
         if (dragIsUI && dragUIRect)
         {
             var root = ResolveUISpawnRoot();
-            if (RectTransformUtility.ScreenPointToLocalPointInRectangle(root, screenPos, uiCamera, out var local))
+
+            // [수정] Update에서도 동일하게 카메라 보정
+            Camera camToUse = uiCamera;
+            if (root != null)
+            {
+                var canvas = root.GetComponentInParent<Canvas>();
+                if (canvas != null && canvas.renderMode == RenderMode.ScreenSpaceOverlay)
+                    camToUse = null;
+            }
+
+            if (RectTransformUtility.ScreenPointToLocalPointInRectangle(root, screenPos, camToUse, out var local))
                 dragUIRect.anchoredPosition = local + _dragOffset;
         }
         else if (dragWorldTr)
@@ -379,7 +419,18 @@ public class KeyBoardManager : MonoBehaviour
         {
             var root = ResolveUISpawnRoot();
 
-            RectTransformUtility.ScreenPointToLocalPointInRectangle(root, startScreen, uiCamera, out var local);
+            // [수정] 헬퍼 메서드로 통합 (Canvas 모드에 따라 null 또는 Camera 반환)
+            Camera camToUse = GetRefinedCamera(root);
+
+            bool convertSuccess = RectTransformUtility.ScreenPointToLocalPointInRectangle(root, startScreen, camToUse, out var local);
+            
+            // [디버그] 좌표 변환 실패 시 원인 파악용 로그
+            if (!convertSuccess || local == Vector2.zero) 
+            {
+                 Debug.LogWarning($"[KeyBoard] Spawn Check - Success:{convertSuccess}, Local:{local}");
+                 Debug.LogWarning($"[KeyBoard] Root: {root.name} / Active: {root.gameObject.activeInHierarchy}");
+                 // Debug.LogWarning($"[KeyBoard] Cam Used: {(camToUse != null ? camToUse.name : "Null")}");
+            }
 
             _dragOffset = longPressSpawnOffset;
 
@@ -399,7 +450,7 @@ public class KeyBoardManager : MonoBehaviour
             var drag = go.GetComponent<DraggableWordUI>();
             if (drag)
             {
-                drag.Init(root, allowedArea, trashArea, uiCamera);
+                drag.Init(root, allowedArea, trashArea, camToUse);
                 drag.BindSource(this, invIndex, amount);
             }
 

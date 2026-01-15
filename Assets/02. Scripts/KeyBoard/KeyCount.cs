@@ -93,4 +93,31 @@ public static class KeyCount
             }
         }
     }
+
+    // -----------------------------------------------------
+    // Save & Load Helper
+    // -----------------------------------------------------
+    public static int[] GetAllCounts()
+    {
+        if (!isReady) return new int[0];
+        return (int[])counts.Clone();
+    }
+
+    public static void SetAllCounts(int[] loaded)
+    {
+        if (!isReady || loaded == null) return;
+        
+        for (int i = 0; i < counts.Length; i++)
+        {
+            if (i < loaded.Length)
+            {
+                counts[i] = Mathf.Clamp(loaded[i], 0, maxCount);
+            }
+            else
+            {
+                // 로드된 데이터가 더 짧으면? 유지하거나 0? 유지하는게 안전.
+            }
+            OnChanged?.Invoke(i, counts[i]);
+        }
+    }
 }

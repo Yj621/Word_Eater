@@ -605,6 +605,44 @@ public class GameManager : MonoBehaviour
         phoneSwiper.isUsingTab = true;
     }
 
+    /// <summary>
+    /// [재적용] 애니메이션 없이 즉시 블러 패널들을 닫음 (결과창 가림 방지)
+    /// </summary>
+    public void CloseBlurPanelsImmediate()
+    {
+        Debug.Log("[GameManager] CloseBlurPanelsImmediate Called!");
+
+        if (FolderPanel != null)
+        {
+            FolderPanel.DOKill();
+            FolderPanel.gameObject.SetActive(false);
+        }
+
+        if (ItemFolderPanel != null)
+        {
+            ItemFolderPanel.DOKill();
+            ItemFolderPanel.gameObject.SetActive(false);
+        }
+        
+        // 블러 캔버스 그룹도 리셋
+        if (folderCanvasGroup != null)
+        {
+            folderCanvasGroup.DOKill();
+            folderCanvasGroup.alpha = 0f;
+            folderCanvasGroup.blocksRaycasts = false;
+            folderCanvasGroup.interactable = false;
+        }
+        if (itemFolderCanvasGroup != null)
+        {
+            itemFolderCanvasGroup.DOKill();
+            itemFolderCanvasGroup.alpha = 0f;
+            itemFolderCanvasGroup.blocksRaycasts = false;
+            itemFolderCanvasGroup.interactable = false;
+        }
+
+        if (phoneSwiper != null) phoneSwiper.isUsingTab = false;
+    }
+
     private void HideBlurPanelToButton(RectTransform panel, RectTransform btn, CanvasGroup cg)
     {
         // [수정] 참조가 없더라도 일단 스와이프 잠금은 해제해야 함 (버그 방지)

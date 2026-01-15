@@ -11,6 +11,7 @@ public class JamoTicketDisplay : MonoBehaviour
     [SerializeField] private JamoChooserUI chooserPanel;
     [SerializeField] private Transform targetPanel;
     [SerializeField] private GameObject folderPanel;
+    [SerializeField] private GameObject iconGroup; // [추가] 직접 할당 (이름 검색 지양)
     [SerializeField] private GameObject jamoConfirmPanel;
     [SerializeField] private GameObject closePanel;
 
@@ -73,7 +74,8 @@ public class JamoTicketDisplay : MonoBehaviour
         var comp = go.GetComponent<ClickIconChoiceJamo>();
         if (comp != null)
         {
-            comp.Initialize(chooserPanel, targetPanel, folderPanel, jamoConfirmPanel, closePanel);
+            // [수정] 직접 할당된 iconGroup 사용
+            comp.Initialize(chooserPanel, targetPanel, folderPanel, jamoConfirmPanel, closePanel, iconGroup);
         }
 
         _spawnedTickets.Add(go);

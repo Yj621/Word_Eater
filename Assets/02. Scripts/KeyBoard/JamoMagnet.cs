@@ -39,6 +39,12 @@ public class JamoMagnet : MonoBehaviour
         All.Remove(this);
     }
 
+    void OnDestroy()
+    {
+        // [수정] 파괴될 때 트윈이 돌고 있으면 에러 나므로 강제 종료
+        transform.DOKill();
+    }
+
     /// <summary>모음 글자로부터 기본 방향 추정</summary>
     public static VowelAttach GuessVowelAttach(string g)
     {

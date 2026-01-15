@@ -26,10 +26,23 @@ public class AlgorithmPanel : MonoBehaviour
 
     private void Update()
     {
-            for(int i = 0; i < Buttons.Length; i++)
+        // 기본 조건: 패널이 열려있지 않아야 함
+        bool canInteract = !IsOpen;
+
+        // 추가 조건: 배터리가 20 초과여야 함 (20 이하면 잠금 -> 사용자 요청)
+        // 참고: 미니게임 비용이 20이므로, <= 20이면 "비용을 낼 수 없거나, 딱 낼 수 있어도 방지"하려는 의도로 보임
+        if (_mini != null && _mini.wordeater != null)
+        {
+            if (_mini.wordeater.CurrentBatteryPercent <= 20)
             {
-                Buttons[i].interactable = !IsOpen;
+                canInteract = false;
             }
+        }
+
+        for (int i = 0; i < Buttons.Length; i++)
+        {
+            Buttons[i].interactable = canInteract;
+        }
     }
 
     public void OpenEasyMode()
@@ -130,6 +143,12 @@ public class AlgorithmPanel : MonoBehaviour
         // 3. UI 매니저 호출 (ResultTab 흐름 대체)
         if (UIManager.Instance != null)
         {
+            // [수정] 결과창이 뜰 때 기존에 열려있을 수 있는 블러 패널(폴더 등)을 닫아서 가리지 않게 함
+            if (GameManager.Instance != null)
+            {
+                GameManager.Instance.CloseBlurPanelsImmediate();
+            }
+
             // CloseResultTab을 콜백으로 넘겨서 팝업 닫히면 정리되게 함
             UIManager.Instance.Show(finalMsg, () => 
             {

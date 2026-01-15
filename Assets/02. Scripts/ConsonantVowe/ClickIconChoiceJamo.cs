@@ -12,19 +12,21 @@ public class ClickIconChoiceJamo : MonoBehaviour, IPointerClickHandler
     [SerializeField] private GameObject folderPanel;
     [SerializeField] private GameObject confirmPanel;
     [SerializeField] private GameObject closePanel;
+    [SerializeField] private GameObject iconGroup; // [추가] 인스펙터가 아닌 Initialize로 주입받을 변수
 
     // 핸들러 보관(중복 구독 방지용)
     private Action<JamoDefsType, string> _selectedHandler;
     private Action<bool> _requestCloseHandler;
 
     // [추가] 동적 생성을 위한 초기화 함수
-    public void Initialize(JamoChooserUI chooser, Transform target, GameObject folder, GameObject confirm, GameObject close)
+    public void Initialize(JamoChooserUI chooser, Transform target, GameObject folder, GameObject confirm, GameObject close, GameObject iconGroup)
     {
         this.chooserPanel = chooser;
         this.targetPanel = target;
         this.folderPanel = folder;
         this.confirmPanel = confirm;
         this.closePanel = close;
+        this.iconGroup = iconGroup; // [추가] 주입
     }
 
     public void OnPointerClick(PointerEventData eventData)
@@ -35,17 +37,26 @@ public class ClickIconChoiceJamo : MonoBehaviour, IPointerClickHandler
             return;
         }
 
-        // 기존 UI 숨기기
-        folderPanel.SetActive(false);
+        // [수정] 직접 끄지 않고 Chooser에 위임 (프리팹 파괴 대비)
+        // if (iconGroup != null) iconGroup.SetActive(false); 
 
         // 프리팹 대신 인스펙터에 배치한 오브젝트를 사용한다.
         var chooser = chooserPanel;
+
+        // [추가] Chooser에게 "닫힐 때 복구해달라"고 요청하면서 끄기
+        if (iconGroup != null)
+        {
+            chooser.RegisterRestoreTarget(iconGroup);
+        }
 
         // 부모를 targetPanel로 설정. worldPositionStays=false로 로컬값 유지
         chooser.transform.SetParent(targetPanel, false);
         var rect = chooser.GetComponent<RectTransform>();
         rect.anchoredPosition = Vector2.zero; // 부모 패널 기준 (0,0)
         rect.localRotation = Quaternion.identity;
+        
+        // [수정] 폴더보다 위에 그려지도록 순서 조정 (부모 내 최상단으로 이동)
+        chooser.transform.SetAsLastSibling();
 
         // 활성화 전 초기 스케일 세팅
         chooser.gameObject.SetActive(true);
@@ -100,7 +111,7 @@ public class ClickIconChoiceJamo : MonoBehaviour, IPointerClickHandler
     public void OnCloseChooser()
     {
         chooserPanel.gameObject.SetActive(false);
-        closePanel.SetActive(false);
+        if (closePanel != null) closePanel.SetActive(false);
 
         // [DOTween] 작아지는 애니메이션 적용 (Destroy 대신 비활성화)
         chooserPanel.transform.DOScale(Vector3.zero, 0.2f)
@@ -109,7 +120,12 @@ public class ClickIconChoiceJamo : MonoBehaviour, IPointerClickHandler
             {
                 // 애니메이션이 다 끝난 뒤 오브젝트 비활성화
                 chooserPanel.gameObject.SetActive(false);
-                closePanel.SetActive(false); // 배경 패널 끄기
+                if (closePanel != null) closePanel.SetActive(false); // 배경 패널 끄기
+                
+                // [중요] JamoChooserUI가 닫힐 때 스스로 _OnCloseCleanup()을 호출하거나, 
+                // 여기서 Close()를 호출해줘야 함. 
+                // 위에서 SetActive(false)를 직접 했지만, 안전하게 Close() 호출
+                chooserPanel.Close(); 
             });
     }
 }

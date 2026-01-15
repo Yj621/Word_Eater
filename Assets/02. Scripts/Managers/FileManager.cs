@@ -52,6 +52,7 @@ public class FileManager : MonoBehaviour
         public List<string> Relevant; //관련 단어
         public string Name;
         public string ImgId;
+        public List<int> KeyCounts; // [추가] 자모음 개수 저장
     }
 
     [System.Serializable]
@@ -109,6 +110,7 @@ public class FileManager : MonoBehaviour
         LoadWordEaterInfo();
         LoadGallery();
         LoadBatteryInfo();
+        LoadInventory(); // [추가] 인벤토리 로드 누락된 부분 추가
     }
 
     // ========================================================================
@@ -124,7 +126,9 @@ public class FileManager : MonoBehaviour
             Relevant = RR,
             RelevantLine = RRL,
             Name = CurrentPlayerName,
-            ImgId = id
+            ImgId = id,
+            // [추가] 현재 KeyCount 상태 저장
+            KeyCounts = new List<int>(KeyCount.GetAllCounts())
         };
 
         string json = JsonUtility.ToJson(data, true);
@@ -158,7 +162,15 @@ public class FileManager : MonoBehaviour
             gamemanager.RelevantResult = data.Relevant;
             gamemanager.RelevantLine = data.RelevantLine;
         }
+
+        // [추가] 로드된 키 데이터를 임시 보관 또는 즉시 적용
+        // KeyBoardManager가 아직 Init 안됐을 수 있으므로 여기서는 프로퍼티에 들고 있거나
+        // KeyBoardManager가 Start에서 FileManager를 참조해서 가져가도록 함
+        tempLoadedKeyCounts = data.KeyCounts;
     }
+
+    // KeyBoardManager가 씬 로드 후 가져갈 데이터
+    public List<int> tempLoadedKeyCounts;
 
     /// <summary>
     /// 외부에서 이름을 변경할 때 호출 (변경 후 저장까지 수행)

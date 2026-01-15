@@ -43,6 +43,11 @@ namespace WordEater.Core
         /// </summary>
         public bool isDead { get; private set; } = false;
 
+        /// <summary>
+        /// 현재 배터리 잔량 (%) 외부 공개
+        /// </summary>
+        public int CurrentBatteryPercent => battery != null ? battery.CurrentPercent : 0;
+
         // 이미지 컴포넌트 캐싱용 변수임
         private Image _targetImage;
         private Image TargetImage => _targetImage ? _targetImage : (_targetImage = GetComponent<Image>());

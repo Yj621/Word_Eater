@@ -23,6 +23,9 @@ public class JamoChooserUI : MonoBehaviour
     [Header("Button Template")]
     [SerializeField] private Button jamoButtonTemplate; // 자음/모음이 자식으로 들어갈 버튼
 
+    [Header("Main Content Panel (Jamo Panel)")]
+    [SerializeField] private Transform jamoMainPanel; // [추가] Jamo_Panel (뒤로 보낼 대상)
+
     [Header("Confirm Panel")]
     [SerializeField] private GameObject jamoConfirmPanel;          // 확인 패널 전체
     [SerializeField] private TextMeshProUGUI confirmText;      // "ㄱ 을 선택하시겠습니까?" 같은 문구
@@ -121,6 +124,9 @@ public class JamoChooserUI : MonoBehaviour
         // 열기 연출: 스케일 0 -> 1
         jamoConfirmPanel.transform.localScale = Vector3.zero;
         jamoConfirmPanel.SetActive(true);
+        
+        // [롤백] Canvas 소팅 방식 제거 (사용자 요청)
+        // [수정] 단순히 확인 패널을 맨 앞으로 가져옴 (가장 기본적인 방식)
         jamoConfirmPanel.transform.SetAsLastSibling();
 
         if (confirmText != null)
@@ -154,7 +160,8 @@ public class JamoChooserUI : MonoBehaviour
                     if (!ItemManager.Instance.TryUseItem(ItemType.JamoSelectionTicket))
                     {
                         Debug.LogWarning("아이템이 부족하여 사용할 수 없습니다.");
-                        // UI 닫기 등 처리
+                        GameManager.Instance.CloseBlurPanelsImmediate();
+
                         jamoConfirmPanel.SetActive(false);
                         OnRequestClose?.Invoke(false);
                         return;
@@ -162,6 +169,15 @@ public class JamoChooserUI : MonoBehaviour
                 }
                 // 실제로 획득됨
                 OnSelected?.Invoke(_current, _pendingJamo);
+
+                // [추가] 사용 완료 알림 패널 띄우기 (사용자 요청)
+                if (UIManager.Instance != null)
+                {
+                    if (GameManager.Instance != null) 
+                        GameManager.Instance.CloseBlurPanelsImmediate();
+
+                   UIManager.Instance.Show("사용 완료!");
+                }
 
                 // 닫는 연출 후
                 jamoConfirmPanel.transform.DOScale(Vector3.zero, 0.15f)
@@ -207,8 +223,18 @@ public class JamoChooserUI : MonoBehaviour
     {
         // 씬에 배치된 경우 재사용을 위해 비활성화 처리
         gameObject.SetActive(false);
+        _OnCloseCleanup(); // [추가] 닫힐 때 복구 로직 실행
     }
 
+    // [추가] 닫을 때 다시 켜줄 타겟 오브젝트 등록 (버튼 프리팹이 사라져도 여기서 처리)
+    private GameObject _restoreTarget;
+
+    public void RegisterRestoreTarget(GameObject target)
+    {
+        _restoreTarget = target;
+        if (_restoreTarget != null) _restoreTarget.SetActive(false); // 등록 즉시 끄기
+    }
+    
     // 화면 좌표를 같은 Canvas의 앵커 좌표로 변환
     private Vector2 ScreenToCanvasAnchoredPosition(RectTransform ui, Vector2 screenPos)
     {
@@ -217,5 +243,15 @@ public class JamoChooserUI : MonoBehaviour
         Vector2 localPoint;
         RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRect, screenPos, canvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : canvas.worldCamera, out localPoint);
         return localPoint;
+    }
+
+    private void _OnCloseCleanup()
+    {
+        // [복구] 등록된 타겟이 있다면 다시 켜주기
+        if (_restoreTarget != null)
+        {
+            _restoreTarget.SetActive(true);
+            _restoreTarget = null;
+        }
     }
 }
