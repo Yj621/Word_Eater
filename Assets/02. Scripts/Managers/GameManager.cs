@@ -112,6 +112,13 @@ public class GameManager : MonoBehaviour
         }
         InitBlurPanel(folderCanvasGroup, FolderPanel);
         InitBlurPanel(itemFolderCanvasGroup, ItemFolderPanel);
+
+        // [추가] 워드이터 펫 동작 시작 (아이콘이 화면을 돌아다님)
+        if (WordEaterBtn != null)
+        {
+            var pet = WordEaterBtn.GetComponent<WordEaterPet>();
+            if (pet == null) pet = WordEaterBtn.gameObject.AddComponent<WordEaterPet>();
+        }
     }
 
     // 블러 패널 초기화 헬퍼 함수

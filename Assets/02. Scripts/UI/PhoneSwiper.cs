@@ -187,6 +187,9 @@ public class PhoneSwiper : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
 
     public void SetPage(int index)
     {
+        // 탭 사용 중이면 스와이프뿐만 아니라 버튼 이동도 막음
+        if (isUsingTab) return;
+
         if (pageCount <= 0) return;
 
         index = Mathf.Clamp(index, 0, pageCount - 1);

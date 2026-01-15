@@ -176,7 +176,8 @@ namespace WordEater.Core
                     // bit 단계면 랜덤 선택
                     if (index == 0)
                     {
-                        if (stageSprites != null && index >= 0)
+                        // [수정] stageSprites 여부와 상관없이 DB가 있으면 무조건 수행
+                        if (index >= 0)
                         {
                             int randomIndex = UnityEngine.Random.Range(0, wordimgdatabase.entries.Count);
                             // 여기서 entries 접근 시 에러가 났었습니다.
@@ -184,6 +185,9 @@ namespace WordEater.Core
 
                             wordImgString = entry.wordId;
                             TargetImage.sprite = entry.stage1;
+                            
+                            var pet = GetComponent<WordEaterPet>();
+                            if(pet != null) pet.SetAnimSprites(entry.stage1Anim?.ToArray());
 
                             Debug.Log($"[Visual Update] New Bit Image: {wordImgString}");
                         }
@@ -197,10 +201,20 @@ namespace WordEater.Core
 
                             if (cur != null) // 찾는 ID가 없을 수도 있음
                             {
+                                var pet = GetComponent<WordEaterPet>();
+                                
                                 // byte
-                                if (index == 1) TargetImage.sprite = cur.stage2;
+                                if (index == 1) 
+                                {
+                                    TargetImage.sprite = cur.stage2;
+                                    if(pet != null) pet.SetAnimSprites(cur.stage2Anim?.ToArray());
+                                }
                                 // word
-                                if (index == 2) TargetImage.sprite = cur.stage3;
+                                if (index == 2) 
+                                {
+                                    TargetImage.sprite = cur.stage3;
+                                    if(pet != null) pet.SetAnimSprites(cur.stage3Anim?.ToArray());
+                                }
                             }
                             else
                             {
@@ -224,9 +238,25 @@ namespace WordEater.Core
 
                         if (cur != null)
                         {
-                            if (index == 0) TargetImage.sprite = cur.stage1;
-                            if (index == 1) TargetImage.sprite = cur.stage2;
-                            if (index == 2) TargetImage.sprite = cur.stage3;
+                            
+                            var pet = GetComponent<WordEaterPet>();
+
+                            // 0: Bit, 1: Byte, 2: Word
+                            if (index == 0) 
+                            {
+                                TargetImage.sprite = cur.stage1;
+                                if(pet != null) pet.SetAnimSprites(cur.stage1Anim?.ToArray());
+                            }
+                            if (index == 1) 
+                            {
+                                TargetImage.sprite = cur.stage2;
+                                if(pet != null) pet.SetAnimSprites(cur.stage2Anim?.ToArray());
+                            }
+                            if (index == 2) 
+                            {
+                                TargetImage.sprite = cur.stage3;
+                                if(pet != null) pet.SetAnimSprites(cur.stage3Anim?.ToArray());
+                            }
                         }
                     }
                 }
