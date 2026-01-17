@@ -149,6 +149,10 @@ public class JamoChooserUI : MonoBehaviour
                     jamoConfirmPanel.SetActive(false);
                     this.gameObject.SetActive(false);
                     OnRequestClose?.Invoke(false);
+                    
+                    if (GameManager.Instance != null) 
+                         GameManager.Instance.CloseBlurPanelsImmediate();
+                    
                     if (UIManager.Instance != null) UIManager.Instance.Show("더 이상 가질 수 없습니다!");
                      return;
                 }

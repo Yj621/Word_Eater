@@ -53,6 +53,7 @@ public class FileManager : MonoBehaviour
         public string Name;
         public string ImgId;
         public List<int> KeyCounts; // [추가] 자모음 개수 저장
+        public int MaxKeyCount; // [추가] 자모음 최대 개수 저장
     }
 
     [System.Serializable]
@@ -128,11 +129,40 @@ public class FileManager : MonoBehaviour
             Name = CurrentPlayerName,
             ImgId = id,
             // [추가] 현재 KeyCount 상태 저장
-            KeyCounts = new List<int>(KeyCount.GetAllCounts())
+            KeyCounts = new List<int>(KeyCount.GetAllCounts()),
+            MaxKeyCount = KeyCount.MaxCount
         };
 
         string json = JsonUtility.ToJson(data, true);
         File.WriteAllText(WordEaterPath, json);
+    }
+
+    /// <summary>
+    /// [추가] 다른 데이터는 건드리지 않고, 현재 자모(키) 개수와 최대 용량만 갱신하여 저장함
+    /// (아이템 사용, 자모 소모 후 즉시 저장용)
+    /// </summary>
+    public void UpdateAndSaveKeyCounts()
+    {
+        if (!File.Exists(WordEaterPath)) return;
+
+        try 
+        {
+            // 1. 기존 데이터 읽기
+            string json = File.ReadAllText(WordEaterPath);
+            WordEaterData data = JsonUtility.FromJson<WordEaterData>(json);
+            
+            // 2. 키 데이터만 최신값으로 덮어쓰기
+            data.KeyCounts = new List<int>(KeyCount.GetAllCounts());
+            data.MaxKeyCount = KeyCount.MaxCount;
+
+            // 3. 다시 저장
+            File.WriteAllText(WordEaterPath, JsonUtility.ToJson(data, true));
+            Debug.Log("[FileManager] 자모 데이터 부분 저장 완료");
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"[FileManager] 자모 저장 실패: {e.Message}");
+        }
     }
     public void LoadWordEaterInfo()
     {
@@ -167,10 +197,12 @@ public class FileManager : MonoBehaviour
         // KeyBoardManager가 아직 Init 안됐을 수 있으므로 여기서는 프로퍼티에 들고 있거나
         // KeyBoardManager가 Start에서 FileManager를 참조해서 가져가도록 함
         tempLoadedKeyCounts = data.KeyCounts;
+        tempLoadedMaxKeyCount = data.MaxKeyCount > 0 ? data.MaxKeyCount : 5;
     }
 
     // KeyBoardManager가 씬 로드 후 가져갈 데이터
     public List<int> tempLoadedKeyCounts;
+    public int tempLoadedMaxKeyCount = 5;
 
     /// <summary>
     /// 외부에서 이름을 변경할 때 호출 (변경 후 저장까지 수행)

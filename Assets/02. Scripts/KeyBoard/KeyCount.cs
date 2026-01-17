@@ -26,6 +26,11 @@ public static class KeyCount
         for (int i = 0; i < length; i++) OnChanged?.Invoke(i, counts[i]);
     }
 
+    public static void SetMaxCount(int max)
+    {
+        maxCount = Mathf.Max(1, max);
+    }
+
     public static bool isReady => initialized && counts != null;
     public static int Length => counts?.Length ?? 0;
     public static int MaxCount => maxCount; 

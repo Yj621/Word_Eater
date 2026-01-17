@@ -106,11 +106,19 @@ public class KeyBoardManager : MonoBehaviour
         // [추가] FileManager에서 로드된 키 개수가 있으면 적용
         if (FileManager.Instance != null && FileManager.Instance.tempLoadedKeyCounts != null)
         {
+            // 저장된 최대 개수가 있으면 먼저 적용 (순서 중요! SetAllCounts 전에 해야 함)
+            if (FileManager.Instance.tempLoadedMaxKeyCount > 0)
+            {
+                KeyCount.SetMaxCount(FileManager.Instance.tempLoadedMaxKeyCount);
+                // 로컬 변수도 맞춤 (화면 갱신 등을 위함)
+                maxCount = FileManager.Instance.tempLoadedMaxKeyCount;
+            }
+
             var loaded = FileManager.Instance.tempLoadedKeyCounts.ToArray();
             if (loaded.Length > 0)
             {
                 KeyCount.SetAllCounts(loaded);
-                Debug.Log("[KeyBoard] 저장된 자모 개수 불러오기 완료");
+                Debug.Log($"[KeyBoard] 저장된 자모 개수 불러오기 완료 (Max: {KeyCount.MaxCount})");
             }
         }
     }
@@ -124,6 +132,17 @@ public class KeyBoardManager : MonoBehaviour
     void OnDestroy()
     {
         KeyCount.OnChanged -= OnKeyCountChanged;
+        // 파괴될 때(씬 이동 등) 저장
+        if (FileManager.Instance != null) FileManager.Instance.UpdateAndSaveKeyCounts();
+    }
+
+    void OnApplicationPause(bool pause)
+    {
+        if (pause)
+        {
+            // 앱 내려갈 때 저장
+            if (FileManager.Instance != null) FileManager.Instance.UpdateAndSaveKeyCounts();
+        }
     }
 
     // -----------------------------
@@ -779,6 +798,9 @@ public class KeyBoardManager : MonoBehaviour
     {
         _sessionSpent.Clear();   // 환불 기록 버리기 (다시는 돌려주지 않음)
         ClearAllSpawnedPieces(); // 화면에 남은 자모/Syl 블럭 제거
+        
+        // 제출했으니 소비 확정 -> 저장
+        if (FileManager.Instance != null) FileManager.Instance.UpdateAndSaveKeyCounts();
     }
 
 }
