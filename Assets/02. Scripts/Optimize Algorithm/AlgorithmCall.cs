@@ -60,6 +60,7 @@ public class AlgorithmCall : MonoBehaviour
             string newRRL = gameamnager.RelevantLine + result[idx] + '|';
             gameamnager.RelevantLine = newRRL;
             filemanager.SavaRelevantLine(newRRL);
+            gameamnager.saveCountInmanager(0);
 
             resultText.text = $"관련 단어 : {result[idx]}";
         }
@@ -70,6 +71,7 @@ public class AlgorithmCall : MonoBehaviour
             string newRRL = gameamnager.RelevantLine + gameamnager.RelevantResult[idx] + '|';
             gameamnager.RelevantLine = newRRL;
             filemanager.SavaRelevantLine(newRRL);
+            gameamnager.saveCountInmanager(0);
             resultText.text = $"관련 단어 : {gameamnager.RelevantResult[idx]}";
         }
     }

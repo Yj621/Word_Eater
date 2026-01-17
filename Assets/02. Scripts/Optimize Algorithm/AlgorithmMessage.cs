@@ -232,6 +232,7 @@ public class AlgorithmMessage : MonoBehaviour
 
             // 파일에 저장 ( 히스토리에서 확인 가능)
             gamemanager.HistoryLIne += userInput + "," + (similarity.Value * 100f).ToString("F0") + "%" + "|";
+            gamemanager.saveCountInmanager(1);
             gamemanager.UpdateHistoryLineInFile(gamemanager.HistoryLIne);
 
         }

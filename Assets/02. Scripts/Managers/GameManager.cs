@@ -78,6 +78,13 @@ public class GameManager : MonoBehaviour
     [Header("슬라이드 메니저")]
     [SerializeField] private SlideManager smanager;
 
+
+    [Header("횟수")]
+    public int callCount = 0;
+    public int msgCount = 0;
+    public int submitCount = 0;
+    public int lockCount = 0;
+
     public static GameManager Instance;
 
     void Awake() {     
@@ -88,6 +95,7 @@ public class GameManager : MonoBehaviour
         // 파일들 먼저 불러오기 (여기서 wordEater의 Stage가 결정됨)
         filemanager.LoadWordEaterInfo();
         filemanager.LoadSoundInfo();
+        filemanager.LoadCountData();
 
         string currentName = FileManager.Instance.CurrentPlayerName;
         bool isDefaultName = (currentName == "워드이터"); // 기본 이름인지 확인
@@ -182,6 +190,33 @@ public class GameManager : MonoBehaviour
             touchblockPanel.SetActive(true);
             StartCoroutine(ProcessGameClearSequence());
         }
+    }
+
+    // type : 0 -> 전화 , 1 -> 메세지 , 2 - > 제출 , 3 -> 잠금
+    public void saveCountInmanager(int type) {
+        switch (type)
+        {
+            case 0:
+                callCount++;
+                break;
+
+            case 1:
+                msgCount++;
+                break;
+
+            case 2:
+                submitCount++;
+                break;
+
+            case 3:
+                lockCount++;
+                break;
+
+            default:
+                break;
+        }
+
+        filemanager.SaveCountData(callCount, msgCount, submitCount, lockCount);
     }
 
 /// <summary>

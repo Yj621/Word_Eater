@@ -12419,6 +12419,7 @@ MonoBehaviour:
   inventoryData:
     items: []
   tempLoadedKeyCounts: 
+  tempLoadedMaxKeyCount: 5
 --- !u!1 &477274896
 GameObject:
   m_ObjectHideFlags: 0
@@ -13222,6 +13223,7 @@ MonoBehaviour:
   battery: {fileID: 1922716698}
   lockUI: {fileID: 499385027}
   wordEater: {fileID: 993040833}
+  gamemanager: {fileID: 1076038538945570555}
   chosungChance: 0.5
 --- !u!1 &499571871
 GameObject:
@@ -54377,7 +54379,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -0.0009765625, y: -231.98}
+  m_AnchoredPosition: {x: -0.0009765625, y: -231.97998}
   m_SizeDelta: {x: -0.77, y: -472.71}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1756442347
@@ -64805,6 +64807,10 @@ MonoBehaviour:
   RelevantLine: 
   RelevantResult: []
   smanager: {fileID: 954633072}
+  callCount: 0
+  msgCount: 0
+  submitCount: 0
+  lockCount: 0
 --- !u!224 &1253854187952671841
 RectTransform:
   m_ObjectHideFlags: 0

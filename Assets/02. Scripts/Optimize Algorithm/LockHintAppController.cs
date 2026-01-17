@@ -7,6 +7,7 @@ public class LockHintAppController : MonoBehaviour
     [SerializeField] private BatterySystem battery;          // 배터리 시스템 연결
     [SerializeField] private AlgorithmLock lockUI;           // UI 스크립트 연결
     [SerializeField] private WordEater.Core.WordEater wordEater; // 정답 들고 있는 메인 객체
+    [SerializeField] private GameManager gamemanager;
 
     [Range(0f, 1f)][SerializeField] private float chosungChance = 0.5f; // 초성 힌트 뜰 확률
 
@@ -40,6 +41,7 @@ public class LockHintAppController : MonoBehaviour
 
         // UI에 최종적으로 힌트 표시 요청함
         lockUI.ShowHint(answer, mode);
+        gamemanager.saveCountInmanager(3);
     }
 
     /// <summary>

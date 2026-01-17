@@ -49,6 +49,7 @@ public class SubmitManager : MonoBehaviour
                     }
 
                     wordeater.DoFeedData(word2);
+                    gamemanager.saveCountInmanager(2);
                 }
                 else
                 {

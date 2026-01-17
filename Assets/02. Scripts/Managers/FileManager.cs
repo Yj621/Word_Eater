@@ -64,6 +64,15 @@ public class FileManager : MonoBehaviour
     }
 
     [System.Serializable]
+    public class CountData
+    {
+        public int call;
+        public int msg;
+        public int submit;
+        public int lockc;
+    }
+
+    [System.Serializable]
     public class BatteryData
     {
         public int SavedBattery = 100;    // 저장된 배터리 잔량
@@ -91,6 +100,7 @@ public class FileManager : MonoBehaviour
     string GalleryPath => Path.Combine(Application.persistentDataPath, "gallery.json");
     string BatteryPath => Path.Combine(Application.persistentDataPath, "battery.json");
     string InventoryPath => Path.Combine(Application.persistentDataPath, "inventory.json");
+    string countPath => Path.Combine(Application.persistentDataPath, "count.json");
     private void Awake()
     {
         // 싱글톤 설정 (필요하다면 DontDestroyOnLoad 사용, 여기서는 씬 내 관리자로 가정)
@@ -244,6 +254,9 @@ public class FileManager : MonoBehaviour
         File.WriteAllText(WordEaterPath, JsonUtility.ToJson(data, true));
     }
 
+
+
+
     public void SaveHistory(string newHis)
     {
         if (!File.Exists(WordEaterPath)) return;
@@ -253,6 +266,30 @@ public class FileManager : MonoBehaviour
         data.History = newHis;
 
         File.WriteAllText(WordEaterPath, JsonUtility.ToJson(data, true));
+    }
+
+
+    // ========================================================================
+    // 이용 횟수 데이터
+    // ========================================================================
+
+    public void SaveCountData(int callc , int msgc, int submitc , int lockcc) {
+        CountData data = new CountData { call = callc, msg = msgc, submit = submitc, lockc = lockcc };
+        File.WriteAllText(countPath, JsonUtility.ToJson(data, true));
+    }
+
+    public void LoadCountData() {
+        if (!File.Exists(countPath))
+        {
+            return;
+        }
+        string json = File.ReadAllText(countPath);
+        CountData data = JsonUtility.FromJson<CountData>(json);
+
+        gamemanager.callCount = data.call;
+        gamemanager.msgCount = data.msg;
+        gamemanager.submitCount = data.submit;
+        gamemanager.lockCount = data.lockc;
     }
 
     // ========================================================================

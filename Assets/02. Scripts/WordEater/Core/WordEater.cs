@@ -104,6 +104,14 @@ namespace WordEater.Core
             {
                 // 완전 초기화일 경우 Bit 상태로 리셋함
                 ResetToBitConfig();
+
+                // Count 값들 0으로 초기화
+                gamemanager.callCount = 0;
+                gamemanager.msgCount = 0;
+                gamemanager.submitCount = 0;
+                gamemanager.lockCount = 0;
+
+                gamemanager.saveCountInmanager(4);
             }
             else
             {
