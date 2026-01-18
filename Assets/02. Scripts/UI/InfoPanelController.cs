@@ -16,7 +16,13 @@ public class InfoPanelController : MonoBehaviour
     [SerializeField] private TextMeshProUGUI nameText;        // 워드이터 이름
     [SerializeField] private TextMeshProUGUI dateText;        // 오늘 날짜
     [SerializeField] private TextMeshProUGUI stateText;      // 현재 상태 (비트/바이트/워드)
-    [SerializeField] private TextMeshProUGUI tryText;     // 시도 횟수
+
+
+[Header("실시간 활동 횟수 UI")]
+    [SerializeField] private TextMeshProUGUI callCountText;
+    [SerializeField] private TextMeshProUGUI msgCountText;
+    [SerializeField] private TextMeshProUGUI submitCountText;
+    [SerializeField] private TextMeshProUGUI lockCountText;
 
     [Header("버튼")]
     [SerializeField] private Button galleryShortcutBtn; // 도감 바로가기 버튼 (>)
@@ -95,18 +101,13 @@ public class InfoPanelController : MonoBehaviour
             stateText.text = $"{statusString}";
         }
 
-        // 시도 횟수 설정 (History.cs 참고)
-        // GameManager의 HistoryLine 문자열 개수를 세어 시도 횟수를 파악
-        if (gameManager != null && !string.IsNullOrEmpty(gameManager.HistoryLIne))
+        if (gameManager != null)
         {
-            // History.cs 로직을 참고하여 '|' 기준으로 나눔
-            string[] attempts = gameManager.HistoryLIne.Split(new char[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
-            tryText.text = $"{attempts.Length}번";
-        }
-        else
-        {
-            tryText.text = "0번";
-        }
+            if (callCountText != null) callCountText.text = gameManager.callCount.ToString();
+            if (msgCountText != null) msgCountText.text = gameManager.msgCount.ToString();
+            if (submitCountText != null) submitCountText.text = gameManager.submitCount.ToString();
+            if (lockCountText != null) lockCountText.text = gameManager.lockCount.ToString();
+        }        
     }
 
     /// <summary>
@@ -114,18 +115,7 @@ public class InfoPanelController : MonoBehaviour
     /// </summary>
     private void OnGoToGallery()
     {
-        // 정보창을 닫고 도감을 엽니다.
         gameObject.SetActive(false);
-
-        if (galleryPanel != null)
-        {
-            galleryPanel.SetActive(true);
-
-            galleryPanel.GetComponent<GalleryUIManager>()?.Refresh();
-        }
-        else
-        {
-            Debug.LogWarning("도감 패널이 연결되지 않았습니다.");
-        }
+        gameManager.ShowPanel_Gallery();
     }
 }

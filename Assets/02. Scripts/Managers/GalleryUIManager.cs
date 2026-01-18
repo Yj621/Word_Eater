@@ -67,27 +67,6 @@ public class GalleryUIManager : MonoBehaviour
         }
     }
 
-    // 테스트용(선택): 도감 항목 강제 하나 추가
-    public void DebugAddDummy()
-    {
-        var dummy = new GalleryItem
-        {
-            id = "debug-1",
-            displayName = "디버그",
-            desc = "테스트 설명입니다.",
-            thumbPath = "", // 이미지가 없으므로 회색으로 뜰 것임
-            dateCaught = System.DateTime.Now.ToString("yyyy-MM-dd"),
-            meetCount = 1
-        };
-
-        // [변경점] FileManager의 통합 메서드 호출
-        if (FileManager.Instance != null)
-        {
-            FileManager.Instance.UpsertGalleryItem(dummy);
-            Debug.Log("[GalleryUIManager] Dummy 추가, 다시 Refresh 호출");
-            Refresh();
-        }
-    }
 
     /// <summary>
     /// 뒤로가기(상세 → 목록) 버튼에서 호출

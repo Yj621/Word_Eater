@@ -25,6 +25,7 @@ namespace WordEater.Core
         [SerializeField] private FileManager filemanager;            // 파일 관리자
         [SerializeField] private AlgorithmMessage algoMessage;
         [SerializeField] private ADPopup adPopup;
+        private string nameBit, nameByte, nameWord;
 
         [Header("에셋 연결")]
         [SerializeField] private Sprite[] stageSprites;      // 0:Bit, 1:Byte, 2:Word 단계별 이미지
@@ -76,8 +77,10 @@ namespace WordEater.Core
             stage = (GrowthStage)Mathf.Clamp(level, 0, 2);
 
             // 초기 단어 데이터 로드하고 WordBank 에서 찾아서 매칭
-            currentEntry = wordService.PickWordFromFile(level,savedAnswer);
+            currentEntry = wordService.PickWordFromFile(level, savedAnswer);
             currentAnswer = currentEntry.word;
+
+            if (stage == GrowthStage.Bit) nameByte = currentAnswer;
 
             // 외형 업데이트하고 이벤트 알림
             UpdateVisuals(1);
@@ -123,7 +126,7 @@ namespace WordEater.Core
             SaveCheckpoint();
 
             // 현재 상태를 파일에 저장함
-            filemanager.SaveWordEaterInfo((int)stage, currentAnswer, gamemanager.HistoryLIne , gamemanager.RelevantResult, wordImgString,gamemanager.RelevantLine);
+            filemanager.SaveWordEaterInfo((int)stage, currentAnswer, gamemanager.HistoryLIne, gamemanager.RelevantResult, wordImgString, gamemanager.RelevantLine);
             NotifyNewWordAssigned();
         }
 
@@ -142,16 +145,17 @@ namespace WordEater.Core
             // 새 단어 뽑고 이번 생애의 고유 ID 생성함
             currentEntry = wordService.PickInitialWord();
             currentAnswer = currentEntry.word;
+            nameBit = currentAnswer; // 첫 번째 단어 저장
             pendingEvoId = $"evo_{System.DateTime.UtcNow.Ticks}";
 
             // 초기 썸네일 캡처함
             CaptureThumbnail($"thumb_{pendingEvoId}_s0");
-/*
-            // 튜토리얼 씬이 아니면 관련 단어 버튼 활성화함
-            if (SceneManager.GetActiveScene().name != "TutoScene")
-            {
-                submitmanager.OnRelevantButton();
-            }*/
+            /*
+                        // 튜토리얼 씬이 아니면 관련 단어 버튼 활성화함
+                        if (SceneManager.GetActiveScene().name != "TutoScene")
+                        {
+                            submitmanager.OnRelevantButton();
+                        }*/
         }
 
         /// <summary>
@@ -193,9 +197,9 @@ namespace WordEater.Core
 
                             wordImgString = entry.wordId;
                             TargetImage.sprite = entry.stage1;
-                            
+
                             var pet = GetComponent<WordEaterPet>();
-                            if(pet != null) pet.SetAnimSprites(entry.stage1Anim?.ToArray());
+                            if (pet != null) pet.SetAnimSprites(entry.stage1Anim?.ToArray());
 
                             Debug.Log($"[Visual Update] New Bit Image: {wordImgString}");
                         }
@@ -210,18 +214,18 @@ namespace WordEater.Core
                             if (cur != null) // 찾는 ID가 없을 수도 있음
                             {
                                 var pet = GetComponent<WordEaterPet>();
-                                
+
                                 // byte
-                                if (index == 1) 
+                                if (index == 1)
                                 {
                                     TargetImage.sprite = cur.stage2;
-                                    if(pet != null) pet.SetAnimSprites(cur.stage2Anim?.ToArray());
+                                    if (pet != null) pet.SetAnimSprites(cur.stage2Anim?.ToArray());
                                 }
                                 // word
-                                if (index == 2) 
+                                if (index == 2)
                                 {
                                     TargetImage.sprite = cur.stage3;
-                                    if(pet != null) pet.SetAnimSprites(cur.stage3Anim?.ToArray());
+                                    if (pet != null) pet.SetAnimSprites(cur.stage3Anim?.ToArray());
                                 }
                             }
                             else
@@ -246,24 +250,24 @@ namespace WordEater.Core
 
                         if (cur != null)
                         {
-                            
+
                             var pet = GetComponent<WordEaterPet>();
 
                             // 0: Bit, 1: Byte, 2: Word
-                            if (index == 0) 
+                            if (index == 0)
                             {
                                 TargetImage.sprite = cur.stage1;
-                                if(pet != null) pet.SetAnimSprites(cur.stage1Anim?.ToArray());
+                                if (pet != null) pet.SetAnimSprites(cur.stage1Anim?.ToArray());
                             }
-                            if (index == 1) 
+                            if (index == 1)
                             {
                                 TargetImage.sprite = cur.stage2;
-                                if(pet != null) pet.SetAnimSprites(cur.stage2Anim?.ToArray());
+                                if (pet != null) pet.SetAnimSprites(cur.stage2Anim?.ToArray());
                             }
-                            if (index == 2) 
+                            if (index == 2)
                             {
                                 TargetImage.sprite = cur.stage3;
-                                if(pet != null) pet.SetAnimSprites(cur.stage3Anim?.ToArray());
+                                if (pet != null) pet.SetAnimSprites(cur.stage3Anim?.ToArray());
                             }
                         }
                     }
@@ -418,6 +422,7 @@ namespace WordEater.Core
             // 이미 최종 단계(Word)라면 엔딩 처리함
             if (stage == GrowthStage.Word)
             {
+                nameWord = currentAnswer; // 최종 단어 저장
                 HandleEnding();
                 return;
             }
@@ -450,16 +455,16 @@ namespace WordEater.Core
         {
             // 1. 진화 이벤트 발생
             GameEvents.OnEvolved?.Invoke(stage);
-            
+
             // 2. 도감(데이터) 등록 - 백그라운드 작업
             RegisterToGallery();
-            
+
             // 3. UI 갱신 (도감에 New 표시 등을 위함)
             galleryUIManager.Refresh();
 
             // [중요] 아이템 획득(ObtainRandomItem) 코드는 여기서 삭제합니다.
             // GameManager의 시퀀스 안에서 실행하도록 변경했기 때문입니다.
-            
+
             // 4. 게임 매니저에게 클리어 시퀀스 시작 요청
             gamemanager.EndingController(2);
         }
@@ -623,8 +628,15 @@ namespace WordEater.Core
             var item = new GalleryItem
             {
                 id = finalId,
-                displayName = currentEntry.word,
-                desc = GetDisplayTopic(currentEntry),
+                displayNameBit = nameBit,
+                displayNameByte = nameByte,
+                displayNameWord = currentAnswer, // 현재(Word단계) 단어                desc = GetDisplayTopic(currentEntry),
+                
+                callCount = GameManager.Instance.callCount,
+                msgCount = GameManager.Instance.msgCount,
+                submitCount = GameManager.Instance.submitCount,
+                lockCount = GameManager.Instance.lockCount,
+                
                 thumbPath = finalS2Path,
                 dateCaught = System.DateTime.Now.ToString("yyyy-MM-dd"),
                 spriteid = wordImgString

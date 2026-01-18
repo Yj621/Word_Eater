@@ -10,15 +10,28 @@ using System.IO;
 public class GalleryDetailView : MonoBehaviour
 {
     [SerializeField] private RawImage thumb1, thumb2, thumb3;
-    [SerializeField] private TMP_Text titleText, dateText, countText;
+    [SerializeField] private TMP_Text dateText;
+    [SerializeField] private TMP_Text nameBitText, nameByteText, nameWordText;
+    
+    [SerializeField] private TMP_Text callCountText;
+    [SerializeField] private TMP_Text msgCountText;
+    [SerializeField] private TMP_Text submitCountText;
+    [SerializeField] private TMP_Text lockCountText;
 
     public void Open(GalleryItem item)
     {
         gameObject.SetActive(true);
 
-        titleText.text = item.displayName;
+        if (nameBitText != null) nameBitText.text = item.displayNameBit;
+        if (nameByteText != null) nameByteText.text = item.displayNameByte;
+        if (nameWordText != null) nameWordText.text = item.displayNameWord;
+        
+        if (callCountText != null) callCountText.text = $"전화 : {item.callCount}회";
+        if (msgCountText != null) msgCountText.text = $"메시지 : {item.msgCount}회";
+        if (lockCountText != null) lockCountText.text = $"잠금 : {item.lockCount}회";
+        if (submitCountText != null) submitCountText.text = $"제출 : {item.submitCount}회";
+        
         dateText.text = item.dateCaught;
-        countText.text = $"만난 횟수 : {item.meetCount}";
 
         string baseDir = Application.persistentDataPath;
 
