@@ -30,6 +30,9 @@ public class NameInputController : MonoBehaviour
     {
         submitButton.onClick.AddListener(OnSubmitName);
         nameInputField.onValueChanged.AddListener(OnInputValueChanged);
+
+    nameInputField.onSubmit.AddListener(_ => OnSubmitName());
+    nameInputField.onEndEdit.AddListener(_ => OnSubmitName());
     }
     private void Start()
     {
@@ -112,7 +115,7 @@ public class NameInputController : MonoBehaviour
     // ========================================================================
     // [기능 로직] 이름 저장 및 패널 닫기
     // ========================================================================
-    private void OnSubmitName()
+    public void OnSubmitName()
     {
         string inputName = nameInputField.text;
 

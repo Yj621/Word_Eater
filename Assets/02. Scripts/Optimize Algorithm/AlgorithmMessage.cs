@@ -37,6 +37,11 @@ public class AlgorithmMessage : MonoBehaviour
     [Header("애니메이션")]
     [SerializeField] private float duration = 0.2f;
 
+void Awake()
+{
+    inputField.onSubmit.AddListener(_ => OnCheckSimilarity());
+    inputField.onEndEdit.AddListener(_ => OnCheckSimilarity()); // 기기별 보험
+}
     void Start()
     {
         CheckAndShowDate();
@@ -46,12 +51,7 @@ public class AlgorithmMessage : MonoBehaviour
 
     void Update()
     {
-        // 1. 입력창이 활성화(커서 깜빡임) 상태이고
-        // 2. 엔터키(Return)나 숫자패드 엔터(KeypadEnter)를 눌렀다면
-        if (inputField.isFocused && (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter)))
-        {
-            OnCheckSimilarity();
-        }
+
     }
 
     void OnEnable()
