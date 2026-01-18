@@ -97,6 +97,9 @@ namespace WordEater.Core
             gamemanager.HistoryLIne = "";
             gamemanager.RelevantLine = "";
             gamemanager.RelevantResult.Clear();
+            gamemanager.isLength = false;
+            gamemanager.isFirst = false;
+            gamemanager.isLast = false;
 
             if (algoMessage != null)
             {
@@ -126,7 +129,7 @@ namespace WordEater.Core
             SaveCheckpoint();
 
             // 현재 상태를 파일에 저장함
-            filemanager.SaveWordEaterInfo((int)stage, currentAnswer, gamemanager.HistoryLIne, gamemanager.RelevantResult, wordImgString, gamemanager.RelevantLine);
+            filemanager.SaveWordEaterInfo((int)stage, currentAnswer, gamemanager.HistoryLIne, gamemanager.RelevantResult, wordImgString, gamemanager.RelevantLine,gamemanager.isLength,gamemanager.isFirst,gamemanager.isLast);
             NotifyNewWordAssigned();
         }
 

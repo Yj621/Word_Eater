@@ -73,6 +73,9 @@ public class GameManager : MonoBehaviour
     public string HistoryLIne = "";
     public string RelevantLine = "";
     public List<string> RelevantResult = new List<string>();
+    public bool isLength = false;
+    public bool isFirst = false;
+    public bool isLast = false;
 
 
     [Header("슬라이드 메니저")]
@@ -191,6 +194,26 @@ public class GameManager : MonoBehaviour
             StartCoroutine(ProcessGameClearSequence());
         }
     }
+
+    // 0 -> 길이만 , 1 -> 첫번째 초성 , 2 -> 두 번째 초성
+    public void saveLock(int type) {
+        switch (type) {
+            case 0:
+                isLength = true;
+                break;
+            case 1:
+                isFirst = true;
+                break;
+            case 2:
+                isLast = true;
+                break;
+            default:
+                break;
+        }
+
+        filemanager.SaveLockHistoryInfo();
+    }
+
 
     // type : 0 -> 전화 , 1 -> 메세지 , 2 - > 제출 , 3 -> 잠금
     public void saveCountInmanager(int type) {

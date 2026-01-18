@@ -41,6 +41,11 @@ public class LockHintAppController : MonoBehaviour
 
         // UI에 최종적으로 힌트 표시 요청함
         lockUI.ShowHint(answer, mode);
+
+        if (mode == LockHintMode.LengthOnly) gamemanager.saveLock(0);
+        else if (mode == LockHintMode.FirstChosung) gamemanager.saveLock(1);
+        else gamemanager.saveLock(2);
+
         gamemanager.saveCountInmanager(3);
     }
 

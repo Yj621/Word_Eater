@@ -54,6 +54,9 @@ public class FileManager : MonoBehaviour
         public string ImgId;
         public List<int> KeyCounts; // [추가] 자모음 개수 저장
         public int MaxKeyCount; // [추가] 자모음 최대 개수 저장
+        public bool LockLength;
+        public bool LockFirst;
+        public bool LockLast;
     }
 
     [System.Serializable]
@@ -127,7 +130,7 @@ public class FileManager : MonoBehaviour
     // ========================================================================
     // [Part 1] 워드이터 게임 데이터 (레벨, 정답, 히스토리)
     // ========================================================================
-    public void SaveWordEaterInfo(int le, string an, string hi, List<string> RR , string id , string RRL)
+    public void SaveWordEaterInfo(int le, string an, string hi, List<string> RR , string id , string RRL,bool LLen,bool LF, bool LLast)
     {
         WordEaterData data = new WordEaterData
         {
@@ -140,7 +143,11 @@ public class FileManager : MonoBehaviour
             ImgId = id,
             // [추가] 현재 KeyCount 상태 저장
             KeyCounts = new List<int>(KeyCount.GetAllCounts()),
-            MaxKeyCount = KeyCount.MaxCount
+            MaxKeyCount = KeyCount.MaxCount,
+            // [추가] 히스토리에 Lock에서 본 정보 저장
+            LockLength = LLen,
+            LockFirst = LF,
+            LockLast = LLast
         };
 
         string json = JsonUtility.ToJson(data, true);
@@ -174,6 +181,28 @@ public class FileManager : MonoBehaviour
             Debug.LogError($"[FileManager] 자모 저장 실패: {e.Message}");
         }
     }
+
+    public void SaveLockHistoryInfo() {
+        try
+        {
+            // 1. 기존 데이터 읽기
+            string json = File.ReadAllText(WordEaterPath);
+            WordEaterData data = JsonUtility.FromJson<WordEaterData>(json);
+
+            // 2. Lock 데이터만 최신값으로 덮어쓰기
+            data.LockLength = gamemanager.isLength;
+            data.LockFirst = gamemanager.isFirst;
+            data.LockLast = gamemanager.isLast;
+
+            // 3. 다시 저장
+            File.WriteAllText(WordEaterPath, JsonUtility.ToJson(data, true));
+
+        }
+        catch (System.Exception e)
+        {
+        }
+    }
+
     public void LoadWordEaterInfo()
     {
         if (!File.Exists(WordEaterPath))
@@ -201,6 +230,9 @@ public class FileManager : MonoBehaviour
             gamemanager.HistoryLIne = data.History;
             gamemanager.RelevantResult = data.Relevant;
             gamemanager.RelevantLine = data.RelevantLine;
+            gamemanager.isLength = data.LockLength;
+            gamemanager.isFirst = data.LockFirst;
+            gamemanager.isLast = data.LockLast;
         }
 
         // [추가] 로드된 키 데이터를 임시 보관 또는 즉시 적용

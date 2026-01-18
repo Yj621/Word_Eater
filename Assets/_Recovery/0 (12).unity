@@ -23943,13 +23943,13 @@ MonoBehaviour:
   thumb2: {fileID: 1675816461}
   thumb3: {fileID: 1426278784}
   dateText: {fileID: 858139407}
-  nameBitText: {fileID: 409543995}
-  nameByteText: {fileID: 1817881242}
-  nameWordText: {fileID: 60202669}
-  callCountText: {fileID: 1074752769}
-  msgCountText: {fileID: 802019766}
-  submitCountText: {fileID: 704834843}
-  lockCountText: {fileID: 820758572}
+  nameBitText: {fileID: 0}
+  nameByteText: {fileID: 0}
+  nameWordText: {fileID: 0}
+  callCountText: {fileID: 0}
+  msgCountText: {fileID: 0}
+  submitCountText: {fileID: 0}
+  lockCountText: {fileID: 0}
 --- !u!1 &578168996
 GameObject:
   m_ObjectHideFlags: 0
@@ -37103,68 +37103,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DogamitselfInfo
   sprid: "\u314F"
   isOn: 0
---- !u!1 &1064303342
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1064303343}
-  - component: {fileID: 1064303344}
-  m_Layer: 5
-  m_Name: Dot_Group
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &1064303343
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1064303342}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.0002642, y: 1.0002642, z: 1.0002642}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1223463721}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0}
-  m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: 0, y: 599.311}
-  m_SizeDelta: {x: 250, y: 100}
-  m_Pivot: {x: 0.5, y: 0}
---- !u!114 &1064303344
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1064303342}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 30649d3a9faa99c48a7b1166b86bf2a0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.HorizontalLayoutGroup
-  m_Padding:
-    m_Left: 0
-    m_Right: 0
-    m_Top: 0
-    m_Bottom: 0
-  m_ChildAlignment: 4
-  m_Spacing: 0
-  m_ChildForceExpandWidth: 1
-  m_ChildForceExpandHeight: 1
-  m_ChildControlWidth: 0
-  m_ChildControlHeight: 0
-  m_ChildScaleWidth: 0
-  m_ChildScaleHeight: 0
-  m_ReverseArrangement: 0
 --- !u!1 &1071820420
 GameObject:
   m_ObjectHideFlags: 0
@@ -40829,7 +40767,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 876267104}
-  - {fileID: 1064303343}
   m_Father: {fileID: 321487234}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -40888,7 +40825,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::History
   gamemanager: {fileID: 1076038538945570555}
-  wordEater: {fileID: 993040833}
   content: {fileID: 550318121}
   scrollrect: {fileID: 1792441137}
   HistoryViewPrafab: {fileID: 7556757933675523241, guid: e75db17b25103e34ba28d8b794886dac, type: 3}
@@ -40897,8 +40833,6 @@ MonoBehaviour:
   StateMsg: {fileID: 244407814}
   BackBtn: {fileID: 1172767975}
   NextBtn: {fileID: 2029928359}
-  slotsParent: {fileID: 1064303343}
-  slotPrefab: {fileID: 3028037010845380129, guid: 778a0eedd24482d4b9727efefdc92b84, type: 3}
   page: 0
 --- !u!1 &1223865759
 GameObject:
@@ -44808,10 +44742,10 @@ MonoBehaviour:
   nameText: {fileID: 1358019934}
   dateText: {fileID: 1906720738}
   stateText: {fileID: 1801506816}
-  callCountText: {fileID: 1843165091}
-  msgCountText: {fileID: 1734062659}
-  submitCountText: {fileID: 346089764}
-  lockCountText: {fileID: 1569667637}
+  callCountText: {fileID: 0}
+  msgCountText: {fileID: 0}
+  submitCountText: {fileID: 0}
+  lockCountText: {fileID: 0}
   galleryShortcutBtn: {fileID: 1515202790}
 --- !u!1 &1381053966
 GameObject:
@@ -55963,7 +55897,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -0.0009765625, y: -231.97998}
+  m_AnchoredPosition: {x: -0.0009765625, y: -231.98}
   m_SizeDelta: {x: -0.77, y: -472.71}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1756442347
