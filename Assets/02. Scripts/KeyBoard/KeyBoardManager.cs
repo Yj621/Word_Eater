@@ -403,6 +403,7 @@ public class KeyBoardManager : MonoBehaviour
         {
             if (drag != null) drag.RefundAndDestroy();
             else Destroy(dragUIRect.gameObject);
+            SoundManager.Instance.SFXStart(SoundManager.SFXType.trashcan);
             return;
         }
 

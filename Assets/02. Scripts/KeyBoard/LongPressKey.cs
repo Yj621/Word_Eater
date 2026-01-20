@@ -71,6 +71,8 @@ public void OnPointerDown(PointerEventData eventData)
             {
                 if (keyType == KeyType.Single) manager.PressSingle(index, lastDownEvent);
                 else manager.PressDouble(index, lastDownEvent);
+
+                SoundManager.Instance.SFXStart(SoundManager.SFXType.jaMoDrag);
             }
         }
     }

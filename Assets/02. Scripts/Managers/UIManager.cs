@@ -361,6 +361,7 @@ public class UIManager : MonoBehaviour
     public void OpenKeyboard()
     {
         slidemanager.isOK = false;
+        SoundManager.Instance.SFXStart(SoundManager.SFXType.keyboardOpen);
 
         PageIcon.SetActive(false);
         if (_isKeyboardOpen) return;
@@ -377,7 +378,9 @@ public class UIManager : MonoBehaviour
     public void CloseKeyboard()
     {
         slidemanager.isOK = true;
-        
+
+        SoundManager.Instance.SFXStart(SoundManager.SFXType.keyboardClose);
+
         // [수정] 키보드 닫을 때 스와이프 잠금 해제
         if (phoneSwiper != null) phoneSwiper.isUsingTab = false;
 
