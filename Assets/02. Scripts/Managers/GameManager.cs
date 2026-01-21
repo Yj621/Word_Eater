@@ -76,7 +76,7 @@ public class GameManager : MonoBehaviour
     public bool isLength = false;
     public bool isFirst = false;
     public bool isLast = false;
-
+    public bool isChoseongItem = false;
 
     [Header("슬라이드 메니저")]
     [SerializeField] private SlideManager smanager;
@@ -195,7 +195,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // 0 -> 길이만 , 1 -> 첫번째 초성 , 2 -> 두 번째 초성
+    // 0 -> 길이만 , 1 -> 첫번째 초성 , 2 -> 두 번째 초성 , 3 -> 초성 아이템
     public void saveLock(int type) {
         switch (type) {
             case 0:
@@ -207,6 +207,10 @@ public class GameManager : MonoBehaviour
             case 2:
                 isLast = true;
                 break;
+            case 3:
+                isChoseongItem = true;
+                break;
+
             default:
                 break;
         }

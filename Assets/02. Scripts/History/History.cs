@@ -183,7 +183,7 @@ public class History : MonoBehaviour
             // 받은 초성 저장된거 가져오기
 
             // 아무런 힌트가 없는 경우
-            if (!gamemanager.isLength && !gamemanager.isFirst && !gamemanager.isLast) EmptyWord.SetActive(true);
+            if (!gamemanager.isLength && !gamemanager.isFirst && !gamemanager.isLast && !gamemanager.isChoseongItem) EmptyWord.SetActive(true);
 
 
             // 힌트가 하나라도 있단거니까 일단 글자수 띄우고 first나 last가 있으면 추가해서 공개하는 식으로
@@ -234,6 +234,13 @@ public class History : MonoBehaviour
         {
             char chosungChar = GetSingleChosung(answerWord, LockHintMode.LastChosung);
             spawned[length - 1].SetChar(chosungChar.ToString());
+        }
+        if (gamemanager.isChoseongItem) {
+            string chosung = KoreanUtils.GetChosungString(answerWord);
+
+            for (int i = 0; i < spawned.Count; i++) {
+                spawned[i].SetChar(chosung[i].ToString());
+            }
         }
     }
 
