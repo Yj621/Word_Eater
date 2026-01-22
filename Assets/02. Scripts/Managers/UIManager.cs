@@ -62,6 +62,7 @@ public class UIManager : MonoBehaviour
     private void Awake()
     {
         Instance = this;
+        phoneSwiper = GetComponent<PhoneSwiper>();
         // 씬 시작 시 배터리 팝업 숨김 처리함
         InteractPanel.SetActive(false);
 
@@ -81,7 +82,6 @@ public class UIManager : MonoBehaviour
 
     void Start()
     {
-        phoneSwiper = GetComponent<PhoneSwiper>();
 
         // 흔들림 효과 기준 위치 저장함
         if (_shakeTarget != null)
