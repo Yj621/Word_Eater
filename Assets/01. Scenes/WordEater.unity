@@ -6629,6 +6629,25 @@ MonoBehaviour:
   MainBGM1: {fileID: 8300000, guid: 870b211e84c2f964588b65a449a97b86, type: 3}
   MainBGM2: {fileID: 8300000, guid: 8d6b934c6c612da4e8b690dd82bcc634, type: 3}
   MainBGM3: {fileID: 8300000, guid: d19122042af48cc469f9043c8ccf12a1, type: 3}
+  sfxList:
+  - {fileID: 8300000, guid: d7ba901222334bc469201f518b1c1d8c, type: 3}
+  - {fileID: 8300000, guid: 28f89f3b18e23574a9440af4669488ca, type: 3}
+  - {fileID: 8300000, guid: 3ac6fab84e4425446bb873adf83077ba, type: 3}
+  - {fileID: 8300000, guid: d7ba901222334bc469201f518b1c1d8c, type: 3}
+  - {fileID: 8300000, guid: 5d133f74eb487f9448f11e959ce78983, type: 3}
+  - {fileID: 8300000, guid: 72e778914578b144bb40562b36755f3b, type: 3}
+  - {fileID: 8300000, guid: d7ba901222334bc469201f518b1c1d8c, type: 3}
+  - {fileID: 8300000, guid: ce1355fc25d01c54e95440b9b37461d7, type: 3}
+  - {fileID: 8300000, guid: 51c8e4a76356d7c408834cf54c66ccac, type: 3}
+  - {fileID: 8300000, guid: f9df8f7d2af3e2945994f7687de9446d, type: 3}
+  - {fileID: 8300000, guid: d7ba901222334bc469201f518b1c1d8c, type: 3}
+  - {fileID: 8300000, guid: 51ebb82130f961e4d8c9dd5025b18e5c, type: 3}
+  - {fileID: 8300000, guid: d7ba901222334bc469201f518b1c1d8c, type: 3}
+  - {fileID: 8300000, guid: 0949467a004b2624aac39e7fe527ecbe, type: 3}
+  - {fileID: 8300000, guid: 38aa39f8bad4ed44ea9c223d80b7cf4e, type: 3}
+  - {fileID: 8300000, guid: 89be64a33fbcfce4e94ba1e8217f57bf, type: 3}
+  - {fileID: 8300000, guid: 3c94096969bccf1449d8587c171c8760, type: 3}
+  - {fileID: 8300000, guid: f6a5ec1927ffced4485d2eae76baab22, type: 3}
 --- !u!1 &244407811
 GameObject:
   m_ObjectHideFlags: 0
@@ -26117,12 +26136,10 @@ MonoBehaviour:
   dropTable:
   - type: 0
     weight: 50
-  - type: 1
-    weight: 40
-  - type: 2
-    weight: 30
   - type: 3
     weight: 20
+  - type: 2
+    weight: 30
 --- !u!114 &645306828
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -32251,6 +32268,18 @@ MonoBehaviour:
       - m_Target: {fileID: 1076038538945570555}
         m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
         m_MethodName: ShowPanel_Call
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
+      - m_Target: {fileID: 240587560}
+        m_TargetAssemblyTypeName: SoundManager, Assembly-CSharp
+        m_MethodName: SFXCall
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -46679,6 +46708,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 240587560}
+        m_TargetAssemblyTypeName: SoundManager, Assembly-CSharp
+        m_MethodName: SFXCallClose
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &1436749897
 GameObject:
   m_ObjectHideFlags: 0
@@ -54707,6 +54748,18 @@ MonoBehaviour:
       - m_Target: {fileID: 141816758}
         m_TargetAssemblyTypeName: AlgorithmCall, Assembly-CSharp
         m_MethodName: OnShowSimilarWord
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 240587560}
+        m_TargetAssemblyTypeName: SoundManager, Assembly-CSharp
+        m_MethodName: SFXCallClose
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

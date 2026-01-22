@@ -206,6 +206,12 @@ public class MiniGameController : MonoBehaviour
              if (ItemManager.Instance != null && ClearCount > 0)
              {
                  ItemManager.Instance.AddItem(ItemType.JamoSelectionTicket, ClearCount);
+
+                if (ClearCount >= 3) {
+                    // 초성 힌트는 3개 클리어시마다 한개 씩 ex) 3클 -> 1개 , 5클 -> 1개, 7클 -> 2개
+                    ItemManager.Instance.AddItem(ItemType.HintChosung, ClearCount/3);
+                }
+
                  return ItemType.JamoSelectionTicket;
              }
         }

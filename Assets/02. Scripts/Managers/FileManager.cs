@@ -57,6 +57,7 @@ public class FileManager : MonoBehaviour
         public bool LockLength;
         public bool LockFirst;
         public bool LockLast;
+        public bool LockItem;
     }
 
     [System.Serializable]
@@ -130,7 +131,7 @@ public class FileManager : MonoBehaviour
     // ========================================================================
     // [Part 1] 워드이터 게임 데이터 (레벨, 정답, 히스토리)
     // ========================================================================
-    public void SaveWordEaterInfo(int le, string an, string hi, List<string> RR , string id , string RRL,bool LLen,bool LF, bool LLast)
+    public void SaveWordEaterInfo(int le, string an, string hi, List<string> RR , string id , string RRL,bool LLen,bool LF, bool LLast , bool LI)
     {
         WordEaterData data = new WordEaterData
         {
@@ -147,7 +148,8 @@ public class FileManager : MonoBehaviour
             // [추가] 히스토리에 Lock에서 본 정보 저장
             LockLength = LLen,
             LockFirst = LF,
-            LockLast = LLast
+            LockLast = LLast,
+            LockItem = LI
         };
 
         string json = JsonUtility.ToJson(data, true);
@@ -193,6 +195,7 @@ public class FileManager : MonoBehaviour
             data.LockLength = gamemanager.isLength;
             data.LockFirst = gamemanager.isFirst;
             data.LockLast = gamemanager.isLast;
+            data.LockItem = gamemanager.isChoseongItem;
 
             // 3. 다시 저장
             File.WriteAllText(WordEaterPath, JsonUtility.ToJson(data, true));
@@ -233,6 +236,7 @@ public class FileManager : MonoBehaviour
             gamemanager.isLength = data.LockLength;
             gamemanager.isFirst = data.LockFirst;
             gamemanager.isLast = data.LockLast;
+            gamemanager.isChoseongItem = data.LockItem;
         }
 
         // [추가] 로드된 키 데이터를 임시 보관 또는 즉시 적용

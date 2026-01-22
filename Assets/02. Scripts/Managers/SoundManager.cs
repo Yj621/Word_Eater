@@ -1,6 +1,8 @@
 using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.UI;
+using System.Collections.Generic;
+
 public class SoundManager : MonoBehaviour
 {
     public static SoundManager Instance; // 싱글톤 인스턴스
@@ -36,8 +38,30 @@ public class SoundManager : MonoBehaviour
     public AudioClip MainBGM1;
     public AudioClip MainBGM2;
     public AudioClip MainBGM3;
-    //효과음
 
+    //효과음
+    public List<AudioClip> sfxList;
+    public enum SFXType 
+    {
+        temp, //0번 소리 = 아직 없는 소리 임시 등록
+        startScene, 
+        tutoClick,
+        iconMove,
+        keyboardOpen,
+        keyboardClose,
+        jaMoDrag,
+        trashcan,
+        upAlram,
+        popup,
+        miniGame,
+        call,
+        scrollView,
+        msgPopup,
+        dead,
+        wrongAnswer,
+        DogamAssign,
+        sucess
+    }
 
     private void Awake()
     {
@@ -111,7 +135,7 @@ public class SoundManager : MonoBehaviour
 
         Svalue = volume;
 
-        filemanager.SaveSoundInfo(Bvalue, volume);
+        filemanager.SaveSoundInfo(Svalue, volume);
     }
 
 
@@ -159,17 +183,26 @@ public class SoundManager : MonoBehaviour
         bgmSource.Play();
     }
 
-    public void SFXStart(int SFXType)
+    public void SFXStart(SFXType type)
     {
-        switch (SFXType)
+        int index = (int)type;
+        if (index < sfxList.Count)
         {
-            case 1:
-                //SFXSource.PlayOneShot(SFX01);
-                break;
-
-            default:
-                break;
+                SFXSource.PlayOneShot(sfxList[index]);
         }
 
+    }
+
+    // 전화 효과음 출력 함수
+    // 브금이랑 같이 들려도 되나 싶긴 한데 브금 잠깐 꺼놓으면 진짜 전화라고 생각할듯?
+    public void SFXCall() {
+        SFXSource.clip = sfxList[11];
+        SFXSource.loop = true;
+        SFXSource.Play();
+    }
+    // 전화 효과음 종료 함수
+    public void SFXCallClose() {
+        SFXSource.Stop();
+        SFXSource.loop = false;
     }
 }

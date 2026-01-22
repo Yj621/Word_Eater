@@ -41,6 +41,7 @@ namespace WordEater.Systems
                 case ItemType.HintChosung:
                     string answer = wordEater.Answer;
                     string chosung = KoreanUtils.GetChosungString(answer);
+                    gameManager.saveLock(3);
                     UIManager.Instance.Show($"정답의 초성은 [{chosung}] 입니다!");
                     break;
 
