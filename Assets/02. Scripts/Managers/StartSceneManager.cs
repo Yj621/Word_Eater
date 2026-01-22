@@ -7,6 +7,7 @@ public class StartSceneManager : MonoBehaviour
 {
     [Header("움직일 텍스트")]
     public TextMeshProUGUI startText;
+    [SerializeField] private AudioSource btnSound;
     void Start()
     {
         if (startText != null)
@@ -18,8 +19,22 @@ public class StartSceneManager : MonoBehaviour
                 .SetLoops(-1, LoopType.Yoyo); // 무한 반복 (왔다갔다)
         }
     }
+    public void OnClickStart()
+    {
+        if (btnSound != null && btnSound.clip != null)
+        {
+            btnSound.PlayOneShot(btnSound.clip);
+            // 소리가 들릴 시간을 주기 위해 0.2초 후 씬 전환
+            Invoke("GoToMain", 0.5f);
+        }
+        else
+        {
+            // 사운드 설정이 안 되어 있어도 게임은 넘어가게 처리
+            GoToMain();
+        }
+    }
 
-    public void MainScene()
+    private void GoToMain()
     {
         LoadingSceneManager.LoadScene("WordEater");
     }

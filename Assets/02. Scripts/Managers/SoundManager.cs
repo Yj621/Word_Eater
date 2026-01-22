@@ -60,7 +60,8 @@ public class SoundManager : MonoBehaviour
         dead,
         wrongAnswer,
         DogamAssign,
-        sucess
+        sucess,
+        notice
     }
 
     private void Awake()

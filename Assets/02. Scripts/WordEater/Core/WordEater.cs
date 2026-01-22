@@ -387,6 +387,7 @@ namespace WordEater.Core
             {
                 // 정답이면 진화 로직 실행함
                 ProcessEvolution();
+                SoundManager.Instance.SFXStart(SoundManager.SFXType.sucess);
             }
             else
             {
@@ -415,6 +416,8 @@ namespace WordEater.Core
         private void HandleMistake()
         {
             GameEvents.RaiseMistakeHit();
+
+            SoundManager.Instance.SFXStart(SoundManager.SFXType.wrongAnswer);
             Handheld.Vibrate();
         }
 

@@ -62,6 +62,7 @@ public class UIManager : MonoBehaviour
     private void Awake()
     {
         Instance = this;
+        phoneSwiper = GetComponent<PhoneSwiper>();
         // 씬 시작 시 배터리 팝업 숨김 처리함
         InteractPanel.SetActive(false);
 
@@ -81,7 +82,6 @@ public class UIManager : MonoBehaviour
 
     void Start()
     {
-        phoneSwiper = GetComponent<PhoneSwiper>();
 
         // 흔들림 효과 기준 위치 저장함
         if (_shakeTarget != null)
@@ -97,7 +97,7 @@ public class UIManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 배터리 충전 팝업을 애니메이션과 함께 띄움
+    /// 아이템 사용 후 팝업
     /// </summary>
     /// <param name="message">표시할 메시지</param>
     /// <param name="onClose">닫힐 때 실행할 콜백</param>
@@ -120,6 +120,7 @@ public class UIManager : MonoBehaviour
                 .SetUpdate(true); // 일시정지 상태에서도 동작하게 함
             phoneSwiper.isUsingTab = true;
         }
+
     }
 
     public void ReviveTicket()
@@ -178,6 +179,10 @@ public class UIManager : MonoBehaviour
             _alarmPanel.gameObject.SetActive(false);
             onComplete?.Invoke();
         });
+
+
+        SoundManager.Instance.SFXStart(SoundManager.SFXType.upAlram);
+        Debug.Log("아이템 상단 팝업 소리");
     }
 
     /// <summary>

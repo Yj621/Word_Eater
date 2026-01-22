@@ -249,6 +249,7 @@ void Awake()
             currentTryCount = 0;
             UpdateCountText();
         }
-
+        
+        SoundManager.Instance.SFXStart(SoundManager.SFXType.msgPopup);
     }
 }
