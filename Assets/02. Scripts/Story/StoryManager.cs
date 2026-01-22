@@ -36,6 +36,7 @@ public class StoryManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI storyText;  // 대사 출력용
     [SerializeField] private Button screenButton;        // 전체 화면 클릭용 버튼
     [SerializeField] private Image bgImage;              // 배경 이미지 (페이드 아웃용)
+    [SerializeField] private RawImage globalVideoDisplay; // [New] 전체 화면 비디오 출력용 RawImage
 
     [Header("MiniGame References")]
     [SerializeField] private GameObject miniGameRoot;    // 미니게임 오브젝트 그룹
@@ -64,6 +65,9 @@ public class StoryManager : MonoBehaviour
     // [추가] 현재 재생 중인 비디오 추적용
     private VideoPlayer _currentVideoPlayer;
 
+    [Header("Scene Transition")]
+    [SerializeField] private Image fadeOutImage; // 끝나고 나갈 때 어두워질 이미지 (검은색 Panel 권장)
+
     void Start()
     {
         // 1. 리스너 연결
@@ -85,6 +89,9 @@ public class StoryManager : MonoBehaviour
 
         // 3. [중요] 모든 StoryStep의 이미지/비디오를 사전에 초기화 (전부 끄기)
         InitializeAllStoryResources();
+        
+        // 페이드 아웃 이미지가 켜져있다면 끄기 (씬 진입 효과용으로 쓸 수도 있으나 여기선 생략)
+        if (fadeOutImage != null) fadeOutImage.gameObject.SetActive(false);
 
         // 4. 첫 대사 시작
         if (storyData != null && storyData.Count > 0)
@@ -103,6 +110,13 @@ public class StoryManager : MonoBehaviour
     /// </summary>
     private void InitializeAllStoryResources()
     {
+        // 글로벌 비디오 화면 초기화 (투명)
+        if (globalVideoDisplay != null)
+        {
+            globalVideoDisplay.gameObject.SetActive(true);
+            SetRawImageAlpha(globalVideoDisplay, 0f);
+        }
+
         if (storyData == null) return;
 
         foreach (var step in storyData)
@@ -176,6 +190,7 @@ public class StoryManager : MonoBehaviour
         if (index >= storyData.Count)
         {
             Debug.Log("[StoryManager] 스토리 종료");
+            EndStory();
             return;
         }
 
@@ -193,6 +208,33 @@ public class StoryManager : MonoBehaviour
         if (typingCoroutine != null) StopCoroutine(typingCoroutine);
         typingCoroutine = StartCoroutine(RoutineTypeWriter(currentFullText));
     }
+    
+    // 스토리 종료 -> 로딩 씬 -> 메인
+    private void EndStory()
+    {
+        // 1. 시청 완료 기록
+        PlayerPrefs.SetInt("HasWatchStory", 1);
+        PlayerPrefs.Save();
+
+        // 2. 페이드 후 이동
+        if (fadeOutImage != null)
+        {
+            fadeOutImage.gameObject.SetActive(true);
+            // 투명 -> 검정(불투명)
+            var c = fadeOutImage.color;
+            c.a = 0f; 
+            fadeOutImage.color = c;
+
+            fadeOutImage.DOFade(1f, 1.0f).OnComplete(() =>
+            {
+                LoadingSceneManager.LoadScene("WordEater");
+            });
+        }
+        else
+        {
+            LoadingSceneManager.LoadScene("WordEater");
+        }
+    }
 
     // [추가] 이펙트 재생 로직
     private void CheckAndPlayEffect(StoryStep step)
@@ -206,6 +248,9 @@ public class StoryManager : MonoBehaviour
                 _currentVideoPlayer.Stop();
                 _currentVideoPlayer.gameObject.SetActive(false);
                 _currentVideoPlayer = null;
+                
+                // 글로벌 스크린 투명화
+                SetRawImageAlpha(globalVideoDisplay, 0f);
             }
 
             float duration = step.effectDuration > 0 ? step.effectDuration : 1.0f;
@@ -261,10 +306,23 @@ public class StoryManager : MonoBehaviour
                 {
                     _currentVideoPlayer.Stop();
                     _currentVideoPlayer.gameObject.SetActive(false);
+                    SetRawImageAlpha(globalVideoDisplay, 0f);
                 }
 
                 _currentVideoPlayer = step.videoPlayer;
                 _currentVideoPlayer.gameObject.SetActive(true);
+                
+                // [New] 글로벌 RawImage 켜기 및 텍스쳐 연결
+                if (globalVideoDisplay != null)
+                {
+                    // 비디오 플레이어가 RenderTexture에 쏘는 경우 연결 필요
+                    if (step.videoPlayer.targetTexture != null)
+                        globalVideoDisplay.texture = step.videoPlayer.targetTexture;
+
+                    globalVideoDisplay.gameObject.SetActive(true);
+                    SetRawImageAlpha(globalVideoDisplay, 1f);
+                }
+                
                 _currentVideoPlayer.Play();
             }
         }
@@ -284,6 +342,14 @@ public class StoryManager : MonoBehaviour
                 }
             }
         }
+    }
+
+    private void SetRawImageAlpha(RawImage img, float alpha)
+    {
+        if (img == null) return;
+        Color c = img.color;
+        c.a = alpha;
+        img.color = c;
     }
 
     private IEnumerator RoutineTypeWriter(string fullText)

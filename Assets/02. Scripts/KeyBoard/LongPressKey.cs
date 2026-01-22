@@ -22,7 +22,8 @@ public class LongPressKey : MonoBehaviour, IPointerDownHandler, IPointerUpHandle
 bool pressing;
     bool fired;
     Coroutine waitCo;
-    PointerEventData lastDownEvent;
+    Vector2 lastDownPos;
+    int lastPointerId;
 
     public void SetValue(int count, int max)
     {
@@ -37,7 +38,8 @@ bool pressing;
     }
 public void OnPointerDown(PointerEventData eventData)
     {
-        lastDownEvent = eventData;
+        lastDownPos = eventData.position;
+        lastPointerId = eventData.pointerId;
         pressing = true; fired = false;
         if (waitCo != null) StopCoroutine(waitCo);
         waitCo = StartCoroutine(WaitLongPress());
@@ -69,8 +71,15 @@ public void OnPointerDown(PointerEventData eventData)
             fired = true;
             if (manager)
             {
-                if (keyType == KeyType.Single) manager.PressSingle(index, lastDownEvent);
-                else manager.PressDouble(index, lastDownEvent);
+                // [Fix] create new PointerEventData with saved values
+                PointerEventData fakeEvent = new PointerEventData(EventSystem.current)
+                {
+                    position = lastDownPos,
+                    pointerId = lastPointerId
+                };
+
+                if (keyType == KeyType.Single) manager.PressSingle(index, fakeEvent);
+                else manager.PressDouble(index, fakeEvent);
 
                 SoundManager.Instance.SFXStart(SoundManager.SFXType.jaMoDrag);
             }
