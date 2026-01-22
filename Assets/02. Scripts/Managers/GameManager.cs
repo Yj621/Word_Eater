@@ -184,6 +184,8 @@ public class GameManager : MonoBehaviour
             // 터치 방지
             touchblockPanel.SetActive(true);
 
+            SoundManager.Instance.SFXStart(SoundManager.SFXType.dead);
+
             // 기존 텍스트 알림 대신 방전 연출 코루틴 실행
             StartCoroutine(ProcessGameOverSequence());
         }
@@ -259,6 +261,8 @@ public class GameManager : MonoBehaviour
 
         // 3. [중요] 화면 캡쳐를 위해 프레임 끝까지 대기 (필수)
         yield return new WaitForEndOfFrame();
+
+        SoundManager.Instance.SFXStart(SoundManager.SFXType.DogamAssign);
 
         // -------------------------------------------------------
         // A. 화면 캡쳐 및 이미지 할당

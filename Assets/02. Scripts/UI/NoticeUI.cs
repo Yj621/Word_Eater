@@ -63,8 +63,10 @@ public class NoticeUI : MonoBehaviour, IPointerClickHandler
                .Join(_panel.DOAnchorPos(_startOffset, _outDuration).SetEase(Ease.InBack))
                .OnComplete(CompleteClose);
         }
-
         currentTween = seq;
+
+
+        SoundManager.Instance.SFXStart(SoundManager.SFXType.notice);
     }
 
     /// <summary>
