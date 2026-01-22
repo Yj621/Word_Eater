@@ -88,6 +88,8 @@ public class GameManager : MonoBehaviour
     public int submitCount = 0;
     public int lockCount = 0;
 
+    public int MaxRelevant = 8;
+
     public static GameManager Instance;
 
     void Awake() {     

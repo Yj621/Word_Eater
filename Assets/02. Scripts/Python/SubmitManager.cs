@@ -74,7 +74,7 @@ public class SubmitManager : MonoBehaviour
         if (gamemanager.RelevantResult.Count == 0)
         {
             // await로 결과값 바로 받기
-            List<string> result = await pythonConnectManager.MostSimilarty(word1, 5);
+            List<string> result = await pythonConnectManager.MostSimilarty(word1, gamemanager.MaxRelevant);
 
             if (result != null && result.Count == 1 && result[0] == "요청 실패")
             {
@@ -90,9 +90,14 @@ public class SubmitManager : MonoBehaviour
                 filemanager.SaveRelevant(gamemanager.RelevantResult);
 
                 int randomIndex = UnityEngine.Random.Range(0, result.Count);
-                string newRRL = gamemanager.RelevantLine + result[randomIndex] + '|';
-                gamemanager.RelevantLine = newRRL;
-                filemanager.SavaRelevantLine(newRRL);
+
+                //이미 본 적 있는 단어면 스킵
+                if (!gamemanager.RelevantLine.Contains(result[randomIndex]))
+                {
+                    string newRRL = gamemanager.RelevantLine + result[randomIndex] + '|';
+                    gamemanager.RelevantLine = newRRL;
+                    filemanager.SavaRelevantLine(newRRL);
+                }
 
                 NoticeManager.Instance.ShowSticky($"힌트 단어 : {result[randomIndex]}");
             }

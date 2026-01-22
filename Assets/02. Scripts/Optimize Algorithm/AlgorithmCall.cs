@@ -10,6 +10,7 @@ public class AlgorithmCall : MonoBehaviour
     [Header("전화 패널 관련")]
     [SerializeField] private PythonConnectManager pythonConnectManager;
     [SerializeField] private TextMeshProUGUI resultText;
+    [SerializeField] private TextMeshProUGUI leftText;
     [SerializeField] private WordEater.Core.WordEater wordEater;
     [SerializeField] private BatterySystem batterySystem;
     [SerializeField] private UILoadingText loading; //공용 로딩 컴포넌트
@@ -20,6 +21,7 @@ public class AlgorithmCall : MonoBehaviour
     /// </summary>
     public async void OnShowSimilarWord()
     {
+        leftText.gameObject.SetActive(false);
         GameManager.Instance.StopRingingEffect();
         // 배터리 체크 등 기존 로직 유지
         if (!AlgoGuards.EnsureBattery(batterySystem, ActionType.OptimizeAlgoCall, resultText))
@@ -32,7 +34,7 @@ public class AlgorithmCall : MonoBehaviour
 
             // StartCoroutine 제거 -> await 사용
             // 콜백 함수 내용을 아래로 풀어서 작성
-            List<string> result = await pythonConnectManager.MostSimilarty(answerWord, 5);
+            List<string> result = await pythonConnectManager.MostSimilarty(answerWord, gameamnager.MaxRelevant);
 
             loading?.StopAnim();
 
@@ -57,21 +59,46 @@ public class AlgorithmCall : MonoBehaviour
             filemanager.SaveRelevant(gameamnager.RelevantResult);
 
             int idx = UnityEngine.Random.Range(0, result.Count);
-            string newRRL = gameamnager.RelevantLine + result[idx] + '|';
-            gameamnager.RelevantLine = newRRL;
-            filemanager.SavaRelevantLine(newRRL);
+
+            //이미 본 적 있는 단어면 스킵
+            if (!gameamnager.RelevantLine.Contains(result[idx]))
+            {
+                string newRRL = gameamnager.RelevantLine + result[idx] + '|';
+                gameamnager.RelevantLine = newRRL;
+                filemanager.SavaRelevantLine(newRRL);
+            }
+
             gameamnager.saveCountInmanager(0);
 
+
+            string[] items = gameamnager.RelevantLine.Split('|');
+            int left = gameamnager.MaxRelevant -  items.Length + 1;
+
+            leftText.gameObject.SetActive(true);
+
+            if(left == 0) leftText.text = "모든 관련단어를 확인 했습니다!";
+            else leftText.text = $"남은 단어 : {left}";
             resultText.text = $"관련 단어 : {result[idx]}";
         }
         else
         {
             // 기존 로직 유지
             int idx = UnityEngine.Random.Range(0, gameamnager.RelevantResult.Count);
-            string newRRL = gameamnager.RelevantLine + gameamnager.RelevantResult[idx] + '|';
-            gameamnager.RelevantLine = newRRL;
-            filemanager.SavaRelevantLine(newRRL);
+            //이미 본 적 있는 단어면 스킵
+            if (!gameamnager.RelevantLine.Contains(gameamnager.RelevantResult[idx]))
+            {
+                string newRRL = gameamnager.RelevantLine + gameamnager.RelevantResult[idx] + '|';
+                gameamnager.RelevantLine = newRRL;
+                filemanager.SavaRelevantLine(newRRL);
+            }
             gameamnager.saveCountInmanager(0);
+
+            string[] items = gameamnager.RelevantLine.Split('|');
+            int left = gameamnager.MaxRelevant - items.Length + 1;
+
+            leftText.gameObject.SetActive(true);
+            if (left == 0) leftText.text = "모든 관련단어를 확인 했습니다!";
+            else leftText.text = $"남은 단어 : {left}";
             resultText.text = $"관련 단어 : {gameamnager.RelevantResult[idx]}";
         }
     }
