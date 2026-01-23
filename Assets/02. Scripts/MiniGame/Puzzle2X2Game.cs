@@ -25,6 +25,9 @@ public class Puzzle2X2Game : MonoBehaviour
     [Header("슬롯 스냅 허용 반경(px)")]
     public float snapRadius = 80f;
 
+    [Header("스폰 제외 반경 (중앙으로부터)")]
+    public float spawnExclusionRadius = 250f;
+
     MiniGameHook _hook;
 
     // 슬롯 점유 현황 (index 0..3)
@@ -81,12 +84,20 @@ public class Puzzle2X2Game : MonoBehaviour
             p.Setup(this, canvas, i, set.quads[i]);
             _pieces.Add(p);
 
-            // 초기 배치: 영역 내 랜덤
+            // 초기 배치: 영역 내 랜덤 (중앙 제외)
             var area = spawnArea.rect;
             var sz = p.Rect.rect.size;
             float xHalf = (area.width - sz.x) * 0.5f;
             float yHalf = (area.height - sz.y) * 0.5f;
-            Vector2 pos = new Vector2(Random.Range(-xHalf, xHalf), Random.Range(-yHalf, yHalf));
+            
+            Vector2 pos;
+            int guard = 0;
+            do
+            {
+                pos = new Vector2(Random.Range(-xHalf, xHalf), Random.Range(-yHalf, yHalf));
+                guard++;
+            } while (pos.magnitude < spawnExclusionRadius && guard < 50);
+
             p.Rect.anchoredPosition = pos;
 
             // 초기 랜덤 회전(선택)

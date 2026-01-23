@@ -7,8 +7,16 @@ using WordEater.Systems;
 
 public class MiniGameController : MonoBehaviour
 {
+    [System.Serializable]
+    public struct GameTimeBonus
+    {
+        public string gameName;
+        public float bonusTime;
+    }
+
     [Header("게임 목록(패널 또는 프리팹)")]
     [SerializeField] private GameObject[] minigames;
+    [SerializeField] private System.Collections.Generic.List<GameTimeBonus> bonusTimeSettings; // [New] 게임별 추가 시간
     [SerializeField] public KeyBoardManager keyboard;
 
     [Header("타이머 UI (Slider)")]
@@ -68,12 +76,16 @@ public class MiniGameController : MonoBehaviour
     {
         _running = true;
 
-        // 모드에 따라 타이머 세팅
-        float limit = algorithmPanel != null && algorithmPanel.Mode ? _timeLimitEasy : _timeLimitHard;
-        SetupTimer(limit);
-
-        // 첫 게임 시작
+        // 1. 먼저 게임 선택 (그래야 어떤 게임인지 알고 시간을 더해줄 수 있음)
         StartRandomGame(skipIndex: -1);
+
+        // 2. 실행 상태 확인 (StartRandomGame에서 실패하면 _running=false됨)
+        if (!_running) return;
+
+        // 3. 시간 설정 (기본 + 보너스)
+        float baseLimit = algorithmPanel != null && algorithmPanel.Mode ? _timeLimitEasy : _timeLimitHard;
+        float bonus = GetBonusTime(_currentIndex);
+        SetupTimer(baseLimit + bonus);
     }
 
     // [Deprecated] 내부 호출용이었던 것 -> StartGame으로 대체
@@ -92,11 +104,36 @@ public class MiniGameController : MonoBehaviour
     public void NotifyClear()
     {
         if (!_running) return;
-        // 다음 게임으로 즉시 진행
+        
+        int finishedIndex = _currentIndex; // 방금 끝낸 게임 인덱스 (스킵용)
         ClearCount++;
+
+        // 1. 다음 게임 선택
+        StartRandomGame(skipIndex: finishedIndex);
+
+        // 2. 실행 상태 확인
+        if (!_running) return;
+
+        // 3. 시간 설정
         float limit = algorithmPanel != null && algorithmPanel.Mode ? _timeLimitEasy : _timeLimitHard;
-        SetupTimer(limit);
-        StartRandomGame(skipIndex: _currentIndex);
+        float bonus = GetBonusTime(_currentIndex);
+        SetupTimer(limit + bonus);
+    }
+
+    float GetBonusTime(int gameIndex)
+    {
+        if (minigames == null || gameIndex < 0 || gameIndex >= minigames.Length) return 0f;
+        if (bonusTimeSettings == null) return 0f;
+
+        var gObj = minigames[gameIndex];
+        if (!gObj) return 0f;
+
+        string gName = gObj.name;
+        foreach (var b in bonusTimeSettings)
+        {
+            if (b.gameName == gName) return b.bonusTime;
+        }
+        return 0f;
     }
 
     public void NotifyFail()
