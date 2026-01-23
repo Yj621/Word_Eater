@@ -140,11 +140,41 @@ public class MathQuizMiniGame : MonoBehaviour
             char op1 = RandomOp();
             char op2 = RandomOp();
 
-            // 중간/최종 계산
-            if (!TryApply(a, op1, b, out int ab)) continue;
-            if (!allowNegativeIntermediate && ab < 0) continue;
+            // 중간/최종 계산 (우선순위 고려)
+            int ans = 0;
+            bool calcSuccess = false;
 
-            if (!TryApply(ab, op2, c, out int ans)) continue;
+            // op2가 곱셈/나눗셈이고 op1이 덧셈/뺄셈이면 op2 먼저 계산
+            bool op2First = (op2 == '*' || op2 == '/') && (op1 == '+' || op1 == '-');
+
+            if (op2First)
+            {
+                // 뒤쪽 연산 먼저 (b op2 c)
+                if (TryApply(b, op2, c, out int tail))
+                {
+                    if (!allowNegativeIntermediate && tail < 0) continue;
+                    // 앞쪽 연산 (a op1 tail)
+                    if (TryApply(a, op1, tail, out ans))
+                    {
+                        calcSuccess = true;
+                    }
+                }
+            }
+            else
+            {
+                // 앞쪽 연산 먼저 (a op1 b) -> 기본 순서
+                if (TryApply(a, op1, b, out int head))
+                {
+                    if (!allowNegativeIntermediate && head < 0) continue;
+                    // 뒤쪽 연산 (head op2 c)
+                    if (TryApply(head, op2, c, out ans))
+                    {
+                        calcSuccess = true;
+                    }
+                }
+            }
+
+            if (!calcSuccess) continue;
 
             // 최종 답 조건(1~3자리)
             if (ans < minAnswer || ans > maxAnswer) continue;
