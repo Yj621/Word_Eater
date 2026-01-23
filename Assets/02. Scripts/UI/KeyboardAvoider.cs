@@ -7,7 +7,7 @@ public class KeyboardAvoider : MonoBehaviour
     [SerializeField] private RectTransform[] targets; // 배열로 변경
 
     [Header("키보드 높이에 곱해줄 값 (1.0 = 그대로, 0.9 = 살짝 덜 올리기)")]
-    [SerializeField] private float heightMultiplier = 1f;
+    [SerializeField] private float heightMultiplier = 0.8f;
 
     [Header("추가로 미세하게 조절할 오프셋 (UI px 단위, 음수면 아래로)")]
     [SerializeField] private float extraOffset = -50f;
