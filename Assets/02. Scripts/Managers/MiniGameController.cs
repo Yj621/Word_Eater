@@ -227,11 +227,12 @@ public class MiniGameController : MonoBehaviour
         }
     }
 
-    // [변경] UI 표시를 여기서 하지 않고, 획득한 아이템 타입을 리턴해서 AlgorithmPanel이 통합 표시하게 함
-    public ItemType CheckItemReward()
+    // [변경] UI 표시를 여기서 하지 않고, 획득한 아이템 리스트를 리턴해서 AlgorithmPanel이 통합 표시하게 함
+    public System.Collections.Generic.Dictionary<ItemType, int> CheckItemReward()
     {
-        // 보상을 받을지 여부
-        bool getReward = false;
+        // 보상 목록
+        var rewards = new System.Collections.Generic.Dictionary<ItemType, int>();
+
         bool isHard = (algorithmPanel != null && !algorithmPanel.Mode); 
 
         // [변경] 사용자 요청: 
@@ -243,13 +244,15 @@ public class MiniGameController : MonoBehaviour
              if (ItemManager.Instance != null && ClearCount > 0)
              {
                  ItemManager.Instance.AddItem(ItemType.JamoSelectionTicket, ClearCount);
+                 rewards.Add(ItemType.JamoSelectionTicket, ClearCount);
 
                 if (ClearCount >= 3) {
                     // 초성 힌트는 3개 클리어시마다 한개 씩 ex) 3클 -> 1개 , 5클 -> 1개, 7클 -> 2개
-                    ItemManager.Instance.AddItem(ItemType.HintChosung, ClearCount/3);
+                    int hintCount = ClearCount / 3;
+                    ItemManager.Instance.AddItem(ItemType.HintChosung, hintCount);
+                    if (rewards.ContainsKey(ItemType.HintChosung)) rewards[ItemType.HintChosung] += hintCount;
+                    else rewards.Add(ItemType.HintChosung, hintCount);
                 }
-
-                 return ItemType.JamoSelectionTicket;
              }
         }
         else
@@ -270,21 +273,22 @@ public class MiniGameController : MonoBehaviour
                 if (ItemDropManager.Instance != null)
                 {
                     // [변경] 골고루 지급: 획득한 개수(earnedCount)만큼 반복해서 따로따로 뽑는다.
-                    ItemType lastType = (ItemType)(-1);
-                    
                     for (int k = 0; k < earnedCount; k++)
                     {
                         // showUI = false (나중에 통합 알림 혹은 알림 생략)
-                        lastType = ItemDropManager.Instance.ObtainRandomItem(showUI: false);
+                        ItemType earned = ItemDropManager.Instance.ObtainRandomItem(showUI: false);
+                        if ((int)earned >= 0)
+                        {
+                            if (rewards.ContainsKey(earned)) rewards[earned]++;
+                            else rewards.Add(earned, 1);
+                        }
                     }
 
                     Debug.Log($"[MiniGame] 이지모드 보상: 총 {earnedCount}회 가챠 실행 완료");
-                    return lastType; // 마지막 획득한 타입을 리턴 (대표용)
                 }
             }
         }
 
-        // 획득 실패 혹은 조건 미달
-        return (ItemType)(-1); // -1 or generic invalid
+        return rewards;
     }
 }

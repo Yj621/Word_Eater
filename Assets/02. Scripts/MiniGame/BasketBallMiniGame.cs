@@ -93,8 +93,9 @@ public class BasketBallMiniGame : MonoBehaviour, IBeginDragHandler, IDragHandler
         return c;
     }
 
-    // 화면 밖으로 나가는 것 방지용 경계
-    [SerializeField] private float xBound = 450f; 
+    // 화면 밖으로 나가는 것 방지용 경계 (기존 xBound 대신 패널 사용)
+    // [SerializeField] private float xBound = 450f; 
+    [SerializeField] private RectTransform gameAreaPanel; // [New] 게임 유효 영역 패널
 
     private void Update()
     {
@@ -214,16 +215,51 @@ public class BasketBallMiniGame : MonoBehaviour, IBeginDragHandler, IDragHandler
 
     private void CheckGameStatus()
     {
-        if (hoopMoveRoot == null) return;
+        if (hoopMoveRoot == null || ball == null) return;
 
         Vector2 pos = ball.anchoredPosition;
         float hoopY = hoopMoveRoot.anchoredPosition.y;
 
-        // 1. 경계 체크 (화면 밖으로 나가면 즉시 사라짐/리셋)
-        if (Mathf.Abs(pos.x) > xBound)
+        // [New] 1. 패널 기반 경계 체크
+        if (gameAreaPanel != null)
         {
-            FadeOutAndReset(); 
-            return;
+            // 월드 좌표 기준 비교
+            Vector3 ballWorldPos = ball.position;
+            Vector3[] panelCorners = new Vector3[4];
+            gameAreaPanel.GetWorldCorners(panelCorners);
+            
+            // UI World Corners: 0=BottomLeft, 1=TopLeft, 2=TopRight, 3=BottomRight
+            // Min = 0, Max = 2
+            float minX = panelCorners[0].x;
+            float maxX = panelCorners[2].x;
+            float minY = panelCorners[0].y;
+            float maxY = panelCorners[2].y;
+
+            if (ballWorldPos.x < minX || ballWorldPos.x > maxX || 
+                ballWorldPos.y < minY || ballWorldPos.y > maxY)
+            {
+                FadeOutAndReset();
+                return;
+            }
+        }
+        else
+        {
+             // Fallback: 기존 로직 (패널 미할당 시)
+             // 1. 좌우 경계
+             /* 
+             if (Mathf.Abs(pos.x) > xBound) 
+             {
+                 FadeOutAndReset(); 
+                 return;
+             }
+             */
+             
+             // 2. 하단 경계
+             if (pos.y < _startPos.y + throwDropY && !_hasPassedRimHeight)
+             {
+                 FadeOutAndReset();
+                 return;
+             }
         }
 
         // 2. 골 판정
@@ -240,15 +276,10 @@ public class BasketBallMiniGame : MonoBehaviour, IBeginDragHandler, IDragHandler
              }
         }
 
-        // 3. 실패 판정 (너무 아래로 떨어짐)
-        if (pos.y < _startPos.y + throwDropY)
-        {
-            if (!_hasPassedRimHeight)
-            {
-                // 바닥에 닿으면(혹은 그 이하로 떨어지면) 페이드아웃하며 리셋
-                FadeOutAndReset();
-            }
-        }
+        // 3. 실패 판정 (기존 로직 보존 - 패널 확인과는 별개로 높이 기준 실패 처리도 필요할 수 있음)
+        // 하지만 패널 방식이 우선이므로 여기서는 패널이 없을 때만 동작하도록 하거나,
+        // 패널 밖으로 나가는 순간 이미 처리되므로 사실상 중복될 수 있음. 
+        // 안전을 위해 남겨둠 (단, 패널 밖 = 실패이므로 이미 처리됨)
     }
 
     private void OnGoal()

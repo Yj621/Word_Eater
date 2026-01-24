@@ -122,14 +122,18 @@ public class MatchPair : MonoBehaviour
         }
     }
 
-    public void OnSlotRevealed(PairSlot slot)
+    // [변경] 외부에서 클릭 시도 시 호출. 성공하면 true 리턴하며 내부 상태 갱신
+    public void TrySelectSlot(PairSlot slot)
     {
         if (_busy) return;
         if (slot == null) return;
-        if (slot.IsMatched) return;
+        if (slot.IsMatched || slot.IsRevealed) return; // 이미 뒤집힌건 무시
 
-        // 같은 슬롯 두 번 클릭 방지
+        // 같은 슬롯 두 번 클릭 방지 (혹시 IsRevealed 체크가 늦을까봐)
         if (_first == slot) return;
+
+        // 여기까지 통과했으면 뒤집기 허용
+        slot.Reveal();
 
         if (_first == null)
         {
@@ -141,7 +145,7 @@ public class MatchPair : MonoBehaviour
         {
             _second = slot;
 
-            // 두 개 공개됐으니 더 이상 클릭 못하게 잠깐 막기
+            // 두 개 공개됐으니 더 이상 클릭 못하게 막기
             _busy = true;
 
             if (_checkCo != null) StopCoroutine(_checkCo);

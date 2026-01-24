@@ -116,7 +116,7 @@ public class AlgorithmPanel : MonoBehaviour
         }
 
         // 1. 보상 확인
-        ItemType rewardItems = (ItemType)(-1);
+        System.Collections.Generic.Dictionary<ItemType, int> rewardItems = null;
         if (_mini != null)
         {
             rewardItems = _mini.CheckItemReward();
@@ -128,10 +128,18 @@ public class AlgorithmPanel : MonoBehaviour
         string scoreStr = $"{clearCnt} 개의 미니게임 클리어!";
         string itemStr = "";
 
-        if ((int)rewardItems >= 0) // 유효한 아이템
+        if (rewardItems != null && rewardItems.Count > 0)
         {
-            string kName = ItemUtils.GetItemNameKR(rewardItems);
-            itemStr = $"\n아이템 획득!\n<color=#FF00FF>[{kName}]</color>";
+            itemStr = "\n아이템 획득!";
+            foreach (var kv in rewardItems)
+            {
+                ItemType type = kv.Key;
+                int count = kv.Value;
+                string kName = ItemUtils.GetItemNameKR(type);
+                
+                // [수정] 줄바꿈 후 [아이템명] x 개수 표시
+                itemStr += $"\n<color=#FF00FF>[{kName}]</color> x {count}";
+            }
         }
         else
         {
