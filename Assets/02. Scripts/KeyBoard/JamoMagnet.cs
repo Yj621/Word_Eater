@@ -149,6 +149,8 @@ public class JamoMagnet : MonoBehaviour
         Object.Destroy(cho.gameObject);
         Object.Destroy(jung.gameObject);
 
+        SoundManager.Instance.SFXStart(SoundManager.SFXType.zamoCombine);
+
         return true;
     }
 
@@ -167,6 +169,8 @@ public class JamoMagnet : MonoBehaviour
         seq.Append(cg.DOFade(1f, 0.15f));
         seq.Join(rt.DOScale(1.1f, 0.15f).SetEase(Ease.OutBack));
         seq.Append(rt.DOScale(1f, 0.08f));
+
+        SoundManager.Instance.SFXStart(SoundManager.SFXType.jaMoDrag);
     }
 
     /// <summary>삭제될 때 (쓰레기통 or 범위 밖) 쑥 빨려들어가듯 사라짐</summary>

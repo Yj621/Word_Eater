@@ -353,6 +353,9 @@ public class SyllableBlock : MonoBehaviour
 
         // 4. 실제로 붙이기 시도
         bool ok = best.AttachJamoWithRole(jamo, attachRole);
+
+        SoundManager.Instance.SFXStart(SoundManager.SFXType.zamoCombine);
+
         return ok;
     }
 

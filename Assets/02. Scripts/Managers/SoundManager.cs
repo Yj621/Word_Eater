@@ -53,7 +53,7 @@ public class SoundManager : MonoBehaviour
         trashcan,
         upAlram,
         popup,
-        miniGame,
+        miniGame, // 10
         call,
         scrollView,
         msgPopup,
@@ -61,7 +61,11 @@ public class SoundManager : MonoBehaviour
         wrongAnswer,
         DogamAssign,
         sucess,
-        notice
+        notice,
+        zamoCombine,
+        historymove, // 20
+        minigameWin,
+        minigameLose
     }
 
     private void Awake()
@@ -205,5 +209,10 @@ public class SoundManager : MonoBehaviour
     public void SFXCallClose() {
         SFXSource.Stop();
         SFXSource.loop = false;
+    }
+
+    // 버튼에 붙이고 싶어서 만든 함수
+    public void SFXHistory() {
+        SFXSource.PlayOneShot(sfxList[20]);
     }
 }

@@ -6770,7 +6770,7 @@ MonoBehaviour:
   - {fileID: 8300000, guid: d7ba901222334bc469201f518b1c1d8c, type: 3}
   - {fileID: 8300000, guid: 5d133f74eb487f9448f11e959ce78983, type: 3}
   - {fileID: 8300000, guid: 72e778914578b144bb40562b36755f3b, type: 3}
-  - {fileID: 8300000, guid: d7ba901222334bc469201f518b1c1d8c, type: 3}
+  - {fileID: 8300000, guid: cdcfdecd4fe094c4191ab1d1a39b6136, type: 3}
   - {fileID: 8300000, guid: ce1355fc25d01c54e95440b9b37461d7, type: 3}
   - {fileID: 8300000, guid: 51c8e4a76356d7c408834cf54c66ccac, type: 3}
   - {fileID: 8300000, guid: f9df8f7d2af3e2945994f7687de9446d, type: 3}
@@ -6783,6 +6783,10 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 3c94096969bccf1449d8587c171c8760, type: 3}
   - {fileID: 8300000, guid: f6a5ec1927ffced4485d2eae76baab22, type: 3}
   - {fileID: 8300000, guid: d66c5fdb3392c2e498c117ef0b85f7d5, type: 3}
+  - {fileID: 8300000, guid: 2995a6f903d11eb4fb3b9fc3d46d57d4, type: 3}
+  - {fileID: 8300000, guid: 76c0a1f5b83ea27419201023f2fe004b, type: 3}
+  - {fileID: 8300000, guid: c05a30c593db41f4b8027c58d2267f91, type: 3}
+  - {fileID: 8300000, guid: b33572567126d564f9fb9171b3c10e5b, type: 3}
 --- !u!1 &244407811
 GameObject:
   m_ObjectHideFlags: 0
@@ -40088,6 +40092,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 240587560}
+        m_TargetAssemblyTypeName: SoundManager, Assembly-CSharp
+        m_MethodName: SFXHistory
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &1188075595
 GameObject:
   m_ObjectHideFlags: 0
@@ -65617,6 +65633,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 240587560}
+        m_TargetAssemblyTypeName: SoundManager, Assembly-CSharp
+        m_MethodName: SFXHistory
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &2029928360
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -68604,7 +68632,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a82eea42e722eb44b90dd0c5132ceaf1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AdsManager
-  rewardedAdRevivalId: ca-app-pub-3940256099942544/5354046379
+  rewardedAdUnitId: unused
 --- !u!224 &4387353267101508220
 RectTransform:
   m_ObjectHideFlags: 0

@@ -90,6 +90,7 @@ public class AlgorithmPanel : MonoBehaviour
 
     public IEnumerator CloasePageTab(bool showResult = true)
     {
+
         // 미니게임 정리
         if (_mini == null) _mini = GameTab.GetComponentInChildren<MiniGameController>(true);
         _mini?.StopAllGames();
