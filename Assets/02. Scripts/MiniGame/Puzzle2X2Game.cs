@@ -18,6 +18,8 @@ public class Puzzle2X2Game : MonoBehaviour
 
     [Header("필수: 같은 캔버스")]
     public Canvas canvas;
+    [Header("정답(완성본) 표시용 이미지 UI")]
+    public Image answerDisplayImage; // [New] 정답지 이미지
 
     [Header("초기 랜덤 회전 허용 (0/90/180/270 중 하나)")]
     public bool randomizeRotation = true;
@@ -78,6 +80,20 @@ public class Puzzle2X2Game : MonoBehaviour
         }
 
         // 4조각 생성 (정답 슬롯 인덱스 = 0..3)
+        // [New] 정답지 이미지 표시
+        if (answerDisplayImage != null)
+        {
+            if (set.fullImage != null)
+            {
+                answerDisplayImage.gameObject.SetActive(true);
+                answerDisplayImage.sprite = set.fullImage;
+            }
+            else
+            {
+                // 이미지가 없으면 꺼둠
+                answerDisplayImage.gameObject.SetActive(false);
+            }
+        }
         for (int i = 0; i < 4; i++)
         {
             var p = Instantiate(piecePrefab, spawnArea, false);

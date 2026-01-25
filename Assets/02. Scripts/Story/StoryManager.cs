@@ -58,10 +58,19 @@ public class StoryManager : MonoBehaviour
     // 미니게임 상태
     private bool isMiniGameActive = false;
     private float currentFill = 0f;
+    
+    // [추가] 입력 차단 (페이드 아웃 등 연출 중일 때)
+    private bool isInputBlocked = false;
 
     // 현재 화면에 띄워진 이펙트 이미지들 추적용 (필요시 전체 끄기 등을 위해 남겨둠)
     private List<RectTransform> _activeImages = new List<RectTransform>();
     
+    // [추가] 스토리 전체에 사용되는 모든 이펙트 이미지 캐싱 (비디오 재생 시 전부 끄기 위함)
+    private List<RectTransform> _allEffectImages = new List<RectTransform>();
+    
+    // [New] 비디오 재생 시 함께 꺼야 할 고정 이미지 (예: 스탠딩 일러스트 등)
+    [SerializeField] private GameObject standingImage;
+
     // [추가] 현재 재생 중인 비디오 추적용
     private VideoPlayer _currentVideoPlayer;
 
@@ -88,6 +97,8 @@ public class StoryManager : MonoBehaviour
         if (hiddenObj != null) hiddenObj.SetActive(false);
 
         // 3. [중요] 모든 StoryStep의 이미지/비디오를 사전에 초기화 (전부 끄기)
+        // 3. [중요] 모든 StoryStep의 이미지/비디오를 사전에 초기화 (전부 끄기)
+        CollectAllEffectImages(); // 전체 이미지 목록 수집
         InitializeAllStoryResources();
         
         // 페이드 아웃 이미지가 켜져있다면 끄기 (씬 진입 효과용으로 쓸 수도 있으나 여기선 생략)
@@ -160,7 +171,10 @@ public class StoryManager : MonoBehaviour
     // 화면 클릭 시 처리
     private void OnScreenClick()
     {
-        // Debug.Log($"[StoryManager] 화면 클릭됨! (Typing: {isTyping}, MiniGame: {isMiniGameActive})");
+        // [추가] 중요 연출 중(예: 페이드)에는 입력 차단
+        if (isInputBlocked) return;
+
+        Debug.Log($"[StoryManager] 화면 클릭됨! (Typing: {isTyping}, MiniGame: {isMiniGameActive})");
 
         // 1. 미니게임 중일 때
         if (isMiniGameActive)
@@ -308,6 +322,37 @@ public class StoryManager : MonoBehaviour
                     _currentVideoPlayer.gameObject.SetActive(false);
                     SetRawImageAlpha(globalVideoDisplay, 0f);
                 }
+                
+                // [New] 비디오 시작 시, 모든 이미지 강제 종료
+                if (_allEffectImages != null)
+                {
+                    foreach (var img in _allEffectImages)
+                    {
+                        if (img != null)
+                        {
+                            img.DOKill();
+                            img.gameObject.SetActive(false);
+                            // 투명도도 0으로 (재사용 시 문제 없게)
+                            var imgComp = img.GetComponent<Image>();
+                            if (imgComp) 
+                            {
+                                var c = imgComp.color;
+                                c.a = 0f;
+                                imgComp.color = c;
+                            }
+                            var cg = img.GetComponent<CanvasGroup>();
+                            if (cg) cg.alpha = 0f;
+                        }
+                    }
+                    _activeImages.Clear(); // 활성 목록도 비움
+                }
+
+                // [New] 고정 스탠딩 이미지도 끄기
+                if (standingImage != null)
+                {
+                    Debug.Log($"[StoryManager] Disabling Standing Image: {standingImage.name}");
+                    standingImage.SetActive(false);
+                }
 
                 _currentVideoPlayer = step.videoPlayer;
                 _currentVideoPlayer.gameObject.SetActive(true);
@@ -419,6 +464,9 @@ public class StoryManager : MonoBehaviour
 
     private IEnumerator RoutineMiniGameClear()
     {
+        // [수정] 클리어 즉시 입력 차단 (대사 넘김 방지)
+        isInputBlocked = true;
+        
         isMiniGameActive = false; // 더 이상 클릭 안 먹힘
         // Debug.Log("미니게임 클리어!");
 
@@ -446,12 +494,46 @@ public class StoryManager : MonoBehaviour
         // 5. 배경 Fade Out 시작과 동시에 잔상 UI 삭제
         if (miniGameRoot != null) miniGameRoot.SetActive(false);
 
+        // [추가] 페이드 중 입력 차단 (위에서 이미 했지만 안전하게 유지)
+        isInputBlocked = true;
+
         if (bgImage != null)
         {
             // 부드럽게 사라짐
             yield return bgImage.DOFade(0f, 1.0f).WaitForCompletion();
             // 완전히 끔
             bgImage.gameObject.SetActive(false);
+        }
+        
+        isInputBlocked = false; // 차단 해제
+    }
+    private void CollectAllEffectImages()
+    {
+        _allEffectImages.Clear();
+        if (storyData == null) return;
+
+        foreach (var step in storyData)
+        {
+            if (step.effectImages != null)
+            {
+                foreach (var img in step.effectImages)
+                {
+                    if (img != null && !_allEffectImages.Contains(img))
+                    {
+                        _allEffectImages.Add(img);
+                    }
+                }
+            }
+        }
+
+        // [New] Standing Image도 리스트에 포함시켜서 관리
+        if (standingImage != null)
+        {
+            var rt = standingImage.GetComponent<RectTransform>();
+            if (rt != null && !_allEffectImages.Contains(rt))
+            {
+                _allEffectImages.Add(rt);
+            }
         }
     }
 }
