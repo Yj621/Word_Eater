@@ -9544,7 +9544,7 @@ MonoBehaviour:
   targets:
   - {fileID: 1578392072}
   - {fileID: 2106123769}
-  heightMultiplier: 0.8
+  heightMultiplier: 0.85
   extraOffset: 0
 --- !u!1 &327853921
 GameObject:
