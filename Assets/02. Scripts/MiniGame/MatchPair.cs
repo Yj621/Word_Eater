@@ -66,7 +66,7 @@ public class MatchPair : MonoBehaviour
     {
         if (slots == null || slots.Length == 0)
         {
-            Debug.LogError("[MatchPair] slots가 비어있어.");
+            // Debug.LogError("[MatchPair] slots가 비어있어.");
             _hook?.ReportFail();
             return;
         }
@@ -75,7 +75,7 @@ public class MatchPair : MonoBehaviour
 
         if (imagePool == null || imagePool.Count < pairCount)
         {
-            Debug.LogError("[MatchPair] imagePool이 부족해.");
+            // Debug.LogError("[MatchPair] imagePool이 부족해.");
             _hook?.ReportFail();
             return;
         }

@@ -42,7 +42,7 @@ namespace WordEater.Services
         /// 
         public WordEntry PickNextLinkedWord(WordEntry prev, GrowthStage stage)
         {
-            Debug.Log(prev);
+            // Debug.Log(prev);
 
             int nextStage = (int)stage+1;
 

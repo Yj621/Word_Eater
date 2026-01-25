@@ -182,7 +182,7 @@ public class UIManager : MonoBehaviour
 
 
         SoundManager.Instance.SFXStart(SoundManager.SFXType.upAlram);
-        Debug.Log("아이템 상단 팝업 소리");
+        // Debug.Log("아이템 상단 팝업 소리");
     }
 
     /// <summary>
@@ -192,6 +192,7 @@ public class UIManager : MonoBehaviour
     {
         Transform target = _t_OffLineReward != null ? _t_OffLineReward : _offLineRewardPanel.transform;
 
+        SoundManager.Instance.SFXStart(SoundManager.SFXType.button2);
         // 작아지면서 사라지는 연출 실행함
         target.DOKill();
         target.DOScale(0f, 0.25f)
@@ -214,13 +215,12 @@ public class UIManager : MonoBehaviour
     {
         if (_itemBuyConfirmPanel == null)
         {
-            Debug.LogError("Confirm Panel 미할당됨");
+            // Debug.LogError("Confirm Panel 미할당됨");
             onNo?.Invoke();
             return;
         }
 
         _itemBuyConfirmPanel.SetActive(true);
-
         if (_itemTitleText != null) _itemTitleText.text = title;
         if (_itemExplanText != null) _itemExplanText.text = message;
 
@@ -255,6 +255,7 @@ public class UIManager : MonoBehaviour
             {
                 // '예'를 눌렀을 때도 부드럽게 닫히게 하려면 이 함수 사용
                 ClosePanelWithAnimation(onYes);
+                SoundManager.Instance.SFXStart(SoundManager.SFXType.button1);
             });
         }
 
@@ -266,6 +267,7 @@ public class UIManager : MonoBehaviour
             {
                 //그냥 끄지 않고 애니메이션 함수 호출
                 ClosePanelWithAnimation(onNo);
+                SoundManager.Instance.SFXStart(SoundManager.SFXType.button2);
             });
         }
 

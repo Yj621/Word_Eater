@@ -56,12 +56,12 @@ public class Puzzle2X2Game : MonoBehaviour
 
         if (canvas == null || targetSlots == null || targetSlots.Length != 4 || spawnArea == null || piecePrefab == null)
         {
-            Debug.LogError("[Puzzle2x2Game] 참조가 비었거나 슬롯 수가 4가 아님.");
+            // Debug.LogError("[Puzzle2x2Game] 참조가 비었거나 슬롯 수가 4가 아님.");
             enabled = false; return;
         }
         if (puzzleSets == null || puzzleSets.Length == 0)
         {
-            Debug.LogError("[Puzzle2x2Game] 퍼즐 세트가 비어 있음.");
+            // Debug.LogError("[Puzzle2x2Game] 퍼즐 세트가 비어 있음.");
             enabled = false; return;
         }
 
@@ -73,7 +73,7 @@ public class Puzzle2X2Game : MonoBehaviour
         var set = puzzleSets[setIdx];
         if (set.quads == null || set.quads.Length != 4)
         {
-            Debug.LogError("[Puzzle2x2Game] 세트의 quads는 반드시 4장이어야 함.");
+            // Debug.LogError("[Puzzle2x2Game] 세트의 quads는 반드시 4장이어야 함.");
             enabled = false; return;
         }
 

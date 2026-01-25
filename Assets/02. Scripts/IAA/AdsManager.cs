@@ -60,13 +60,13 @@ public class AdsManager : MonoBehaviour
         {
             if (error != null)
             {
-                Debug.LogWarning($"[Ads] Rewarded load failed: {error.GetMessage()}");
+                // Debug.LogWarning($"[Ads] Rewarded load failed: {error.GetMessage()}");
                 return;
             }
 
             _rewardedAd = ad;
             HookRewardedEvents(_rewardedAd);
-            Debug.Log("[Ads] Rewarded loaded.");
+            // Debug.Log("[Ads] Rewarded loaded.");
         });
         */
         
@@ -76,17 +76,17 @@ public class AdsManager : MonoBehaviour
     {
         ad.OnAdFullScreenContentOpened += () =>
         {
-            Debug.Log("[Ads] Rewarded opened.");
+            // Debug.Log("[Ads] Rewarded opened.");
         };
         ad.OnAdFullScreenContentClosed += () =>
         {
-            Debug.Log("[Ads] Rewarded closed.");
+            // Debug.Log("[Ads] Rewarded closed.");
             // 닫히면 다음 광고 미리 로드
             PreloadRewarded();
         };
         ad.OnAdFullScreenContentFailed += (AdError err) =>
         {
-            Debug.LogWarning($"[Ads] Rewarded open failed: {err.GetMessage()}");
+            // Debug.LogWarning($"[Ads] Rewarded open failed: {err.GetMessage()}");
             PreloadRewarded();
         };
     }
@@ -105,7 +105,7 @@ public class AdsManager : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("[Ads] Rewarded not ready.");
+            // Debug.LogWarning("[Ads] Rewarded not ready.");
             onUnavailable?.Invoke();
             PreloadRewarded();
         }

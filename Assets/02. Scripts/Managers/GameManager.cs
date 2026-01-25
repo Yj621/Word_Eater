@@ -92,7 +92,8 @@ public class GameManager : MonoBehaviour
 
     public static GameManager Instance;
 
-    void Awake() {     
+    void Awake()
+    {
         Instance = this;
     }
     void Start()
@@ -152,6 +153,7 @@ public class GameManager : MonoBehaviour
     {
         if (sharedAdPopup == null) return;
 
+        SoundManager.Instance.SFXStart(SoundManager.SFXType.button1);
         // 팝업 문구 설정 (아이템용 멘트로 변경)
         sharedAdPopup.Configure(
             title: "반짝이는 무언가 발견!",
@@ -164,13 +166,13 @@ public class GameManager : MonoBehaviour
             onAccept: () =>
             {
                 // 광고 시청 완료(Yes) 시 실행될 로직
-                Debug.Log("광고 보상: 랜덤 아이템 지급");
+                // Debug.Log("광고 보상: 랜덤 아이템 지급");
                 ItemDropManager.Instance.ObtainRandomItem(); // 아이템 획득 함수 호출
             },
             onDecline: () =>
             {
                 // 거절(No) 시 실행될 로직
-                Debug.Log("아이템 획득 거절");
+                // Debug.Log("아이템 획득 거절");
             }
         );
     }
@@ -200,8 +202,10 @@ public class GameManager : MonoBehaviour
     }
 
     // 0 -> 길이만 , 1 -> 첫번째 초성 , 2 -> 두 번째 초성 , 3 -> 초성 아이템
-    public void saveLock(int type) {
-        switch (type) {
+    public void saveLock(int type)
+    {
+        switch (type)
+        {
             case 0:
                 isLength = true;
                 break;
@@ -224,7 +228,8 @@ public class GameManager : MonoBehaviour
 
 
     // type : 0 -> 전화 , 1 -> 메세지 , 2 - > 제출 , 3 -> 잠금
-    public void saveCountInmanager(int type) {
+    public void saveCountInmanager(int type)
+    {
         switch (type)
         {
             case 0:
@@ -250,14 +255,14 @@ public class GameManager : MonoBehaviour
         filemanager.SaveCountData(callCount, msgCount, submitCount, lockCount);
     }
 
-/// <summary>
-/// 게임 클리어 시 연출 처리
-/// </summary>
+    /// <summary>
+    /// 게임 클리어 시 연출 처리
+    /// </summary>
     private IEnumerator ProcessGameClearSequence()
     {
         // 1. 게임 클리어 텍스트 표시
         NoticeManager.Instance.ShowTimed("게임 클리어!", 2.0f);
-        
+
         // 2. 잠시 대기
         yield return new WaitForSeconds(1.5f);
 
@@ -270,19 +275,19 @@ public class GameManager : MonoBehaviour
         // A. 화면 캡쳐 및 이미지 할당
         // -------------------------------------------------------
         Texture2D screenTexture = ScreenCapture.CaptureScreenshotAsTexture();
-        
+
         if (snapshotImg != null)
         {
             snapshotImg.texture = screenTexture;
             snapshotImg.color = Color.white;
             snapshotImg.gameObject.SetActive(true);
-            
+
             // 초기화: 화면 꽉 찬 상태, 중앙 위치
             snapshotImg.rectTransform.localScale = Vector3.one;
             snapshotImg.rectTransform.anchoredPosition = Vector2.zero;
-            
+
             // 캔버스 크기에 맞춰 사이즈 델타 조정 (Stretch 상태면 생략 가능하지만 안전하게)
-            snapshotImg.rectTransform.sizeDelta = Vector2.zero; 
+            snapshotImg.rectTransform.sizeDelta = Vector2.zero;
         }
 
         // -------------------------------------------------------
@@ -292,7 +297,7 @@ public class GameManager : MonoBehaviour
         {
             captureImg.gameObject.SetActive(true);
             captureImg.color = Color.white; // 불투명
-            
+
             // 0.5초 동안 빠르게 사라짐 -> 뒤에 있는 snapshotImg가 드러남
             captureImg.DOFade(0f, 0.5f).SetEase(Ease.OutQuad);
         }
@@ -308,7 +313,7 @@ public class GameManager : MonoBehaviour
             // 목표 위치 계산 (CanvasUtil 활용)
             // snapshotImg의 부모 기준으로 galleryBtnTarget의 위치를 가져옴
             Vector2 targetLocalPos = CanvasUtil.ConvertBetweenCanvases(
-                galleryBtnTarget, 
+                galleryBtnTarget,
                 snapshotImg.rectTransform.parent as RectTransform
             );
 
@@ -317,10 +322,10 @@ public class GameManager : MonoBehaviour
 
             // 1. 위치 이동
             flySeq.Join(snapshotImg.rectTransform.DOAnchorPos(targetLocalPos, 1.0f).SetEase(Ease.InBack));
-            
+
             // 2. 크기 축소 (작은 사진처럼)
             flySeq.Join(snapshotImg.rectTransform.DOScale(0.1f, 1.0f).SetEase(Ease.InBack));
-            
+
             // 3. 마지막에 살짝 페이드 아웃
             flySeq.Join(snapshotImg.DOFade(0f, 0.3f).SetDelay(0.7f));
 
@@ -336,13 +341,13 @@ public class GameManager : MonoBehaviour
         {
             Destroy(screenTexture);
         }
-// 사진이 갤러리에 들어간 뒤, 유저가 "아 저장됐구나" 인식할 시간(0.5~1초)을 줍니다.
-    yield return new WaitForSeconds(0.8f);
-    
+        // 사진이 갤러리에 들어간 뒤, 유저가 "아 저장됐구나" 인식할 시간(0.5~1초)을 줍니다.
+        yield return new WaitForSeconds(0.8f);
+
         // -------------------------------------------------------
         // D. 아이템 획득 및 재시작
         // -------------------------------------------------------
-        
+
         // 아이템 획득 로직
         ItemDropManager.Instance.ObtainRandomItem(true);
 
@@ -398,7 +403,7 @@ public class GameManager : MonoBehaviour
         Restart();
     }
 
-    public void Restart() 
+    public void Restart()
     {
         touchblockPanel.SetActive(false);
 
@@ -412,7 +417,7 @@ public class GameManager : MonoBehaviour
         // [중요] 게임 재시작 시 1번(0번 인덱스) 화면으로 이동
         if (phoneSwiper != null)
         {
-             phoneSwiper.GoToPage(0);
+            phoneSwiper.GoToPage(0);
         }
 
         // 패널 켜기
@@ -423,7 +428,8 @@ public class GameManager : MonoBehaviour
     }
 
 
-    public void UpdateHistoryLineInFile(string newHis) {
+    public void UpdateHistoryLineInFile(string newHis)
+    {
         filemanager.SaveHistory(newHis);
     }
 
@@ -433,7 +439,7 @@ public class GameManager : MonoBehaviour
     private void ShowPanelFromButton(RectTransform panel, RectTransform btn)
     {
         if (panel == null || btn == null) return;
-
+        SoundManager.Instance.SFXStart(SoundManager.SFXType.button1);
         smanager.isOK = false;
         panel.gameObject.SetActive(true);
 
@@ -459,6 +465,7 @@ public class GameManager : MonoBehaviour
     {
         if (panel == null || btn == null) return;
 
+        SoundManager.Instance.SFXStart(SoundManager.SFXType.button2);
 
         var parent = panel.parent as RectTransform;
         Vector2 endLocal = CanvasUtil.ConvertBetweenCanvases(btn, parent);
@@ -469,7 +476,9 @@ public class GameManager : MonoBehaviour
         panel.DOAnchorPos(endLocal, 0.2f)
              .SetEase(Ease.InBack)
              .SetUpdate(true)
-             .OnComplete(() => { panel.gameObject.SetActive(false);
+             .OnComplete(() =>
+             {
+                 panel.gameObject.SetActive(false);
                  smanager.isOK = true;
                  smanager.BlockJJS = false;
              });
@@ -483,6 +492,7 @@ public class GameManager : MonoBehaviour
         panel.gameObject.SetActive(true);
         panel.localScale = Vector3.zero;
         panel.DOScale(Vector3.one, 0.3f).SetEase(Ease.OutBack);
+        SoundManager.Instance.SFXStart(SoundManager.SFXType.button1);
     }
 
     public void HidePanel(RectTransform panel)
@@ -491,6 +501,8 @@ public class GameManager : MonoBehaviour
         panel.DOScale(Vector3.zero, 0.2f)
              .SetEase(Ease.InBack)
              .OnComplete(() => panel.gameObject.SetActive(false));
+
+        SoundManager.Instance.SFXStart(SoundManager.SFXType.button2);
     }
 
     // ---- 패널별 쇼/하이드 ----
@@ -546,7 +558,7 @@ public class GameManager : MonoBehaviour
     }
 
     //type이 0 -> 위에서 아래로 슬라이드, 1-> 아래에서 위로 슬라이드
-    public void SlidePanelSetting(RectTransform Panel,Vector2 originPos,int type)
+    public void SlidePanelSetting(RectTransform Panel, Vector2 originPos, int type)
     {
         float duration = 0.4f;
 
@@ -561,7 +573,8 @@ public class GameManager : MonoBehaviour
                 .SetEase(Ease.OutCubic);
         }
         //아래에서 위로
-        else if (type == 1) {
+        else if (type == 1)
+        {
             Panel.DOAnchorPos(originPos + Vector2.up * Screen.height, duration)
                          .SetEase(Ease.InCubic)
                      .OnComplete(() =>
@@ -574,8 +587,9 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void SlidePanelDuring(RectTransform Panel, Vector2 targetPos) {
-        
+    public void SlidePanelDuring(RectTransform Panel, Vector2 targetPos)
+    {
+
         float duration = 0.2f;
 
         Panel.DOAnchorPos(targetPos, duration)
@@ -602,7 +616,7 @@ public class GameManager : MonoBehaviour
             CallPanel.DOKill();
         }
     }
-    
+
     public void ShowPanel_Message() => ShowPanelFromButton(MessagePanel, MessageBtn);
     public void HidePanel_Message() => HidePanelToButton(MessagePanel, MessageBtn);
 
@@ -622,8 +636,16 @@ public class GameManager : MonoBehaviour
     public void HidePanel_Folder() => HideBlurPanelToButton(FolderPanel, FolderBtn, folderCanvasGroup);
 
     public void ShowPanel_Item() => ShowBlurPanelFromButton(ItemFolderPanel, ItemFolderBtn, itemFolderCanvasGroup);
-    public void HidePanel_Item() => HideBlurPanelToButton(ItemFolderPanel, ItemFolderBtn, itemFolderCanvasGroup);
-    
+    public void HidePanel_Item(bool playSound = true) 
+    {
+        // 소리를 재생하라고 했을 때만 재생
+        if (playSound)
+        {
+            SoundManager.Instance.SFXStart(SoundManager.SFXType.button2);
+        }
+        
+        HideBlurPanelToButton(ItemFolderPanel, ItemFolderBtn, itemFolderCanvasGroup);
+    }
     /// <summary>
     /// 잠금 패널 열기
     /// </summary>
@@ -633,7 +655,7 @@ public class GameManager : MonoBehaviour
         {
             // 이미 있는 알림 시스템 호출
             NoticeManager.Instance.ShowSticky("배터리가 부족합니다");
-            return; 
+            return;
         }
         // 패널 애니 (기존과 동일)
         ShowPanelFromButton(LockPanel, LockBtn);
@@ -656,6 +678,7 @@ public class GameManager : MonoBehaviour
     {
         if (panel == null || btn == null || cg == null) return;
 
+        SoundManager.Instance.SFXStart(SoundManager.SFXType.button1);
         smanager.isOK = false;
 
         // [중요] 이미 SetActive(true) 상태임. 초기화 렉 없음.
@@ -685,7 +708,7 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void CloseBlurPanelsImmediate()
     {
-        Debug.Log("[GameManager] CloseBlurPanelsImmediate Called!");
+        // Debug.Log("[GameManager] CloseBlurPanelsImmediate Called!");
 
         if (FolderPanel != null)
         {
@@ -698,7 +721,7 @@ public class GameManager : MonoBehaviour
             ItemFolderPanel.DOKill();
             ItemFolderPanel.gameObject.SetActive(false);
         }
-        
+
         // 블러 캔버스 그룹도 리셋
         if (folderCanvasGroup != null)
         {
@@ -723,6 +746,7 @@ public class GameManager : MonoBehaviour
         // [수정] 참조가 없더라도 일단 스와이프 잠금은 해제해야 함 (버그 방지)
         if (phoneSwiper != null) phoneSwiper.isUsingTab = false;
 
+        SoundManager.Instance.SFXStart(SoundManager.SFXType.button2);
         if (panel == null || btn == null || cg == null) return;
 
         var parent = panel.parent as RectTransform;

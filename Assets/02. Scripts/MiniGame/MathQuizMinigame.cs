@@ -91,14 +91,14 @@ public class MathQuizMiniGame : MonoBehaviour
     {
         if (!questionText || answerButtons == null || answerButtons.Length < 3 || answerTexts == null || answerTexts.Length < 3)
         {
-            Debug.LogError("[MathQuizMiniGame] UI 레퍼런스가 부족해.");
+            // Debug.LogError("[MathQuizMiniGame] UI 레퍼런스가 부족해.");
             _hook?.ReportFail();
             return;
         }
 
         if (!TryGenerateValidQuestion(out var q))
         {
-            Debug.LogWarning("[MathQuizMiniGame] 유효한 문제 생성 실패");
+            // Debug.LogWarning("[MathQuizMiniGame] 유효한 문제 생성 실패");
             _hook?.ReportFail();
             return;
         }

@@ -100,7 +100,7 @@ public class SyllableBlock : MonoBehaviour
         }
         catch (System.Exception e)
         {
-            Debug.LogWarning($"[SyllableBlock] compose fail L='{choseong}' V='{jungseong}' T='{jongseong}': {e.Message}");
+            // Debug.LogWarning($"[SyllableBlock] compose fail L='{choseong}' V='{jungseong}' T='{jongseong}': {e.Message}");
             label.text = (choseong ?? "") + (jungseong ?? "") + (jongseong ?? "");
         }
     }
@@ -283,7 +283,7 @@ public class SyllableBlock : MonoBehaviour
             if (!createIfNone) return false;
             if (!Prefab)
             {
-                Debug.LogWarning("[SyllableBlock] Prefab not assigned");
+                // Debug.LogWarning("[SyllableBlock] Prefab not assigned");
                 return false;
             }
 
@@ -367,7 +367,7 @@ public class SyllableBlock : MonoBehaviour
     {
         if (!Prefab)
         {
-            Debug.LogError("[SyllableBlock] Prefab 이 등록되어 있지 않음");
+            // Debug.LogError("[SyllableBlock] Prefab 이 등록되어 있지 않음");
             return null;
         }
 

@@ -57,17 +57,17 @@ namespace GoogleMobileAds.Editor
 
         private void ApplyBuildSettings(BuildReport report)
         {
-            Debug.Log("Running Android Gradle Build Pre-Processor.");
+            // Debug.Log("Running Android Gradle Build Pre-Processor.");
 
             // Set Minimum Api Level.
             if (PlayerSettings.Android.minSdkVersion < (AndroidSdkVersions)MinimumAPILevel)
             {
                 PlayerSettings.Android.minSdkVersion = (AndroidSdkVersions)MinimumAPILevel;
-                Debug.Log($"Set minimum API Level to: {MinimumAPILevel}.");
+                // Debug.Log($"Set minimum API Level to: {MinimumAPILevel}.");
             }
             else
             {
-                Debug.Log($"Verified Minimum API Level is >= {MinimumAPILevel}.");
+                // Debug.Log($"Verified Minimum API Level is >= {MinimumAPILevel}.");
             }
 
             // Create Assets/Plugins folder.
@@ -104,22 +104,22 @@ namespace GoogleMobileAds.Editor
                     File.AppendAllText(
                         customGradlePropertiesTemplatesFilePath,
                         Environment.NewLine + JetifierEntry);
-                    Debug.Log($"Added Jetifier Entry.");
+                    // Debug.Log($"Added Jetifier Entry.");
                 }
                 else
                 {
-                    Debug.Log($"Verified Jetifier Entry exists.");
+                    // Debug.Log($"Verified Jetifier Entry exists.");
                 }
             }
             else
             {
-                Debug.LogError("Failed to add Jetifier Entry.");
+                // Debug.LogError("Failed to add Jetifier Entry.");
             }
             #endif
 
-            Debug.Log("Resolving Android Gradle dependencies.");
+            // Debug.Log("Resolving Android Gradle dependencies.");
             PlayServicesResolver.ResolveSync(true);
-            Debug.Log("Android Build Pre-Processor finished.");
+            // Debug.Log("Android Build Pre-Processor finished.");
         }
 
         /// <summary>
@@ -150,7 +150,7 @@ namespace GoogleMobileAds.Editor
             if (foundTargetFile && foundDisabledFile)
             {
                 File.Delete(disabledPath);
-                Debug.Log($"Removed disabled {fileName}.");
+                // Debug.Log($"Removed disabled {fileName}.");
                 return;
             }
             // If DISABLED exists, move it to target.
@@ -158,13 +158,13 @@ namespace GoogleMobileAds.Editor
             {
                 File.Move(disabledPath, targetPath);
                 AssetDatabase.Refresh();
-                Debug.Log($"Enabled {fileName}.");
+                // Debug.Log($"Enabled {fileName}.");
                 return;
             }
             // If target exists, return true.
             if (foundTargetFile)
             {
-                Debug.Log($"Verified {fileName}.");
+                // Debug.Log($"Verified {fileName}.");
                 return;
             }
 
@@ -184,7 +184,7 @@ namespace GoogleMobileAds.Editor
             }
             File.Copy(sourceFileName, targetPath);
             AssetDatabase.Refresh();
-            Debug.Log($"Created {fileName}.");
+            // Debug.Log($"Created {fileName}.");
         }
     }
 }

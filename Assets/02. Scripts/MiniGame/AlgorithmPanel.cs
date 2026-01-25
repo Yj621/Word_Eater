@@ -55,6 +55,8 @@ public class AlgorithmPanel : MonoBehaviour
             Mode = true;
             StartCoroutine(OpenPageTab());
         });
+
+        SoundManager.Instance.SFXStart(SoundManager.SFXType.button1);
     }
 
     public void OpenHardMode()
@@ -68,6 +70,8 @@ public class AlgorithmPanel : MonoBehaviour
             Mode = false;
             StartCoroutine(OpenPageTab());
         });
+
+        SoundManager.Instance.SFXStart(SoundManager.SFXType.button1);
     }
 
     public void CloseMode()

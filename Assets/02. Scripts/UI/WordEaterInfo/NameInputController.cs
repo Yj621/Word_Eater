@@ -121,7 +121,7 @@ public class NameInputController : MonoBehaviour
 
         if (string.IsNullOrWhiteSpace(inputName))
         {
-            Debug.LogWarning("이름을 입력해주세요.");
+            // Debug.LogWarning("이름을 입력해주세요.");
             return; // 빈 이름은 진행 안 함
         }
 

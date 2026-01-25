@@ -66,7 +66,7 @@ public class MiniGame1_Manager : MonoBehaviour
             GameEndCheck = false;
 
             //이후 성공 기능 추가
-            Debug.Log("Success!");
+            // Debug.Log("Success!");
         }
     }
 
@@ -75,7 +75,7 @@ public class MiniGame1_Manager : MonoBehaviour
         GameEndCheck = false;
 
         // 이후 실패 함수 추가
-        Debug.Log("Fail!");
+        // Debug.Log("Fail!");
     }
 
 

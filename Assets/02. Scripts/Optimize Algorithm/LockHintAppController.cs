@@ -19,7 +19,7 @@ public class LockHintAppController : MonoBehaviour
         // 필수 컴포넌트 연결 안 돼 있으면 에러 로그 띄우고 중단함
         if (battery == null || lockUI == null)
         {
-            Debug.LogWarning("[LockHint] battery 또는 lockUI 미할당됨");
+            // Debug.LogWarning("[LockHint] battery 또는 lockUI 미할당됨");
             return;
         }
 

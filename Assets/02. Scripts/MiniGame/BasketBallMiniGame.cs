@@ -204,7 +204,7 @@ public class BasketBallMiniGame : MonoBehaviour, IBeginDragHandler, IDragHandler
 
     private void OnGoal()
     {
-        Debug.Log("GOAL!");
+        // Debug.Log("GOAL!");
         _currentGoals--;
         UpdateUI();
 

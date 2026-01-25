@@ -34,7 +34,7 @@ public class JamoInventory : MonoBehaviour
         if (_counts.TryGetValue(jamo, out var cnt)) _counts[jamo] = cnt + 1;
         else _counts[jamo] = 1;
 
-        Debug.Log($"[JamoInventory] {type} '{jamo}' 획득 총 {_counts[jamo]}개");
+        // Debug.Log($"[JamoInventory] {type} '{jamo}' 획득 총 {_counts[jamo]}개");
 
         // 2) 실제 키보드 슬롯에 +1 지급
         var kb = Keyboard;
@@ -42,7 +42,7 @@ public class JamoInventory : MonoBehaviour
         {
             if (!kb.AddKeyByGlyph(jamo))
             {
-                Debug.LogWarning($"[JamoInventory] '{jamo}' 를 키보드에 추가하지 못했어.");
+                // Debug.LogWarning($"[JamoInventory] '{jamo}' 를 키보드에 추가하지 못했어.");
             }
         }
     }

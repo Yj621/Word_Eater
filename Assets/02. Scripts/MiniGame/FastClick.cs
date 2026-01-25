@@ -41,7 +41,7 @@ public class FastClick : MonoBehaviour
     {
         if (spawnArea == null || buttonPrefab == null)
         {
-            Debug.LogError("[FastClick] spawnArea나 buttonPrefab이 비어있음.");
+            // Debug.LogError("[FastClick] spawnArea나 buttonPrefab이 비어있음.");
             enabled = false;
             return;
         }

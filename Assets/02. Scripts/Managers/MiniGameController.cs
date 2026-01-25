@@ -163,7 +163,7 @@ public class MiniGameController : MonoBehaviour
 
         if (minigames == null || minigames.Length == 0)
         {
-            Debug.LogWarning("[MiniGameController] 등록된 미니게임이 없음");
+            // Debug.LogWarning("[MiniGameController] 등록된 미니게임이 없음");
             FailAndClose();
             return;
         }
@@ -278,7 +278,7 @@ public class MiniGameController : MonoBehaviour
                         lastType = ItemDropManager.Instance.ObtainRandomItem(showUI: false);
                     }
 
-                    Debug.Log($"[MiniGame] 이지모드 보상: 총 {earnedCount}회 가챠 실행 완료");
+                    // Debug.Log($"[MiniGame] 이지모드 보상: 총 {earnedCount}회 가챠 실행 완료");
                     return lastType; // 마지막 획득한 타입을 리턴 (대표용)
                 }
             }

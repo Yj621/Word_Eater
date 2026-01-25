@@ -75,11 +75,11 @@ public class StoryManager : MonoBehaviour
         {
             screenButton.onClick.RemoveAllListeners();
             screenButton.onClick.AddListener(OnScreenClick);
-            Debug.Log("[StoryManager] Screen Button 연결 완료");
+            // Debug.Log("[StoryManager] Screen Button 연결 완료");
         }
         else
         {
-            Debug.LogError("[StoryManager] Screen Button이 연결되지 않았습니다! 인스펙터를 확인하세요.");
+            // Debug.LogError("[StoryManager] Screen Button이 연결되지 않았습니다! 인스펙터를 확인하세요.");
         }
 
         // 2. 미니게임 UI 초기화
@@ -100,7 +100,7 @@ public class StoryManager : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("[StoryManager] Story Data가 비어있습니다.");
+            // Debug.LogWarning("[StoryManager] Story Data가 비어있습니다.");
         }
     }
 
@@ -160,7 +160,7 @@ public class StoryManager : MonoBehaviour
     // 화면 클릭 시 처리
     private void OnScreenClick()
     {
-        Debug.Log($"[StoryManager] 화면 클릭됨! (Typing: {isTyping}, MiniGame: {isMiniGameActive})");
+        // Debug.Log($"[StoryManager] 화면 클릭됨! (Typing: {isTyping}, MiniGame: {isMiniGameActive})");
 
         // 1. 미니게임 중일 때
         if (isMiniGameActive)
@@ -189,7 +189,7 @@ public class StoryManager : MonoBehaviour
     {
         if (index >= storyData.Count)
         {
-            Debug.Log("[StoryManager] 스토리 종료");
+            // Debug.Log("[StoryManager] 스토리 종료");
             EndStory();
             return;
         }
@@ -393,7 +393,7 @@ public class StoryManager : MonoBehaviour
 
     private void StartMiniGame()
     {
-        Debug.Log("미니게임 시작!");
+        // Debug.Log("미니게임 시작!");
         isMiniGameActive = true;
         currentFill = 0f;
 
@@ -420,7 +420,7 @@ public class StoryManager : MonoBehaviour
     private IEnumerator RoutineMiniGameClear()
     {
         isMiniGameActive = false; // 더 이상 클릭 안 먹힘
-        Debug.Log("미니게임 클리어!");
+        // Debug.Log("미니게임 클리어!");
 
         // 1. 이미지 색 변경
         if (targetChangeImage != null)

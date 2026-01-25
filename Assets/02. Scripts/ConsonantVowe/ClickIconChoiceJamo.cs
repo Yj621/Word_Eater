@@ -33,10 +33,12 @@ public class ClickIconChoiceJamo : MonoBehaviour, IPointerClickHandler
     {
         if (chooserPanel == null || targetPanel == null)
         {
-            Debug.LogWarning("[ClickIconChoiceJamo] chooserPanel 또는 targetCanvas 미지정");
+            // Debug.LogWarning("[ClickIconChoiceJamo] chooserPanel 또는 targetCanvas 미지정");
             return;
         }
 
+        SoundManager.Instance.SFXStart(SoundManager.SFXType.button1);
+        
         // [수정] 직접 끄지 않고 Chooser에 위임 (프리팹 파괴 대비)
         // if (iconGroup != null) iconGroup.SetActive(false); 
 

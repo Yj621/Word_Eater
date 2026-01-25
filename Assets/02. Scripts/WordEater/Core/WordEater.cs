@@ -173,12 +173,12 @@ namespace WordEater.Core
             // [디버깅] 데이터베이스 연결 확인
             if (wordimgdatabase == null)
             {
-                Debug.LogError("❌ [치명적 오류] WordImgDatabase가 연결되지 않았습니다! 인스펙터를 확인하세요.");
+                // Debug.LogError("❌ [치명적 오류] WordImgDatabase가 연결되지 않았습니다! 인스펙터를 확인하세요.");
                 return;
             }
             if (wordimgdatabase.entries == null || wordimgdatabase.entries.Count == 0)
             {
-                Debug.LogError("❌ [데이터 오류] WordImgDatabase는 연결됐지만, 내용물(Entries)이 비어있습니다!");
+                // Debug.LogError("❌ [데이터 오류] WordImgDatabase는 연결됐지만, 내용물(Entries)이 비어있습니다!");
                 return;
             }
 
@@ -205,7 +205,7 @@ namespace WordEater.Core
                             var pet = GetComponent<WordEaterPet>();
                             if (pet != null) pet.SetAnimSprites(entry.stage1Anim?.ToArray());
 
-                            Debug.Log($"[Visual Update] New Bit Image: {wordImgString}");
+                            // Debug.Log($"[Visual Update] New Bit Image: {wordImgString}");
                         }
                     }
                     // bit 아니면 다음 단계로
@@ -234,7 +234,7 @@ namespace WordEater.Core
                             }
                             else
                             {
-                                Debug.LogWarning($"⚠️ ID '{wordImgString}'에 해당하는 이미지를 DB에서 찾을 수 없습니다.");
+                                // Debug.LogWarning($"⚠️ ID '{wordImgString}'에 해당하는 이미지를 DB에서 찾을 수 없습니다.");
                             }
                         }
                     }
@@ -279,7 +279,7 @@ namespace WordEater.Core
             }
             catch (System.Exception e)
             {
-                Debug.LogError($"UpdateVisuals 내부 에러 발생: {e.Message}");
+                // Debug.LogError($"UpdateVisuals 내부 에러 발생: {e.Message}");
             }
         }
         #endregion
@@ -330,7 +330,7 @@ namespace WordEater.Core
         {
             if (battery.CurrentPercent <= 0)
             {
-                Debug.Log("[결제 후 소진] 사망 처리");
+                // Debug.Log("[결제 후 소진] 사망 처리");
                 StartCoroutine(DieSequenceRoutine());
             }
         }

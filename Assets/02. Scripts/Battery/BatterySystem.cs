@@ -86,7 +86,7 @@ namespace WordEater.Systems
         {
             if (batteryPopup == null)
             {
-                Debug.LogWarning("[Battery] batteryAdPopup 미할당");
+                // Debug.LogWarning("[Battery] batteryAdPopup 미할당");
                 return;
             }
 
@@ -99,7 +99,7 @@ namespace WordEater.Systems
             // 광고 충전 팝업 표시 (수락 시 RefillToMax 실행)
             batteryPopup.YesNoPanelShow(
                 onAccept: () => RefillToMax(),
-                onDecline: () => Debug.Log("[Battery] 광고 충전 거절")
+                onDecline: () =>  Debug.Log("[Battery] 광고 충전 거절")
             );
         }
 
@@ -144,7 +144,7 @@ namespace WordEater.Systems
 
             // 방전 이벤트 발생
             GameEvents.OnBatteryDepleted?.Invoke();
-            Debug.Log("[Battery] 강제 방전(ForceEmpty) 실행됨");
+            // Debug.Log("[Battery] 강제 방전(ForceEmpty) 실행됨");
         }
 
         /// <summary>
@@ -299,7 +299,7 @@ namespace WordEater.Systems
             SyncCellsFromPercent();
 
             int actualRecovered = currentBattery - beforeBattery;
-            Debug.Log($"[Battery] 부재중 {timePassed.TotalMinutes:F1}분 경과. {actualRecovered}% 회복.");
+            // Debug.Log($"[Battery] 부재중 {timePassed.TotalMinutes:F1}분 경과. {actualRecovered}% 회복.");
 
             // 메시지 및 아이템 처리
             string finalMessage = "";

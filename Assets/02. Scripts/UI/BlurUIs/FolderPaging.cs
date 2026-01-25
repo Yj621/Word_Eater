@@ -36,7 +36,7 @@ public class FolderPaging : MonoBehaviour
         // DOTween을 이용한 부드러운 이동
         content.DOAnchorPosX(targetPosX, snapSpeed).SetEase(Ease.OutCubic);
 
-        Debug.Log($"현재 페이지: {pageIndex + 1}");
+        // Debug.Log($"현재 페이지: {pageIndex + 1}");
     }
 
     // 좌우 버튼(< >) 기능용

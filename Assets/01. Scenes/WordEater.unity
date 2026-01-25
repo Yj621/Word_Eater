@@ -6787,6 +6787,8 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 76c0a1f5b83ea27419201023f2fe004b, type: 3}
   - {fileID: 8300000, guid: c05a30c593db41f4b8027c58d2267f91, type: 3}
   - {fileID: 8300000, guid: b33572567126d564f9fb9171b3c10e5b, type: 3}
+  - {fileID: 8300000, guid: a5d4c1bbf490b469db49426c698eb635, type: 3}
+  - {fileID: 8300000, guid: a29afedcfab5a4b0dbbeb67cd3eb8c13, type: 3}
 --- !u!1 &244407811
 GameObject:
   m_ObjectHideFlags: 0
@@ -57087,19 +57089,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1758744492}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 689223889583237474}
-        m_TargetAssemblyTypeName: 
-        m_MethodName: 
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: 
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &1758744492
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -68765,7 +68755,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a82eea42e722eb44b90dd0c5132ceaf1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AdsManager
-  rewardedAdUnitId: unused
+  rewardedAdRevivalId: ca-app-pub-3940256099942544/5354046379
 --- !u!224 &4387353267101508220
 RectTransform:
   m_ObjectHideFlags: 0

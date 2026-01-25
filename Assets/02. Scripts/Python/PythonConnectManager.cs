@@ -30,7 +30,7 @@ public class PythonConnectManager : MonoBehaviour
         {
             foreach (var word in result)
             {
-                Debug.Log("결과: " + word);
+                // Debug.Log("결과: " + word);
             }
         }));
         */
@@ -40,11 +40,11 @@ public class PythonConnectManager : MonoBehaviour
         {
             if (result.HasValue)
             {
-                Debug.Log("콜백으로 받은 유사도: " + result.Value);
+                // Debug.Log("콜백으로 받은 유사도: " + result.Value);
             }
             else
             {
-                Debug.Log("콜백: 부정확한 단어 또는 요청 실패");
+                // Debug.Log("콜백: 부정확한 단어 또는 요청 실패");
             }
         }));
         */
@@ -72,7 +72,7 @@ public class PythonConnectManager : MonoBehaviour
             if (request.result == UnityWebRequest.Result.Success)
             {
                 string jsonResponse = request.downloadHandler.text;
-                Debug.Log("서버 응답: " + jsonResponse);
+                // Debug.Log("서버 응답: " + jsonResponse);
                 ResultData responseData = JsonConvert.DeserializeObject<ResultData>(jsonResponse);
 
                 if (responseData.result != null && responseData.result.Count > 0)
@@ -86,7 +86,7 @@ public class PythonConnectManager : MonoBehaviour
             }
             else
             {
-                Debug.LogError("요청 실패: " + request.error);
+                // Debug.LogError("요청 실패: " + request.error);
                 return new List<string> { "요청 실패" };
             }
         }
@@ -126,7 +126,7 @@ public class PythonConnectManager : MonoBehaviour
             }
             else
             {
-                Debug.LogError("요청 실패: " + request.error);
+                // Debug.LogError("요청 실패: " + request.error);
                 return null;
             }
         }

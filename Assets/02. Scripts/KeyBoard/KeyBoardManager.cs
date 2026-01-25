@@ -118,7 +118,6 @@ public class KeyBoardManager : MonoBehaviour
             if (loaded.Length > 0)
             {
                 KeyCount.SetAllCounts(loaded);
-                Debug.Log($"[KeyBoard] 저장된 자모 개수 불러오기 완료 (Max: {KeyCount.MaxCount})");
             }
         }
     }
@@ -296,7 +295,7 @@ public class KeyBoardManager : MonoBehaviour
             var parentBlock = m.GetComponentInParent<SyllableBlock>();
             if (parentBlock == null)
             {
-                Debug.Log("[TryBuildWord] orphan jamo found → invalid word");
+                // Debug.Log("[TryBuildWord] orphan jamo found → invalid word");
                 return false;
             }
         }
@@ -307,7 +306,7 @@ public class KeyBoardManager : MonoBehaviour
         {
             if (string.IsNullOrEmpty(b.choseong) || string.IsNullOrEmpty(b.jungseong))
             {
-                Debug.Log($"[TryBuildWord] invalid block(need L+V): L='{b.choseong}' V='{b.jungseong}'");
+                // Debug.Log($"[TryBuildWord] invalid block(need L+V): L='{b.choseong}' V='{b.jungseong}'");
                 return false;
             }
 
@@ -334,7 +333,7 @@ public class KeyBoardManager : MonoBehaviour
             }
             catch (Exception e)
             {
-                Debug.LogWarning($"[Submit] compose fail from block L='{L}' V='{V}' T='{T}': {e.Message}");
+                // Debug.LogWarning($"[Submit] compose fail from block L='{L}' V='{V}' T='{T}': {e.Message}");
                 return false;
             }
         }
@@ -447,9 +446,9 @@ public class KeyBoardManager : MonoBehaviour
             // [디버그] 좌표 변환 실패 시 원인 파악용 로그
             if (!convertSuccess || local == Vector2.zero) 
             {
-                 Debug.LogWarning($"[KeyBoard] Spawn Check - Success:{convertSuccess}, Local:{local}");
-                 Debug.LogWarning($"[KeyBoard] Root: {root.name} / Active: {root.gameObject.activeInHierarchy}");
-                 // Debug.LogWarning($"[KeyBoard] Cam Used: {(camToUse != null ? camToUse.name : "Null")}");
+                 // Debug.LogWarning($"[KeyBoard] Spawn Check - Success:{convertSuccess}, Local:{local}");
+                 // Debug.LogWarning($"[KeyBoard] Root: {root.name} / Active: {root.gameObject.activeInHierarchy}");
+                 // // Debug.LogWarning($"[KeyBoard] Cam Used: {(camToUse != null ? camToUse.name : "Null")}");
             }
 
             _dragOffset = longPressSpawnOffset;
@@ -554,7 +553,7 @@ public class KeyBoardManager : MonoBehaviour
         int index = FindSlotIndexByGlyph(glyph);
         if (index < 0)
         {
-            Debug.LogWarning($"[KeyBoardManager] '{glyph}' 에 해당하는 슬롯을 찾지 못했어.");
+            // Debug.LogWarning($"[KeyBoardManager] '{glyph}' 에 해당하는 슬롯을 찾지 못했어.");
             return false;
         }
 

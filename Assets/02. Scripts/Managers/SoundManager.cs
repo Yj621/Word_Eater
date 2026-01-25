@@ -65,7 +65,9 @@ public class SoundManager : MonoBehaviour
         zamoCombine,
         historymove, // 20
         minigameWin,
-        minigameLose
+        minigameLose,
+        button1,
+        button2
     }
 
     private void Awake()

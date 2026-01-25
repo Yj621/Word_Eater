@@ -44,7 +44,7 @@ namespace GoogleMobileAds.Editor
                 string linkXmlPackagePath = Path.Combine(parentDirectoryPath, "link.xml");
                 if(String.IsNullOrEmpty(linkXmlPackagePath))
                 {
-                    Debug.LogWarning("link.xml not found in the package.");
+                    // Debug.LogWarning("link.xml not found in the package.");
                     return;
                 }
                 AssetDatabase.CopyAsset(linkXmlPackagePath, _linkXmlAssetsPath);

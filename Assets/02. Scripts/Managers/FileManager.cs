@@ -176,11 +176,11 @@ public class FileManager : MonoBehaviour
 
             // 3. 다시 저장
             File.WriteAllText(WordEaterPath, JsonUtility.ToJson(data, true));
-            Debug.Log("[FileManager] 자모 데이터 부분 저장 완료");
+            // Debug.Log("[FileManager] 자모 데이터 부분 저장 완료");
         }
         catch (System.Exception e)
         {
-            Debug.LogError($"[FileManager] 자모 저장 실패: {e.Message}");
+            // Debug.LogError($"[FileManager] 자모 저장 실패: {e.Message}");
         }
     }
 
@@ -355,7 +355,7 @@ public class FileManager : MonoBehaviour
         // [중요] 변환하기 전에 먼저 비어있는지 확인해야 합니다!
         if (string.IsNullOrEmpty(json) || json == "{}" || json.Trim() == "")
         {
-            Debug.LogWarning("저장된 사운드 데이터가 비어있습니다. 기본값으로 초기화합니다.");
+            // Debug.LogWarning("저장된 사운드 데이터가 비어있습니다. 기본값으로 초기화합니다.");
             soundmanager.SetBGMVolume(1f);
             soundmanager.SetSFXVolume(1f);
             return; // 여기서 함수 종료
@@ -376,7 +376,7 @@ public class FileManager : MonoBehaviour
         catch (System.Exception e)
         {
             // 혹시 모를 깨진 파일 에러 방지
-            Debug.LogError("사운드 데이터 파싱 오류: " + e.Message);
+            // Debug.LogError("사운드 데이터 파싱 오류: " + e.Message);
             soundmanager.SetBGMVolume(1f);
             soundmanager.SetSFXVolume(1f);
         }
@@ -465,10 +465,10 @@ public class FileManager : MonoBehaviour
         foreach (var path in thumbs)
         {
             File.Delete(path);
-            Debug.Log($"[FileManager] 삭제: {path}");
+            // Debug.Log($"[FileManager] 삭제: {path}");
         }
 
-        Debug.Log("[FileManager] 도감 데이터 초기화 완료");
+        // Debug.Log("[FileManager] 도감 데이터 초기화 완료");
     }
 
 
@@ -570,7 +570,7 @@ public class FileManager : MonoBehaviour
     /// </summary>
     public void ClearAllData()
     {
-        Debug.Log("[FileManager] 모든 데이터 초기화 시작...");
+        // Debug.Log("[FileManager] 모든 데이터 초기화 시작...");
 
         // JSON 파일들 삭제
         DeleteFileIfExists(WordEaterPath);
@@ -622,7 +622,7 @@ public class FileManager : MonoBehaviour
         // 보통은 여기서 씬을 재로딩(SceneManager.LoadScene)하는 것이 가장 깔끔합니다.
         // 만약 즉시 반영하려면 BatterySystem.Instance.RefillToMax() 같은 걸 호출해야 합니다.
 
-        Debug.Log("[FileManager] 모든 데이터가 초기화되었습니다.");
+        // Debug.Log("[FileManager] 모든 데이터가 초기화되었습니다.");
 
         // (선택사항) 깔끔하게 모든 시스템(배터리 포함)을 리셋하기 위해 현재 씬 재시작
         // UnityEngine.SceneManagement.SceneManager.LoadScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene().name);

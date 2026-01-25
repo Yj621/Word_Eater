@@ -156,6 +156,9 @@ public class ADPopup : MonoBehaviour
     private void OnClickWatchAd()
     {
         if (!_visible) return;
+
+        SoundManager.Instance.SFXStart(SoundManager.SFXType.button1);
+
         SetButtonsInteractable(false);
 
         // 1. 광고 모드가 아니면 바로 수락 처리 (강제 제출 등)
@@ -178,7 +181,7 @@ public class ADPopup : MonoBehaviour
             onUnavailable: () =>
             {
                 SetButtonsInteractable(true);
-                Debug.LogWarning("[Ads] 광고 준비 안됨");
+                // Debug.LogWarning("[Ads] 광고 준비 안됨");
             }
         );
     }
@@ -186,6 +189,8 @@ public class ADPopup : MonoBehaviour
     private void OnClickNoThanks()
     {
         _onDecline?.Invoke();
+
+        SoundManager.Instance.SFXStart(SoundManager.SFXType.button2);
         Hide(); // 애니메이션과 함께 닫기
         ResetButtons();
     }

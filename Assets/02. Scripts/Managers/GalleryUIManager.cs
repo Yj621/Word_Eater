@@ -35,7 +35,7 @@ public class GalleryUIManager : MonoBehaviour
     {
         if (FileManager.Instance == null)
         {
-            Debug.LogWarning("[GalleryUIManager] FileManager가 없습니다.");
+            // Debug.LogWarning("[GalleryUIManager] FileManager가 없습니다.");
             return;
         }
 
