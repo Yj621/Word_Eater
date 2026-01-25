@@ -26,8 +26,6 @@ public class PhoneCrack : MonoBehaviour, IPointerClickHandler
     {
         _img = GetComponent<Image>();
         _hook = GetComponent<MiniGameHook>(); // 루트에 Hook 붙어있으면 바로 잡혀옴
-        if (_img == null)
-            Debug.LogError("[PhoneCrack] Image 컴포넌트가 필요함.");
     }
 
     private void OnEnable()

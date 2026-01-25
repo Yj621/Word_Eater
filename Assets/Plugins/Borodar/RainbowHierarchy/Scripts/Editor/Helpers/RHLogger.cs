@@ -8,17 +8,17 @@ namespace Borodar.RainbowHierarchy
 
         public static void Log(string message)
         {
-            Debug.Log($"{TAG} {message}");
+            // Debug.Log($"{TAG} {message}");
         }
 
         public static void LogWarning(string message)
         {
-            Debug.LogWarning($"{TAG} {message}");
+            // Debug.LogWarning($"{TAG} {message}");
         }
 
         public static void LogError(string message)
         {
-            Debug.LogError($"{TAG} {message}");
+            // Debug.LogError($"{TAG} {message}");
         }
     }
 }

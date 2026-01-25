@@ -23,6 +23,9 @@ namespace WordEater.Core
         [SerializeField] private GameManager gamemanager;            // 게임 매니저
         [SerializeField] private GalleryUIManager galleryUIManager;  // 도감 UI
         [SerializeField] private FileManager filemanager;            // 파일 관리자
+        [SerializeField] private AlgorithmMessage algoMessage;
+        [SerializeField] private ADPopup adPopup;
+        private string nameBit, nameByte, nameWord;
 
         [Header("에셋 연결")]
         [SerializeField] private Sprite[] stageSprites;      // 0:Bit, 1:Byte, 2:Word 단계별 이미지
@@ -41,6 +44,11 @@ namespace WordEater.Core
         /// </summary>
         public bool isDead { get; private set; } = false;
 
+        /// <summary>
+        /// 현재 배터리 잔량 (%) 외부 공개
+        /// </summary>
+        public int CurrentBatteryPercent => battery != null ? battery.CurrentPercent : 0;
+
         // 이미지 컴포넌트 캐싱용 변수임
         private Image _targetImage;
         private Image TargetImage => _targetImage ? _targetImage : (_targetImage = GetComponent<Image>());
@@ -50,6 +58,9 @@ namespace WordEater.Core
         public WordEntry CurrentEntry => currentEntry;
         public GrowthStage CurrentStage => stage;
         public string Answer => currentAnswer;
+
+        public WordImageDatabase wordimgdatabase;
+        public string wordImgString = "";
 
         private void Awake()
         {
@@ -65,13 +76,14 @@ namespace WordEater.Core
             // 레벨 범위 벗어나지 않게 클램핑함
             stage = (GrowthStage)Mathf.Clamp(level, 0, 2);
 
-            // 초기 단어 데이터 로드하고 저장된 정답으로 덮어씌움
-            currentEntry = wordService.PickInitialWord();
-            currentEntry.word = savedAnswer;
+            // 초기 단어 데이터 로드하고 WordBank 에서 찾아서 매칭
+            currentEntry = wordService.PickWordFromFile(level, savedAnswer);
             currentAnswer = currentEntry.word;
 
+            if (stage == GrowthStage.Bit) nameByte = currentAnswer;
+
             // 외형 업데이트하고 이벤트 알림
-            UpdateVisuals();
+            UpdateVisuals(1);
             NotifyNewWordAssigned();
             SaveCheckpoint();
         }
@@ -83,11 +95,30 @@ namespace WordEater.Core
         {
             // 히스토리 초기화함
             gamemanager.HistoryLIne = "";
+            gamemanager.RelevantLine = "";
+            gamemanager.RelevantResult.Clear();
+            gamemanager.isLength = false;
+            gamemanager.isFirst = false;
+            gamemanager.isLast = false;
+            gamemanager.isChoseongItem = false;
+
+            if (algoMessage != null)
+            {
+                algoMessage.ClearAllMessages();
+            }
 
             if (initial)
             {
                 // 완전 초기화일 경우 Bit 상태로 리셋함
                 ResetToBitConfig();
+
+                // Count 값들 0으로 초기화
+                gamemanager.callCount = 0;
+                gamemanager.msgCount = 0;
+                gamemanager.submitCount = 0;
+                gamemanager.lockCount = 0;
+
+                gamemanager.saveCountInmanager(4);
             }
             else
             {
@@ -99,7 +130,7 @@ namespace WordEater.Core
             SaveCheckpoint();
 
             // 현재 상태를 파일에 저장함
-            filemanager.SaveWordEaterInfo((int)stage, currentAnswer, gamemanager.HistoryLIne);
+            filemanager.SaveWordEaterInfo((int)stage, currentAnswer, gamemanager.HistoryLIne, gamemanager.RelevantResult, wordImgString, gamemanager.RelevantLine,gamemanager.isLength,gamemanager.isFirst,gamemanager.isLast,gamemanager.isChoseongItem);
             NotifyNewWordAssigned();
         }
 
@@ -118,69 +149,227 @@ namespace WordEater.Core
             // 새 단어 뽑고 이번 생애의 고유 ID 생성함
             currentEntry = wordService.PickInitialWord();
             currentAnswer = currentEntry.word;
+            nameBit = currentAnswer; // 첫 번째 단어 저장
             pendingEvoId = $"evo_{System.DateTime.UtcNow.Ticks}";
 
             // 초기 썸네일 캡처함
             CaptureThumbnail($"thumb_{pendingEvoId}_s0");
-
-            // 튜토리얼 씬이 아니면 관련 단어 버튼 활성화함
-            if (SceneManager.GetActiveScene().name != "TutoScene")
-            {
-                submitmanager.OnRelevantButton();
-            }
+            /*
+                        // 튜토리얼 씬이 아니면 관련 단어 버튼 활성화함
+                        if (SceneManager.GetActiveScene().name != "TutoScene")
+                        {
+                            submitmanager.OnRelevantButton();
+                        }*/
         }
 
         /// <summary>
         /// 현재 단계에 맞는 스프라이트로 교체하고 썸네일을 캡처함
         /// </summary>
-        private void UpdateVisuals()
+        private void UpdateVisuals(int type = 0) // 0-> 새로운 이미지 , 1 -> 이미지 불러오기
         {
+            // 1. TargetImage가 없으면 중단
             if (TargetImage == null) return;
+
+            // [디버깅] 데이터베이스 연결 확인
+            if (wordimgdatabase == null)
+            {
+                // Debug.LogError("❌ [치명적 오류] WordImgDatabase가 연결되지 않았습니다! 인스펙터를 확인하세요.");
+                return;
+            }
+            if (wordimgdatabase.entries == null || wordimgdatabase.entries.Count == 0)
+            {
+                // Debug.LogError("❌ [데이터 오류] WordImgDatabase는 연결됐지만, 내용물(Entries)이 비어있습니다!");
+                return;
+            }
 
             // 단계에 맞는 스프라이트 적용함
             int index = (int)stage;
-            if (stageSprites != null && index >= 0 && index < stageSprites.Length)
-            {
-                TargetImage.sprite = stageSprites[index];
-            }
 
-            // 살아있을 때만 썸네일 저장함
-            if (!isDead)
+            try // 안전 장치 추가
             {
-                string suffix = stage == GrowthStage.Bit ? "s0" : (stage == GrowthStage.Byte ? "s1" : "s2");
-                CaptureThumbnail($"thumb_{pendingEvoId}_{suffix}");
+                if (type == 0)
+                {
+                    // bit 단계면 랜덤 선택
+                    if (index == 0)
+                    {
+                        // [수정] stageSprites 여부와 상관없이 DB가 있으면 무조건 수행
+                        if (index >= 0)
+                        {
+                            int randomIndex = UnityEngine.Random.Range(0, wordimgdatabase.entries.Count);
+                            // 여기서 entries 접근 시 에러가 났었습니다.
+                            var entry = wordimgdatabase.entries[randomIndex];
+
+                            wordImgString = entry.wordId;
+                            TargetImage.sprite = entry.stage1;
+
+                            var pet = GetComponent<WordEaterPet>();
+                            if (pet != null) pet.SetAnimSprites(entry.stage1Anim?.ToArray());
+
+                            // Debug.Log($"[Visual Update] New Bit Image: {wordImgString}");
+                        }
+                    }
+                    // bit 아니면 다음 단계로
+                    else
+                    {
+                        if (stageSprites != null && index >= 0 && !string.IsNullOrEmpty(wordImgString))
+                        {
+                            WordStageImages cur = wordimgdatabase.entries.Find(e => e.wordId == wordImgString);
+
+                            if (cur != null) // 찾는 ID가 없을 수도 있음
+                            {
+                                var pet = GetComponent<WordEaterPet>();
+
+                                // byte
+                                if (index == 1)
+                                {
+                                    TargetImage.sprite = cur.stage2;
+                                    if (pet != null) pet.SetAnimSprites(cur.stage2Anim?.ToArray());
+                                }
+                                // word
+                                if (index == 2)
+                                {
+                                    TargetImage.sprite = cur.stage3;
+                                    if (pet != null) pet.SetAnimSprites(cur.stage3Anim?.ToArray());
+                                }
+                            }
+                            else
+                            {
+                                // Debug.LogWarning($"⚠️ ID '{wordImgString}'에 해당하는 이미지를 DB에서 찾을 수 없습니다.");
+                            }
+                        }
+                    }
+
+                    // 살아있을 때만 썸네일 저장함
+                    if (!isDead)
+                    {
+                        string suffix = stage == GrowthStage.Bit ? "s0" : (stage == GrowthStage.Byte ? "s1" : "s2");
+                        CaptureThumbnail($"thumb_{pendingEvoId}_{suffix}");
+                    }
+                }
+                else // type == 1 (로드 시)
+                {
+                    if (stageSprites != null && index >= 0 && !string.IsNullOrEmpty(wordImgString))
+                    {
+                        WordStageImages cur = wordimgdatabase.entries.Find(e => e.wordId == wordImgString);
+
+                        if (cur != null)
+                        {
+
+                            var pet = GetComponent<WordEaterPet>();
+
+                            // 0: Bit, 1: Byte, 2: Word
+                            if (index == 0)
+                            {
+                                TargetImage.sprite = cur.stage1;
+                                if (pet != null) pet.SetAnimSprites(cur.stage1Anim?.ToArray());
+                            }
+                            if (index == 1)
+                            {
+                                TargetImage.sprite = cur.stage2;
+                                if (pet != null) pet.SetAnimSprites(cur.stage2Anim?.ToArray());
+                            }
+                            if (index == 2)
+                            {
+                                TargetImage.sprite = cur.stage3;
+                                if (pet != null) pet.SetAnimSprites(cur.stage3Anim?.ToArray());
+                            }
+                        }
+                    }
+                }
+            }
+            catch (System.Exception e)
+            {
+                // Debug.LogError($"UpdateVisuals 내부 에러 발생: {e.Message}");
             }
         }
         #endregion
 
         #region [Game Loop]
-
         /// <summary>
         /// 제출 전 배터리 비용을 지불할 수 있는지 확인함
+        /// UI 팝업 대기를 위해 성공 시 실행할 로직(onSuccess)을 인자로 받음
         /// </summary>
-        public bool TryPayForSubmit()
+        public void TryPayForSubmit(Action onSuccess)
         {
-            if (isDead) return false;
+            if (isDead) return;
 
             ActionType costType = GetSubmitAction();
 
-            // 1 배터리 소모 시도함
-            if (!battery.TryConsume(costType))
+            // 1. 배터리가 충분한 경우 (정상 진행)
+            if (battery.TryConsume(costType))
             {
-                // 배터리 부족하면 알림 띄우고 실패 처리함
-                NoticeManager.Instance.ShowSticky("배터리가 부족합니다");
-                return false;
-            }
+                // 즉시 성공 로직 실행 (서버 통신 시작)
+                onSuccess?.Invoke();
 
-            // 2 소모 후 배터리가 0 이하가 되었는지 체크함
+            }
+            // 배터리가 부족한 경우 (팝업 띄우기)
+            else
+            {
+                adPopup.Configure("배터리 부족 경고", "강제 제출", "닫기");
+                adPopup.SetAdMode(false);
+
+                adPopup.YesNoPanelShow(
+                      onAccept: () =>
+                      {
+                          battery.ForceEmpty();
+                          onSuccess?.Invoke();
+                          // 여기도 사망 체크 없음 (DoFeedData 안에서 처리됨)
+                      },
+                      onDecline: () =>
+                      {
+                          NoticeManager.Instance.ShowSticky("배터리가 부족합니다");
+                      }
+                );
+            }
+        }
+
+        /// <summary>
+        /// 소모 후 사망 체크 헬퍼 메서드
+        /// </summary>
+        private void CheckBatteryDeath()
+        {
             if (battery.CurrentPercent <= 0)
             {
-                Debug.Log("[결제 후 소진] 사망 처리");
+                // Debug.Log("[결제 후 소진] 사망 처리");
                 StartCoroutine(DieSequenceRoutine());
-                return false; // 사망했으므로 로직 중단함
             }
+        }
 
-            return true;
+        /// <summary>
+        /// 미니게임 시작 비용 지불 (콜백 방식)
+        /// </summary>
+        public void TryPayForMiniGame(Action onSuccess)
+        {
+            if (isDead) return;
+
+            // 1. 배터리 충분함
+            if (battery.TryConsume(ActionType.MinigameStart))
+            {
+                onSuccess?.Invoke();
+            }
+            // 2. 배터리 부족함 -> 팝업
+            else
+            {
+                adPopup.Configure("배터리 부족", "강제 시작", "포기");
+                adPopup.SetAdMode(false); // 광고 없이
+
+                adPopup.YesNoPanelShow(
+                    onAccept: () =>
+                    {
+                        // 강제 시작: 배터리 0으로 만들고 게임 시작
+                        battery.ForceEmpty();
+
+                        onSuccess?.Invoke();
+
+                        // 미니게임 시작 비용도 없는데 했으므로 사망 처리
+                        StartCoroutine(DieSequenceRoutine());
+                    },
+                    onDecline: () =>
+                    {
+                        NoticeManager.Instance.ShowSticky("배터리가 부족합니다");
+                    }
+                );
+            }
         }
 
         /// <summary>
@@ -198,18 +387,19 @@ namespace WordEater.Core
             {
                 // 정답이면 진화 로직 실행함
                 ProcessEvolution();
+                SoundManager.Instance.SFXStart(SoundManager.SFXType.sucess);
             }
             else
             {
                 // 오답이면 피드백 줌
                 HandleMistake();
+                // 오답인 경우에만 배터리를 확인하여 사망 처리
+                if (battery.CurrentPercent <= 0)
+                {
+                    StartCoroutine(DieSequenceRoutine());
+                }
             }
 
-            // 행동 후 배터리가 방전되었는지 한번 더 체크함
-            if (battery.CurrentPercent <= 0)
-            {
-                StartCoroutine(DieSequenceRoutine());
-            }
         }
 
         /// <summary>
@@ -226,17 +416,20 @@ namespace WordEater.Core
         private void HandleMistake()
         {
             GameEvents.RaiseMistakeHit();
+
+            SoundManager.Instance.SFXStart(SoundManager.SFXType.wrongAnswer);
             Handheld.Vibrate();
         }
 
         /// <summary>
         /// 정답을 맞췄을 때 다음 단계로 진화하거나 엔딩을 봄
         /// </summary>
-        private void ProcessEvolution()
+        public void ProcessEvolution()
         {
             // 이미 최종 단계(Word)라면 엔딩 처리함
             if (stage == GrowthStage.Word)
             {
+                nameWord = currentAnswer; // 최종 단어 저장
                 HandleEnding();
                 return;
             }
@@ -255,6 +448,11 @@ namespace WordEater.Core
 
             // 다음 단계 시작함
             BeginStage(stage);
+            // 진화가 완료되었으므로, 새로운 단어에 대한 힌트(연관어)를 서버에 요청합니다.
+            if (submitmanager != null)
+            {
+                submitmanager.OnRelevantButton();
+            }
         }
 
         /// <summary>
@@ -262,12 +460,20 @@ namespace WordEater.Core
         /// </summary>
         private void HandleEnding()
         {
+            // 1. 진화 이벤트 발생
             GameEvents.OnEvolved?.Invoke(stage);
-            RegisterToGallery();
-            ItemDropManager.Instance.ObtainRandomItem();
 
-            gamemanager.EndingController(2);
+            // 2. 도감(데이터) 등록 - 백그라운드 작업
+            RegisterToGallery();
+
+            // 3. UI 갱신 (도감에 New 표시 등을 위함)
             galleryUIManager.Refresh();
+
+            // [중요] 아이템 획득(ObtainRandomItem) 코드는 여기서 삭제합니다.
+            // GameManager의 시퀀스 안에서 실행하도록 변경했기 때문입니다.
+
+            // 4. 게임 매니저에게 클리어 시퀀스 시작 요청
+            gamemanager.EndingController(2);
         }
 
         #endregion
@@ -330,7 +536,7 @@ namespace WordEater.Core
             if (ItemManager.Instance.TryUseItem(ItemType.ReviveTicket))
             {
                 RevivePlayer();
-                NoticeManager.Instance.ShowSticky("부활권 사용! 단어를 다시 맞춰보세요.");
+                UIManager.Instance.Show("부활권 사용!\n단어를 다시 맞춰보세요.");
             }
             else
             {
@@ -429,10 +635,18 @@ namespace WordEater.Core
             var item = new GalleryItem
             {
                 id = finalId,
-                displayName = currentEntry.word,
-                desc = GetDisplayTopic(currentEntry),
+                displayNameBit = nameBit,
+                displayNameByte = nameByte,
+                displayNameWord = currentAnswer, // 현재(Word단계) 단어                desc = GetDisplayTopic(currentEntry),
+                
+                callCount = GameManager.Instance.callCount,
+                msgCount = GameManager.Instance.msgCount,
+                submitCount = GameManager.Instance.submitCount,
+                lockCount = GameManager.Instance.lockCount,
+                
                 thumbPath = finalS2Path,
-                dateCaught = System.DateTime.Now.ToString("yyyy-MM-dd")
+                dateCaught = System.DateTime.Now.ToString("yyyy-MM-dd"),
+                spriteid = wordImgString
             };
 
             if (FileManager.Instance != null)
@@ -472,7 +686,7 @@ namespace WordEater.Core
             stage = s;
             currentAnswer = answer;
             NotifyNewWordAssigned();
-            UpdateVisuals();
+            UpdateVisuals(1);
         }
         #endregion
     }

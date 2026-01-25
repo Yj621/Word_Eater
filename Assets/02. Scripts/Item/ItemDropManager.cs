@@ -53,7 +53,7 @@ public class ItemDropManager : MonoBehaviour
 
         // 인벤토리에 지급
         ItemManager.Instance.AddItem(selectedType, 1);
-        Debug.Log($"[Drop] 아이템 획득: {selectedType}");
+        // Debug.Log($"[Drop] 아이템 획득: {selectedType}");
         string krName = ItemUtils.GetItemNameKR(selectedType);
 
         // 6. 획득 알림 UI

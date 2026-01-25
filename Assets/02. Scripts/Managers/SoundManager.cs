@@ -1,6 +1,8 @@
 using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.UI;
+using System.Collections.Generic;
+
 public class SoundManager : MonoBehaviour
 {
     public static SoundManager Instance; // 싱글톤 인스턴스
@@ -33,10 +35,40 @@ public class SoundManager : MonoBehaviour
     public Slider seSlider;
 
     // 브금
-    public AudioClip MainBGM; 
+    public AudioClip MainBGM1;
+    public AudioClip MainBGM2;
+    public AudioClip MainBGM3;
 
     //효과음
-
+    public List<AudioClip> sfxList;
+    public enum SFXType 
+    {
+        temp, //0번 소리 = 아직 없는 소리 임시 등록
+        startScene, 
+        tutoClick,
+        iconMove,
+        keyboardOpen,
+        keyboardClose,
+        jaMoDrag,
+        trashcan,
+        upAlram,
+        popup,
+        miniGame, // 10
+        call,
+        scrollView,
+        msgPopup,
+        dead,
+        wrongAnswer,
+        DogamAssign,
+        sucess,
+        notice,
+        zamoCombine,
+        historymove, // 20
+        minigameWin,
+        minigameLose,
+        button1,
+        button2
+    }
 
     private void Awake()
     {
@@ -46,7 +78,10 @@ public class SoundManager : MonoBehaviour
             Destroy(gameObject);
             return;
         }
-
+        if (transform.parent != null)
+        {
+            transform.SetParent(null);
+        }
         Instance = this;             // 싱글톤 등록
         DontDestroyOnLoad(gameObject); // 씬 전환 시 유지
 
@@ -107,7 +142,7 @@ public class SoundManager : MonoBehaviour
 
         Svalue = volume;
 
-        filemanager.SaveSoundInfo(Bvalue, volume);
+        filemanager.SaveSoundInfo(Svalue, volume);
     }
 
 
@@ -130,31 +165,56 @@ public class SoundManager : MonoBehaviour
 
 
     public void BGMStart(int BGMType) {
+        if (bgmSource.isPlaying)
+            bgmSource.Stop();
+
         switch (BGMType)
         {
             case 1:
-                bgmSource.clip = MainBGM;
-                bgmSource.loop = true;
-                bgmSource.Play();
+                bgmSource.clip = MainBGM1;
+                break;
+
+            case 2:
+                bgmSource.clip = MainBGM2;
+                break;
+
+            case 3:
+                bgmSource.clip = MainBGM3;
                 break;
 
             default:
                 break;
+        }
+
+        bgmSource.loop = true;
+        bgmSource.Play();
+    }
+
+    public void SFXStart(SFXType type)
+    {
+        int index = (int)type;
+        if (index < sfxList.Count)
+        {
+                SFXSource.PlayOneShot(sfxList[index]);
         }
 
     }
 
-    public void SFXStart(int SFXType)
-    {
-        switch (SFXType)
-        {
-            case 1:
-                //SFXSource.PlayOneShot(SFX01);
-                break;
+    // 전화 효과음 출력 함수
+    // 브금이랑 같이 들려도 되나 싶긴 한데 브금 잠깐 꺼놓으면 진짜 전화라고 생각할듯?
+    public void SFXCall() {
+        SFXSource.clip = sfxList[11];
+        SFXSource.loop = true;
+        SFXSource.Play();
+    }
+    // 전화 효과음 종료 함수
+    public void SFXCallClose() {
+        SFXSource.Stop();
+        SFXSource.loop = false;
+    }
 
-            default:
-                break;
-        }
-
+    // 버튼에 붙이고 싶어서 만든 함수
+    public void SFXHistory() {
+        SFXSource.PlayOneShot(sfxList[20]);
     }
 }

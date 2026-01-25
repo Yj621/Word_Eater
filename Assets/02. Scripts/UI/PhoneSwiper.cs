@@ -23,10 +23,14 @@ public class PhoneSwiper : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
     public float swipeThreshold = 120f;   // 드래그 종결 시 페이지 전환 임계 픽셀
     public float snapSpeed = 12f;         // 스냅 속도(클수록 빠름)
     public bool useUnscaledTime = true;
+
+    [Tooltip("탭 UI가 켜져 있을 때 스와이프 잠금 여부")]
     public bool isUsingTab = false;
 
+    public SlideManager slidemanager;
+
     int pageCount;
-    int current;
+    public int current;
     float pageWidth;
     Vector2 dragStartPointer;
     Vector2 dragStartContentPos;
@@ -35,14 +39,15 @@ public class PhoneSwiper : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
 
     void Awake()
     {
-        isUsingTab = false;
         if (!viewport) viewport = transform as RectTransform;
 
         if (pages == null || pages.Length == 0)
+        {
             pages = content.Cast<Transform>()
                            .Select(t => t as RectTransform)
                            .Where(r => r != null)
                            .ToArray();
+        }
 
         pageCount = pages.Length;
         startPage = Mathf.Clamp(startPage, 0, Mathf.Max(0, pageCount - 1));
@@ -52,7 +57,8 @@ public class PhoneSwiper : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
         Relayout();
         JumpTo(current);
         UpdateDots();
-    }
+        isUsingTab = false;
+}
 
     void EnsureViewportMask()
     {
@@ -81,7 +87,6 @@ public class PhoneSwiper : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
         // 페이지 폭 기준 계산 (원본 page 크기 유지)
         if (pageCount > 0)
         {
-            // 프리팹/에디터에서 설정한 첫 번째 페이지 width 사용
             pageWidth = pages[0].rect.width;
         }
         else
@@ -89,48 +94,73 @@ public class PhoneSwiper : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
             pageWidth = viewport ? viewport.rect.width : 0f;
         }
 
-        // content.anchorMin / anchorMax / pivot / sizeDelta 전혀 건드리지 않음
-
-        // 각 페이지의 x 위치만 index * pageWidth로 배치
+        // content는 건드리지 않고, 개별 페이지의 x만 배치
         for (int i = 0; i < pageCount; i++)
         {
             var p = pages[i];
-
-            // 원본 anchor/pivot/sizeDelta는 그대로 사용
             var pos = p.anchoredPosition;
-            pos.x = i * pageWidth;      // 가로로 나열
+            pos.x = i * pageWidth;
             p.anchoredPosition = pos;
         }
+    }
 
+    // 외부에서 탭 열릴 때/닫힐 때 호출해주면 좋음
+    public void SetSwipeLock(bool locked)
+    {
+        isUsingTab = locked;
+
+        if (locked && dragging)
+        {
+            // 드래그 중에 잠그면 현재 페이지로 스냅 + 드래그 강제 종료
+            dragging = false;
+            SnapTo(current);
+        }
     }
 
     public void OnBeginDrag(PointerEventData eventData)
     {
-        if (isUsingTab) return;
+        if (isUsingTab) return;  // 탭 사용 중이면 스와이프 금지
+
         dragging = true;
+
+
         dragStartPointer = eventData.position;
         dragStartContentPos = content.anchoredPosition;
+
         if (snapCo != null) StopCoroutine(snapCo);
     }
 
-
     public void OnDrag(PointerEventData eventData)
     {
-        if (isUsingTab || !dragging) return;
+        if (!dragging || isUsingTab || slidemanager.BlockJJS) return;
+
+        if (dragStartPointer.y >= Screen.height * 0.7) return;
+
+
         float dx = eventData.position.x - dragStartPointer.x;
+
         float minX = -((pageCount - 1) * pageWidth);
-        float targetX = Mathf.Clamp(dragStartContentPos.x + dx, minX, 0f);
+        float targetX = Mathf.Clamp(dragStartContentPos.x + (dx/3), minX, 0f);
         content.anchoredPosition = new Vector2(targetX, dragStartContentPos.y);
     }
+
     public void OnEndDrag(PointerEventData eventData)
     {
+        if (!dragging || slidemanager.BlockJJS)
+            return;
+
+        if (dragStartPointer.y >= Screen.height * 0.7) return;
+
+        dragging = false;
+
+
+        // 드래그 끝나기 전에 탭이 켜진 상태가 되었으면 그냥 현재 페이지로 스냅
         if (isUsingTab)
         {
-            dragging = false;
             SnapTo(current);
             return;
         }
-        dragging = false;
+
         float totalDx = eventData.position.x - dragStartPointer.x;
 
         if (Mathf.Abs(totalDx) > swipeThreshold)
@@ -145,11 +175,23 @@ public class PhoneSwiper : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
         }
     }
 
+    // ---- 버튼/탭 이동 ----
+
     public void Next() => SetPage(current + 1);
     public void Prev() => SetPage(current - 1);
 
+    public void GoToPage(int index)
+    {
+        SetPage(index);
+    }
+
     public void SetPage(int index)
     {
+        // 탭 사용 중이면 스와이프뿐만 아니라 버튼 이동도 막음
+        if (isUsingTab) return;
+
+        if (pageCount <= 0) return;
+
         index = Mathf.Clamp(index, 0, pageCount - 1);
         if (index == current)
         {
@@ -161,7 +203,6 @@ public class PhoneSwiper : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
         SnapTo(current);
         UpdateDots();
     }
-
 
     void JumpTo(int index)
     {
@@ -179,31 +220,29 @@ public class PhoneSwiper : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
     {
         float t = 0f;
         float fromX = content.anchoredPosition.x;
+
         while (true)
         {
             t += (useUnscaledTime ? Time.unscaledDeltaTime : Time.deltaTime) * snapSpeed;
             float x = Mathf.Lerp(fromX, targetX, Mathf.Clamp01(t));
             content.anchoredPosition = new Vector2(x, content.anchoredPosition.y);
+
             if (Mathf.Abs(x - targetX) < 0.5f) break;
             yield return null;
         }
+
         content.anchoredPosition = new Vector2(targetX, content.anchoredPosition.y);
         snapCo = null;
     }
 
     void UpdateDots()
     {
-        if (dots == null) return;
+        if (dots == null || dots.Length == 0) return;
+
         for (int i = 0; i < dots.Length; i++)
         {
             if (!dots[i]) continue;
             dots[i].color = (i == current) ? dotActive : dotInactive;
         }
-    }
-
-    public void GoToPage(int index)
-    {
-        if (isUsingTab) return;   // 탭 사용 중이면 막기
-        SetPage(index);
     }
 }

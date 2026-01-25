@@ -163,6 +163,6 @@ public class TutoMamager : MonoBehaviour
 
         // 튜토리얼 종료
         TouchEffect.gameObject.SetActive(false);
-        Debug.Log("튜토리얼 완료!");
+        // Debug.Log("튜토리얼 완료!");
     }
 }

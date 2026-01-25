@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
 
 public enum JamoRole { Choseong, Jungseong, Jongseong }    // 자모 역할
 public enum VowelAttach { Side, Below }                    // 모음 방향 힌트
@@ -19,6 +20,7 @@ public class JamoMagnet : MonoBehaviour
 
     RectTransform rt;
 
+
     // 근처 자모 탐색용 글로벌 리스트
     public static readonly HashSet<JamoMagnet> All = new HashSet<JamoMagnet>();
 
@@ -35,6 +37,12 @@ public class JamoMagnet : MonoBehaviour
     void OnDisable()
     {
         All.Remove(this);
+    }
+
+    void OnDestroy()
+    {
+        // [수정] 파괴될 때 트윈이 돌고 있으면 에러 나므로 강제 종료
+        transform.DOKill();
     }
 
     /// <summary>모음 글자로부터 기본 방향 추정</summary>
@@ -127,6 +135,7 @@ public class JamoMagnet : MonoBehaviour
         block.jungseong = (jung.glyph ?? "").Trim();
         block.jongseong = null;
         block.SetSyllable(block.choseong, block.jungseong, null);
+        block.PlayBirthAnim();
 
         // 블럭도 드래그 가능하게 설정 복사
         var srcDrag = a.GetComponent<DraggableWordUI>();
@@ -140,6 +149,46 @@ public class JamoMagnet : MonoBehaviour
         Object.Destroy(cho.gameObject);
         Object.Destroy(jung.gameObject);
 
+        SoundManager.Instance.SFXStart(SoundManager.SFXType.zamoCombine);
+
         return true;
     }
+
+    #region DOTween Animations
+
+    /// <summary>키에서 뽑아졌을 때 “툭” 튀어나오는 느낌</summary>
+    public void PlaySpawnAnim()
+    {
+        var rt = GetComponent<RectTransform>();
+        var cg = GetComponent<CanvasGroup>() ?? gameObject.AddComponent<CanvasGroup>();
+
+        rt.localScale = Vector3.zero;
+        cg.alpha = 0f;
+
+        Sequence seq = DOTween.Sequence();
+        seq.Append(cg.DOFade(1f, 0.15f));
+        seq.Join(rt.DOScale(1.1f, 0.15f).SetEase(Ease.OutBack));
+        seq.Append(rt.DOScale(1f, 0.08f));
+
+        SoundManager.Instance.SFXStart(SoundManager.SFXType.jaMoDrag);
+    }
+
+    /// <summary>삭제될 때 (쓰레기통 or 범위 밖) 쑥 빨려들어가듯 사라짐</summary>
+    /// <param name="trash">쓰레기통 RectTransform (null이면 제자리에서 축소)</param>
+    public void PlayTrashAnim(RectTransform trash, System.Action onComplete)
+    {
+        var rt = GetComponent<RectTransform>();
+        rt.DOKill();
+
+        Vector3 targetPos = trash ? trash.position : rt.position;
+
+        Sequence seq = DOTween.Sequence();
+        seq.Append(rt.DOMove(targetPos, 0.15f).SetEase(Ease.InQuad));
+        seq.Join(rt.DOScale(0f, 0.15f));
+        seq.Join(rt.DORotate(new Vector3(0, 0, 180f), 0.15f, RotateMode.FastBeyond360));
+        seq.OnComplete(() => onComplete?.Invoke());
+    }
+
+    #endregion
+
 }

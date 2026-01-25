@@ -63,7 +63,10 @@ public class GameReviveSystem : MonoBehaviour
             noThanksText: "아니오"
         );
 
-        revivePopup.Show(
+        // revivePopup이 광고 모드인지 명시적으로 설정 (다른 곳에서 SetAdMode(false)로 바뀌었을 수 있음)
+        revivePopup.SetAdMode(true);
+
+        revivePopup.YesNoPanelShow(
             onAccept: () =>
             {
                 // 광고 시청 완료 시 부활함

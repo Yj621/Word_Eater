@@ -18,13 +18,24 @@ public class BackGround : MonoBehaviour
     {
         NativeGallery.GetImageFromGallery((path) =>
         {
-            if (path == null) return;
+            if (string.IsNullOrEmpty(path))
+            {
+                return;
+            }
 
-            Texture2D tex = NativeGallery.LoadImageAtPath(path, 1024);
+            Texture2D tex = NativeGallery.LoadImageAtPath(path, 1024, false);
             if (tex == null) return;
 
+            Sprite sprite = Sprite.Create(
+                tex,
+                new Rect(0, 0, tex.width, tex.height),
+                new Vector2(0.5f, 0.5f)
+                );
+
+            targetImage.sprite = sprite;
+
             SaveTexture(tex);
-            LoadBGImageIfExists();
+            //LoadBGImageIfExists();
         }, "배경 이미지 선택");
     }
 
@@ -32,7 +43,7 @@ public class BackGround : MonoBehaviour
     {
         byte[] png = tex.EncodeToPNG();
         File.WriteAllBytes(filePath, png);
-        ApplyTexture(tex);
+        //ApplyTexture(tex);
     }
 
     // 이미지 -> 스프라이트 연결

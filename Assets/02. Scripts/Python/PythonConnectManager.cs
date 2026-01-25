@@ -5,6 +5,7 @@ using System.Text;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System;
+using Cysharp.Threading.Tasks;
 
 [System.Serializable]
 public class ResultData
@@ -29,7 +30,7 @@ public class PythonConnectManager : MonoBehaviour
         {
             foreach (var word in result)
             {
-                Debug.Log("결과: " + word);
+                // Debug.Log("결과: " + word);
             }
         }));
         */
@@ -39,11 +40,11 @@ public class PythonConnectManager : MonoBehaviour
         {
             if (result.HasValue)
             {
-                Debug.Log("콜백으로 받은 유사도: " + result.Value);
+                // Debug.Log("콜백으로 받은 유사도: " + result.Value);
             }
             else
             {
-                Debug.Log("콜백: 부정확한 단어 또는 요청 실패");
+                // Debug.Log("콜백: 부정확한 단어 또는 요청 실패");
             }
         }));
         */
@@ -52,7 +53,7 @@ public class PythonConnectManager : MonoBehaviour
     }
 
     //단어와 몇개의 유사한 단어를 가져올 것인지 입력
-    public IEnumerator MostSimilarty(string inputWord, int num, Action<List<string>> callback)
+    public async UniTask<List<string>> MostSimilarty(string inputWord, int num)
     {
         string url = "http://yj.nine9.kr/most_similarty";
 
@@ -66,33 +67,33 @@ public class PythonConnectManager : MonoBehaviour
             request.downloadHandler = new DownloadHandlerBuffer();
             request.SetRequestHeader("Content-Type", "application/json");
 
-            yield return request.SendWebRequest();
+            await request.SendWebRequest(); // 완료될 때까지 대기
 
             if (request.result == UnityWebRequest.Result.Success)
             {
                 string jsonResponse = request.downloadHandler.text;
-                Debug.Log("서버 응답: " + jsonResponse);
+                // Debug.Log("서버 응답: " + jsonResponse);
                 ResultData responseData = JsonConvert.DeserializeObject<ResultData>(jsonResponse);
 
                 if (responseData.result != null && responseData.result.Count > 0)
                 {
-                    callback(responseData.result);
+                    return responseData.result; // 결과 리스트 반환
                 }
                 else
                 {
-                    callback(new List<string> { "부정확한 단어" });
+                    return new List<string> { "부정확한 단어" };
                 }
             }
             else
             {
-                Debug.LogError("요청 실패: " + request.error);
-                callback(new List<string> { "요청 실패" });
+                // Debug.LogError("요청 실패: " + request.error);
+                return new List<string> { "요청 실패" };
             }
         }
     }
 
     //두 단어 사이의 유사도
-    public IEnumerator SimilartyTwoWord(string inputWord, string inputWord2, Action<float?> callback)
+    public async UniTask<float?> SimilartyTwoWord(string inputWord, string inputWord2)
     {
         string url = "http://yj.nine9.kr/similarity";
 
@@ -106,27 +107,27 @@ public class PythonConnectManager : MonoBehaviour
             request.downloadHandler = new DownloadHandlerBuffer();
             request.SetRequestHeader("Content-Type", "application/json");
 
-            yield return request.SendWebRequest();
+            await request.SendWebRequest();
 
             if (request.result == UnityWebRequest.Result.Success)
             {
                 string jsonResponse = request.downloadHandler.text;
+
                 ResultData2 responseData = JsonConvert.DeserializeObject<ResultData2>(jsonResponse);
 
                 if (responseData != null && responseData.result.HasValue)
                 {
-                    callback?.Invoke(responseData.result.Value);
+                    return responseData.result.Value; // 값 반환
                 }
                 else
                 {
-                    Debug.Log("부정확한 단어");
-                    callback?.Invoke(null);
+                    return null; // 실패 시 null
                 }
             }
             else
             {
-                Debug.LogError("요청 실패: " + request.error);
-                callback?.Invoke(null);
+                // Debug.LogError("요청 실패: " + request.error);
+                return null;
             }
         }
     }

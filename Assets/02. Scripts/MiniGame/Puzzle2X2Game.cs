@@ -25,6 +25,9 @@ public class Puzzle2X2Game : MonoBehaviour
     [Header("슬롯 스냅 허용 반경(px)")]
     public float snapRadius = 80f;
 
+    [Header("스폰 제외 반경 (중앙으로부터)")]
+    public float spawnExclusionRadius = 250f;
+
     MiniGameHook _hook;
 
     // 슬롯 점유 현황 (index 0..3)
@@ -53,12 +56,12 @@ public class Puzzle2X2Game : MonoBehaviour
 
         if (canvas == null || targetSlots == null || targetSlots.Length != 4 || spawnArea == null || piecePrefab == null)
         {
-            Debug.LogError("[Puzzle2x2Game] 참조가 비었거나 슬롯 수가 4가 아님.");
+            // Debug.LogError("[Puzzle2x2Game] 참조가 비었거나 슬롯 수가 4가 아님.");
             enabled = false; return;
         }
         if (puzzleSets == null || puzzleSets.Length == 0)
         {
-            Debug.LogError("[Puzzle2x2Game] 퍼즐 세트가 비어 있음.");
+            // Debug.LogError("[Puzzle2x2Game] 퍼즐 세트가 비어 있음.");
             enabled = false; return;
         }
 
@@ -70,7 +73,7 @@ public class Puzzle2X2Game : MonoBehaviour
         var set = puzzleSets[setIdx];
         if (set.quads == null || set.quads.Length != 4)
         {
-            Debug.LogError("[Puzzle2x2Game] 세트의 quads는 반드시 4장이어야 함.");
+            // Debug.LogError("[Puzzle2x2Game] 세트의 quads는 반드시 4장이어야 함.");
             enabled = false; return;
         }
 
@@ -81,12 +84,20 @@ public class Puzzle2X2Game : MonoBehaviour
             p.Setup(this, canvas, i, set.quads[i]);
             _pieces.Add(p);
 
-            // 초기 배치: 영역 내 랜덤
+            // 초기 배치: 영역 내 랜덤 (중앙 제외)
             var area = spawnArea.rect;
             var sz = p.Rect.rect.size;
             float xHalf = (area.width - sz.x) * 0.5f;
             float yHalf = (area.height - sz.y) * 0.5f;
-            Vector2 pos = new Vector2(Random.Range(-xHalf, xHalf), Random.Range(-yHalf, yHalf));
+            
+            Vector2 pos;
+            int guard = 0;
+            do
+            {
+                pos = new Vector2(Random.Range(-xHalf, xHalf), Random.Range(-yHalf, yHalf));
+                guard++;
+            } while (pos.magnitude < spawnExclusionRadius && guard < 50);
+
             p.Rect.anchoredPosition = pos;
 
             // 초기 랜덤 회전(선택)

@@ -1,0 +1,353 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ad12ea7b136137247be2c5f1b6b65a9c, type: 3}
+  m_Name: WordImageDatabase
+  m_EditorClassIdentifier: Assembly-CSharp::WordImageDatabase
+  entries:
+  - wordId: "\u3131"
+    stage1: {fileID: 3165899796926439750, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage2: {fileID: -4752425612545647142, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage3: {fileID: 4686824698260747337, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage1Anim:
+    - {fileID: 4628988164632110432, guid: e1192b07a9f52a3489d7a37aad6aac33, type: 3}
+    - {fileID: -8376084015799717933, guid: e1192b07a9f52a3489d7a37aad6aac33, type: 3}
+    stage2Anim:
+    - {fileID: 9105950996256548009, guid: e1192b07a9f52a3489d7a37aad6aac33, type: 3}
+    - {fileID: 9116814608814062049, guid: e1192b07a9f52a3489d7a37aad6aac33, type: 3}
+    stage3Anim:
+    - {fileID: 3442639713143182767, guid: e1192b07a9f52a3489d7a37aad6aac33, type: 3}
+    - {fileID: -6432782115756172204, guid: e1192b07a9f52a3489d7a37aad6aac33, type: 3}
+  - wordId: "\u3134"
+    stage1: {fileID: -4594089353369289754, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage2: {fileID: -2354059711063605819, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage3: {fileID: -471073888702062171, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage1Anim:
+    - {fileID: -1385256740999858788, guid: 3d4ee49062b04e9419e80d2f01f826eb, type: 3}
+    - {fileID: 4400360679790236442, guid: 3d4ee49062b04e9419e80d2f01f826eb, type: 3}
+    stage2Anim:
+    - {fileID: -7048463492055341630, guid: 3d4ee49062b04e9419e80d2f01f826eb, type: 3}
+    - {fileID: 5516183816248039873, guid: 3d4ee49062b04e9419e80d2f01f826eb, type: 3}
+    stage3Anim:
+    - {fileID: -7075020315970207153, guid: 3d4ee49062b04e9419e80d2f01f826eb, type: 3}
+    - {fileID: -2665505862623904579, guid: 3d4ee49062b04e9419e80d2f01f826eb, type: 3}
+  - wordId: "\u3137"
+    stage1: {fileID: -6580384045667553950, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage2: {fileID: 4287248763957884213, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage3: {fileID: -5644023846980588774, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage1Anim:
+    - {fileID: -1642004380561740899, guid: dc5f75683d081be4d80435b6fa887902, type: 3}
+    - {fileID: -4694572594291357427, guid: dc5f75683d081be4d80435b6fa887902, type: 3}
+    stage2Anim:
+    - {fileID: 5681169551923141175, guid: dc5f75683d081be4d80435b6fa887902, type: 3}
+    - {fileID: 951887647877164893, guid: dc5f75683d081be4d80435b6fa887902, type: 3}
+    stage3Anim:
+    - {fileID: -3080669342464297580, guid: dc5f75683d081be4d80435b6fa887902, type: 3}
+    - {fileID: -6755235079407294034, guid: dc5f75683d081be4d80435b6fa887902, type: 3}
+  - wordId: "\u3139"
+    stage1: {fileID: 3792526513636104858, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage2: {fileID: 3559492002611170487, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage3: {fileID: 5094515768039001723, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage1Anim:
+    - {fileID: 4967199976486793478, guid: 215764285fe6fb84980c5612314abe02, type: 3}
+    - {fileID: -111650697615587155, guid: 215764285fe6fb84980c5612314abe02, type: 3}
+    stage2Anim:
+    - {fileID: -1909469101805298175, guid: 215764285fe6fb84980c5612314abe02, type: 3}
+    - {fileID: 6809089037234186414, guid: 215764285fe6fb84980c5612314abe02, type: 3}
+    stage3Anim:
+    - {fileID: -2373135929065841553, guid: 215764285fe6fb84980c5612314abe02, type: 3}
+    - {fileID: 6538514457609638841, guid: 215764285fe6fb84980c5612314abe02, type: 3}
+  - wordId: "\u3141"
+    stage1: {fileID: 7757448381077667232, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage2: {fileID: 5401511560137783030, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage3: {fileID: 6193841273349202160, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage1Anim:
+    - {fileID: -2015764695923651023, guid: c128359d2466d184cbbfbdc1e7297c81, type: 3}
+    - {fileID: 8054176377945600479, guid: c128359d2466d184cbbfbdc1e7297c81, type: 3}
+    stage2Anim:
+    - {fileID: 8771053442931851918, guid: c128359d2466d184cbbfbdc1e7297c81, type: 3}
+    - {fileID: -5766244289193667771, guid: c128359d2466d184cbbfbdc1e7297c81, type: 3}
+    stage3Anim:
+    - {fileID: -4158788095995573206, guid: c128359d2466d184cbbfbdc1e7297c81, type: 3}
+    - {fileID: -2793722878142182974, guid: c128359d2466d184cbbfbdc1e7297c81, type: 3}
+  - wordId: "\u3142"
+    stage1: {fileID: -132646383259103156, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage2: {fileID: 6591086342280470774, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage3: {fileID: -7500525083151601983, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage1Anim:
+    - {fileID: -1828585881287695112, guid: 53a66fff495e8c540adb9f1689c503d2, type: 3}
+    - {fileID: 1804124868951549868, guid: 53a66fff495e8c540adb9f1689c503d2, type: 3}
+    stage2Anim:
+    - {fileID: 8740280344116303001, guid: 53a66fff495e8c540adb9f1689c503d2, type: 3}
+    - {fileID: 4430268594872621174, guid: 53a66fff495e8c540adb9f1689c503d2, type: 3}
+    stage3Anim:
+    - {fileID: -7472882173032829432, guid: 53a66fff495e8c540adb9f1689c503d2, type: 3}
+    - {fileID: 22521118767251692, guid: 53a66fff495e8c540adb9f1689c503d2, type: 3}
+  - wordId: "\u3145"
+    stage1: {fileID: -3207293395672679602, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage2: {fileID: 4025993488710886356, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage3: {fileID: 8230896737735098868, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage1Anim:
+    - {fileID: -3063015165308081925, guid: 0e8ff1d7e1fff4043acd8e663b71f71c, type: 3}
+    - {fileID: -6616238932996089609, guid: 0e8ff1d7e1fff4043acd8e663b71f71c, type: 3}
+    stage2Anim:
+    - {fileID: 4911044335373557468, guid: 0e8ff1d7e1fff4043acd8e663b71f71c, type: 3}
+    - {fileID: 2273982933402590200, guid: 0e8ff1d7e1fff4043acd8e663b71f71c, type: 3}
+    stage3Anim:
+    - {fileID: -991204809046226149, guid: 0e8ff1d7e1fff4043acd8e663b71f71c, type: 3}
+    - {fileID: 5240906554437162205, guid: 0e8ff1d7e1fff4043acd8e663b71f71c, type: 3}
+  - wordId: "\u3147"
+    stage1: {fileID: 8924981685971987857, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage2: {fileID: 776483301816150382, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage3: {fileID: -5574175962241805000, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage1Anim:
+    - {fileID: 3437043714451129932, guid: e36c68bce37dfe5479eb75981fd705a8, type: 3}
+    - {fileID: -8636971572150374550, guid: e36c68bce37dfe5479eb75981fd705a8, type: 3}
+    stage2Anim:
+    - {fileID: -172053155217611311, guid: e36c68bce37dfe5479eb75981fd705a8, type: 3}
+    - {fileID: 2445929177255788210, guid: e36c68bce37dfe5479eb75981fd705a8, type: 3}
+    stage3Anim:
+    - {fileID: -2998842055104594923, guid: e36c68bce37dfe5479eb75981fd705a8, type: 3}
+    - {fileID: 8015606119857331970, guid: e36c68bce37dfe5479eb75981fd705a8, type: 3}
+  - wordId: "\u3148"
+    stage1: {fileID: 1234564877400804788, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage2: {fileID: 2918928299279551742, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage3: {fileID: 5053747061477087054, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage1Anim:
+    - {fileID: -5107364237193627030, guid: bf78b34dc91ff574286d1eb1c900edf3, type: 3}
+    - {fileID: 8584187052076574919, guid: bf78b34dc91ff574286d1eb1c900edf3, type: 3}
+    stage2Anim:
+    - {fileID: -2738035939591379590, guid: bf78b34dc91ff574286d1eb1c900edf3, type: 3}
+    - {fileID: 493716942277428106, guid: bf78b34dc91ff574286d1eb1c900edf3, type: 3}
+    stage3Anim:
+    - {fileID: 131782389379186145, guid: bf78b34dc91ff574286d1eb1c900edf3, type: 3}
+    - {fileID: -2699156440273451892, guid: bf78b34dc91ff574286d1eb1c900edf3, type: 3}
+  - wordId: "\u314A"
+    stage1: {fileID: -2822254296033832399, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage2: {fileID: 7624803013939397866, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage3: {fileID: 2137487939644291043, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage1Anim:
+    - {fileID: -6426974749578213376, guid: 9895ae29dede68e43824979e1089f07a, type: 3}
+    - {fileID: -8144168032612642698, guid: 9895ae29dede68e43824979e1089f07a, type: 3}
+    stage2Anim:
+    - {fileID: 6121976265669158007, guid: 9895ae29dede68e43824979e1089f07a, type: 3}
+    - {fileID: 8363185891920662387, guid: 9895ae29dede68e43824979e1089f07a, type: 3}
+    stage3Anim:
+    - {fileID: 7851213586546394187, guid: 9895ae29dede68e43824979e1089f07a, type: 3}
+    - {fileID: 3121878107965624940, guid: 9895ae29dede68e43824979e1089f07a, type: 3}
+  - wordId: "\u314B"
+    stage1: {fileID: 5819026292615639258, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage2: {fileID: -7638352863344023820, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage3: {fileID: 4279260447815411673, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage1Anim:
+    - {fileID: 6044258976734130417, guid: f9440e27118871345acec839ce12cdf0, type: 3}
+    - {fileID: 6482074312582952773, guid: f9440e27118871345acec839ce12cdf0, type: 3}
+    stage2Anim:
+    - {fileID: -6737492264417606596, guid: f9440e27118871345acec839ce12cdf0, type: 3}
+    - {fileID: 5721224353138115272, guid: f9440e27118871345acec839ce12cdf0, type: 3}
+    stage3Anim:
+    - {fileID: 1003454730259896714, guid: f9440e27118871345acec839ce12cdf0, type: 3}
+    - {fileID: -1789771039057489090, guid: f9440e27118871345acec839ce12cdf0, type: 3}
+  - wordId: "\u314C"
+    stage1: {fileID: -2725109281459718677, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage2: {fileID: 2067264513268649471, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage3: {fileID: 7651781859617324059, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage1Anim:
+    - {fileID: 1665940269758376117, guid: c12507f0f3fa30d48a19bfd922ee08cd, type: 3}
+    - {fileID: -8140294588226502289, guid: c12507f0f3fa30d48a19bfd922ee08cd, type: 3}
+    stage2Anim:
+    - {fileID: 2412172910225755525, guid: c12507f0f3fa30d48a19bfd922ee08cd, type: 3}
+    - {fileID: 8968979526803852035, guid: c12507f0f3fa30d48a19bfd922ee08cd, type: 3}
+    stage3Anim:
+    - {fileID: -2770763441126732436, guid: c12507f0f3fa30d48a19bfd922ee08cd, type: 3}
+    - {fileID: 3867065153230734901, guid: c12507f0f3fa30d48a19bfd922ee08cd, type: 3}
+  - wordId: "\u314D"
+    stage1: {fileID: 5387421849220487561, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage2: {fileID: 5624972090220295530, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage3: {fileID: -7045967433564052415, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage1Anim:
+    - {fileID: -151231901386406089, guid: 3cb43d6ea99d498448832ea51d9b7287, type: 3}
+    - {fileID: -488933054030964856, guid: 3cb43d6ea99d498448832ea51d9b7287, type: 3}
+    stage2Anim:
+    - {fileID: -1693009095254968058, guid: 3cb43d6ea99d498448832ea51d9b7287, type: 3}
+    - {fileID: 417252996205156192, guid: 3cb43d6ea99d498448832ea51d9b7287, type: 3}
+    stage3Anim:
+    - {fileID: -4878406812464436612, guid: 3cb43d6ea99d498448832ea51d9b7287, type: 3}
+    - {fileID: -7105561738904554585, guid: 3cb43d6ea99d498448832ea51d9b7287, type: 3}
+  - wordId: "\u314E"
+    stage1: {fileID: 7723011039732990620, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage2: {fileID: -6083742437205285698, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage3: {fileID: 7153432839150287189, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage1Anim:
+    - {fileID: 1069968114885678962, guid: f0029acc76f933644a4b5ab87261c3f4, type: 3}
+    - {fileID: -2598151335038757170, guid: f0029acc76f933644a4b5ab87261c3f4, type: 3}
+    stage2Anim:
+    - {fileID: -5832967093760791949, guid: f0029acc76f933644a4b5ab87261c3f4, type: 3}
+    - {fileID: 934964091396599787, guid: f0029acc76f933644a4b5ab87261c3f4, type: 3}
+    stage3Anim:
+    - {fileID: -7144368868042384345, guid: f0029acc76f933644a4b5ab87261c3f4, type: 3}
+    - {fileID: -6851713558597937895, guid: f0029acc76f933644a4b5ab87261c3f4, type: 3}
+  - wordId: "\u314F"
+    stage1: {fileID: -7822889250730481688, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage2: {fileID: 3521828221393556787, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage3: {fileID: -6014308715655879256, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage1Anim:
+    - {fileID: -7696332568867620219, guid: e558089b704e2ad4bb869cca19c1814b, type: 3}
+    - {fileID: -6011743365734718933, guid: e558089b704e2ad4bb869cca19c1814b, type: 3}
+    stage2Anim:
+    - {fileID: 8095014134648625361, guid: e558089b704e2ad4bb869cca19c1814b, type: 3}
+    - {fileID: 6251915667306307128, guid: e558089b704e2ad4bb869cca19c1814b, type: 3}
+    stage3Anim:
+    - {fileID: 7014858127685910740, guid: e558089b704e2ad4bb869cca19c1814b, type: 3}
+    - {fileID: -1979583040014609713, guid: e558089b704e2ad4bb869cca19c1814b, type: 3}
+  - wordId: "\u3150"
+    stage1: {fileID: 7989653677615679038, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage2: {fileID: -4045913818987607195, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage3: {fileID: -9141477669620151374, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage1Anim:
+    - {fileID: 6092576192566844805, guid: 1be5c5a538b3ac04f94d2309a72c4b3c, type: 3}
+    - {fileID: -6548575870613660952, guid: 1be5c5a538b3ac04f94d2309a72c4b3c, type: 3}
+    stage2Anim:
+    - {fileID: 3786990811279502311, guid: 1be5c5a538b3ac04f94d2309a72c4b3c, type: 3}
+    - {fileID: -6625070641065503939, guid: 1be5c5a538b3ac04f94d2309a72c4b3c, type: 3}
+    stage3Anim:
+    - {fileID: 6463814306057571468, guid: 1be5c5a538b3ac04f94d2309a72c4b3c, type: 3}
+    - {fileID: -5286157395845569974, guid: 1be5c5a538b3ac04f94d2309a72c4b3c, type: 3}
+  - wordId: "\u3151"
+    stage1: {fileID: 1742074617688873526, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage2: {fileID: -4747221221318155179, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage3: {fileID: 6163705066252985535, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage1Anim:
+    - {fileID: 9078266629611541594, guid: d148c340dd9f3614da72ec305072c118, type: 3}
+    - {fileID: 5600940322722545229, guid: d148c340dd9f3614da72ec305072c118, type: 3}
+    stage2Anim:
+    - {fileID: 19446402188644333, guid: d148c340dd9f3614da72ec305072c118, type: 3}
+    - {fileID: -2622732745380731004, guid: d148c340dd9f3614da72ec305072c118, type: 3}
+    stage3Anim:
+    - {fileID: -8245767853613338768, guid: d148c340dd9f3614da72ec305072c118, type: 3}
+    - {fileID: 8939939103705448299, guid: d148c340dd9f3614da72ec305072c118, type: 3}
+  - wordId: "\u3153"
+    stage1: {fileID: -5145785321142167959, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage2: {fileID: 2594531576690645067, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage3: {fileID: 5516658542004611499, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage1Anim:
+    - {fileID: 5868886209071166241, guid: 62e107437d995aa45bb7cccd3df9c15b, type: 3}
+    - {fileID: 2567047557419759781, guid: 62e107437d995aa45bb7cccd3df9c15b, type: 3}
+    stage2Anim:
+    - {fileID: -4227928353263684566, guid: 62e107437d995aa45bb7cccd3df9c15b, type: 3}
+    - {fileID: -615512438772449995, guid: 62e107437d995aa45bb7cccd3df9c15b, type: 3}
+    stage3Anim:
+    - {fileID: -3352694611001779410, guid: 62e107437d995aa45bb7cccd3df9c15b, type: 3}
+    - {fileID: 2102933935609118858, guid: 62e107437d995aa45bb7cccd3df9c15b, type: 3}
+  - wordId: "\u3154"
+    stage1: {fileID: -4584151765692215533, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage2: {fileID: -1020199144507162475, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage3: {fileID: -6815178579652776234, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage1Anim:
+    - {fileID: -2258153804870056412, guid: 74f153f2861ec3c4dbd6d1a287c90c5c, type: 3}
+    - {fileID: 6469006377207734284, guid: 74f153f2861ec3c4dbd6d1a287c90c5c, type: 3}
+    stage2Anim:
+    - {fileID: 165936567493852593, guid: 74f153f2861ec3c4dbd6d1a287c90c5c, type: 3}
+    - {fileID: 2684585159636107432, guid: 74f153f2861ec3c4dbd6d1a287c90c5c, type: 3}
+    stage3Anim:
+    - {fileID: -7669922156079976381, guid: 74f153f2861ec3c4dbd6d1a287c90c5c, type: 3}
+    - {fileID: 7689846609333219560, guid: 74f153f2861ec3c4dbd6d1a287c90c5c, type: 3}
+  - wordId: "\u3155"
+    stage1: {fileID: -316027206385280079, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage2: {fileID: -8723901684147417176, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage3: {fileID: 2335598134973145799, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage1Anim:
+    - {fileID: 7115337464766403666, guid: adcc1198f4cdec34b90c2a4266dfdd98, type: 3}
+    - {fileID: 3129774773832929394, guid: adcc1198f4cdec34b90c2a4266dfdd98, type: 3}
+    stage2Anim:
+    - {fileID: -289213394869611570, guid: adcc1198f4cdec34b90c2a4266dfdd98, type: 3}
+    - {fileID: 7922473624503152965, guid: adcc1198f4cdec34b90c2a4266dfdd98, type: 3}
+    stage3Anim:
+    - {fileID: 4973108218724257646, guid: adcc1198f4cdec34b90c2a4266dfdd98, type: 3}
+    - {fileID: 8062386286603254008, guid: adcc1198f4cdec34b90c2a4266dfdd98, type: 3}
+  - wordId: "\u3157"
+    stage1: {fileID: -3698128117783161051, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage2: {fileID: 3585568857036811593, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage3: {fileID: 6168501941972456945, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage1Anim:
+    - {fileID: -1343615412320181116, guid: f364d0f7ae9771049b19099e1b5a704e, type: 3}
+    - {fileID: 675695678746388211, guid: f364d0f7ae9771049b19099e1b5a704e, type: 3}
+    stage2Anim:
+    - {fileID: 5243632239248917225, guid: f364d0f7ae9771049b19099e1b5a704e, type: 3}
+    - {fileID: 4296043891794741085, guid: f364d0f7ae9771049b19099e1b5a704e, type: 3}
+    stage3Anim:
+    - {fileID: -5949680416042243526, guid: f364d0f7ae9771049b19099e1b5a704e, type: 3}
+    - {fileID: 7773532487445324, guid: f364d0f7ae9771049b19099e1b5a704e, type: 3}
+  - wordId: "\u315B"
+    stage1: {fileID: -8994116326460197667, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage2: {fileID: -6100323290548043609, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage3: {fileID: 6029603084457176567, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage1Anim:
+    - {fileID: 940047702744639757, guid: 5df27a1712a296246bd7fc9a5168f87e, type: 3}
+    - {fileID: -4022080574328105013, guid: 5df27a1712a296246bd7fc9a5168f87e, type: 3}
+    stage2Anim:
+    - {fileID: 9013117608825997746, guid: 5df27a1712a296246bd7fc9a5168f87e, type: 3}
+    - {fileID: -842566139585025901, guid: 5df27a1712a296246bd7fc9a5168f87e, type: 3}
+    stage3Anim:
+    - {fileID: -3373951754572185478, guid: 5df27a1712a296246bd7fc9a5168f87e, type: 3}
+    - {fileID: 4557804984171859342, guid: 5df27a1712a296246bd7fc9a5168f87e, type: 3}
+  - wordId: "\u315C"
+    stage1: {fileID: 1431793361739885436, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage2: {fileID: 8911286832144423688, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage3: {fileID: -1071611826460809842, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage1Anim:
+    - {fileID: -1492547950343966771, guid: 4c91a43e8de109242b3ad3d4331a237c, type: 3}
+    - {fileID: -748692930078781420, guid: 4c91a43e8de109242b3ad3d4331a237c, type: 3}
+    stage2Anim:
+    - {fileID: 6497830462173382968, guid: 4c91a43e8de109242b3ad3d4331a237c, type: 3}
+    - {fileID: -5615348203159841330, guid: 4c91a43e8de109242b3ad3d4331a237c, type: 3}
+    stage3Anim:
+    - {fileID: -110708876677950001, guid: 4c91a43e8de109242b3ad3d4331a237c, type: 3}
+    - {fileID: -7309736679728335923, guid: 4c91a43e8de109242b3ad3d4331a237c, type: 3}
+  - wordId: "\u3160"
+    stage1: {fileID: 708993111747667650, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage2: {fileID: -6852310005523189640, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage3: {fileID: -1391447313322094005, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage1Anim:
+    - {fileID: 4897234319771999992, guid: fac75911e29a6594ab6042da44eff0d2, type: 3}
+    - {fileID: -5321092157551631983, guid: fac75911e29a6594ab6042da44eff0d2, type: 3}
+    stage2Anim:
+    - {fileID: 6154367334235527493, guid: fac75911e29a6594ab6042da44eff0d2, type: 3}
+    - {fileID: -8880880718767446679, guid: fac75911e29a6594ab6042da44eff0d2, type: 3}
+    stage3Anim:
+    - {fileID: 7443533270283471299, guid: fac75911e29a6594ab6042da44eff0d2, type: 3}
+    - {fileID: -1710885148615337391, guid: fac75911e29a6594ab6042da44eff0d2, type: 3}
+  - wordId: "\u3161"
+    stage1: {fileID: 6794093562252383551, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage2: {fileID: -4047751510287185744, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage3: {fileID: -936677674310579850, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage1Anim:
+    - {fileID: 6014840437129338331, guid: 64da6ac215197f14aabb16600e64440d, type: 3}
+    - {fileID: -1179880361304591682, guid: 64da6ac215197f14aabb16600e64440d, type: 3}
+    stage2Anim:
+    - {fileID: -514627840199523041, guid: 64da6ac215197f14aabb16600e64440d, type: 3}
+    - {fileID: -6823970885951868826, guid: 64da6ac215197f14aabb16600e64440d, type: 3}
+    stage3Anim:
+    - {fileID: 1557718988221175721, guid: 64da6ac215197f14aabb16600e64440d, type: 3}
+    - {fileID: -6605978373326598748, guid: 64da6ac215197f14aabb16600e64440d, type: 3}
+  - wordId: "\u3163"
+    stage1: {fileID: 6372863131365923011, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage2: {fileID: -1288632510793510946, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage3: {fileID: -7057655634767249522, guid: fbee898b2b125de41b079e3b06355a6e, type: 3}
+    stage1Anim:
+    - {fileID: 6104970040329602040, guid: 531e0bca6e654d84584f404d24d5f774, type: 3}
+    - {fileID: -7766213176910429083, guid: 531e0bca6e654d84584f404d24d5f774, type: 3}
+    stage2Anim:
+    - {fileID: 4853417523116309217, guid: 531e0bca6e654d84584f404d24d5f774, type: 3}
+    - {fileID: -2784320602714317328, guid: 531e0bca6e654d84584f404d24d5f774, type: 3}
+    stage3Anim:
+    - {fileID: 5421299754049239987, guid: 531e0bca6e654d84584f404d24d5f774, type: 3}
+    - {fileID: 786005398688125879, guid: 531e0bca6e654d84584f404d24d5f774, type: 3}

@@ -40,7 +40,7 @@ public class FolderPut : MonoBehaviour
 
         if (!playArea || !folderZone || !heartPrefab || !canvas)
         {
-            Debug.LogError("[FolderPut] 참조가 비었어. playArea/folderZone/heartPrefab/canvas 확인해줘.");
+            // Debug.LogError("[FolderPut] 참조가 비었어. playArea/folderZone/heartPrefab/canvas 확인해줘.");
             enabled = false;
             return;
         }

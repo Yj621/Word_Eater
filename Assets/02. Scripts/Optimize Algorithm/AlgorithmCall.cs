@@ -3,32 +3,39 @@ using TMPro;
 using WordEater.Systems;
 using WordEater.Core;
 using System.Collections;
+using System.Collections.Generic;
 
 public class AlgorithmCall : MonoBehaviour
 {
     [Header("전화 패널 관련")]
     [SerializeField] private PythonConnectManager pythonConnectManager;
     [SerializeField] private TextMeshProUGUI resultText;
+    [SerializeField] private TextMeshProUGUI leftText;
     [SerializeField] private WordEater.Core.WordEater wordEater;
     [SerializeField] private BatterySystem batterySystem;
     [SerializeField] private UILoadingText loading; //공용 로딩 컴포넌트
-
+    [SerializeField] private GameManager gameamnager;
+    [SerializeField] private FileManager filemanager;
     /// <summary>
     /// 관련 단어 찾기 요청 메서드
     /// </summary>
-    public void OnShowSimilarWord()
+    public async void OnShowSimilarWord()
     {
+        leftText.gameObject.SetActive(false);
         GameManager.Instance.StopRingingEffect();
-        // 배터리 부족 시 네트워크 호출 자체를 막음
+        // 배터리 체크 등 기존 로직 유지
         if (!AlgoGuards.EnsureBattery(batterySystem, ActionType.OptimizeAlgoCall, resultText))
             return;
 
-        loading?.StartAnim("관련 단어 찾는 중");
-
-        string answerWord = wordEater ? wordEater.Answer : string.Empty;
-
-        StartCoroutine(pythonConnectManager.MostSimilarty(answerWord, 5, (result) =>
+        if (gameamnager.RelevantResult.Count == 0)
         {
+            loading?.StartAnim("관련 단어 찾는 중");
+            string answerWord = wordEater ? wordEater.Answer : string.Empty;
+
+            // StartCoroutine 제거 -> await 사용
+            // 콜백 함수 내용을 아래로 풀어서 작성
+            List<string> result = await pythonConnectManager.MostSimilarty(answerWord, gameamnager.MaxRelevant);
+
             loading?.StopAnim();
 
             if (result == null || result.Count == 0)
@@ -48,8 +55,51 @@ public class AlgorithmCall : MonoBehaviour
                 return;
             }
 
-            int idx = Random.Range(0, result.Count);
+            gameamnager.RelevantResult = new List<string>(result);
+            filemanager.SaveRelevant(gameamnager.RelevantResult);
+
+            int idx = UnityEngine.Random.Range(0, result.Count);
+
+            //이미 본 적 있는 단어면 스킵
+            if (!gameamnager.RelevantLine.Contains(result[idx]))
+            {
+                string newRRL = gameamnager.RelevantLine + result[idx] + '|';
+                gameamnager.RelevantLine = newRRL;
+                filemanager.SavaRelevantLine(newRRL);
+            }
+
+            gameamnager.saveCountInmanager(0);
+
+
+            string[] items = gameamnager.RelevantLine.Split('|');
+            int left = gameamnager.MaxRelevant -  items.Length + 1;
+
+            leftText.gameObject.SetActive(true);
+
+            if(left == 0) leftText.text = "모든 관련단어를 확인 했습니다!";
+            else leftText.text = $"남은 단어 : {left}";
             resultText.text = $"관련 단어 : {result[idx]}";
-        }));
+        }
+        else
+        {
+            // 기존 로직 유지
+            int idx = UnityEngine.Random.Range(0, gameamnager.RelevantResult.Count);
+            //이미 본 적 있는 단어면 스킵
+            if (!gameamnager.RelevantLine.Contains(gameamnager.RelevantResult[idx]))
+            {
+                string newRRL = gameamnager.RelevantLine + gameamnager.RelevantResult[idx] + '|';
+                gameamnager.RelevantLine = newRRL;
+                filemanager.SavaRelevantLine(newRRL);
+            }
+            gameamnager.saveCountInmanager(0);
+
+            string[] items = gameamnager.RelevantLine.Split('|');
+            int left = gameamnager.MaxRelevant - items.Length + 1;
+
+            leftText.gameObject.SetActive(true);
+            if (left == 0) leftText.text = "모든 관련단어를 확인 했습니다!";
+            else leftText.text = $"남은 단어 : {left}";
+            resultText.text = $"관련 단어 : {gameamnager.RelevantResult[idx]}";
+        }
     }
 }

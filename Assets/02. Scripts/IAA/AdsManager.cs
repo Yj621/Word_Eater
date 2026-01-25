@@ -8,9 +8,9 @@ public class AdsManager : MonoBehaviour
     public static AdsManager Instance { get; private set; }
 
 #if UNITY_ANDROID
-    [SerializeField] private string rewardedAdRevivalId = "ca-app-apub-1881501262849586/3221896109"; // 테스트용
+    [SerializeField] private string rewardedAdRevivalId = "ca-app-pub-3940256099942544/5354046379"; // 테스트용
 #elif UNITY_IOS
-    [SerializeField] private string rewardedAdUnitId = "ca-app-pub-3940256099942544/1712485313"; // 테스트용
+    [SerializeField] private string rewardedAdUnitId = "cca-app-pub-3940256099942544/6978759866"; // 테스트용
 #else
     [SerializeField] private string rewardedAdUnitId = "unused";
 #endif
@@ -60,32 +60,33 @@ public class AdsManager : MonoBehaviour
         {
             if (error != null)
             {
-                Debug.LogWarning($"[Ads] Rewarded load failed: {error.GetMessage()}");
+                // Debug.LogWarning($"[Ads] Rewarded load failed: {error.GetMessage()}");
                 return;
             }
 
             _rewardedAd = ad;
             HookRewardedEvents(_rewardedAd);
-            Debug.Log("[Ads] Rewarded loaded.");
+            // Debug.Log("[Ads] Rewarded loaded.");
         });
         */
+        
     }
 
     private void HookRewardedEvents(RewardedAd ad)
     {
         ad.OnAdFullScreenContentOpened += () =>
         {
-            Debug.Log("[Ads] Rewarded opened.");
+            // Debug.Log("[Ads] Rewarded opened.");
         };
         ad.OnAdFullScreenContentClosed += () =>
         {
-            Debug.Log("[Ads] Rewarded closed.");
+            // Debug.Log("[Ads] Rewarded closed.");
             // 닫히면 다음 광고 미리 로드
             PreloadRewarded();
         };
         ad.OnAdFullScreenContentFailed += (AdError err) =>
         {
-            Debug.LogWarning($"[Ads] Rewarded open failed: {err.GetMessage()}");
+            // Debug.LogWarning($"[Ads] Rewarded open failed: {err.GetMessage()}");
             PreloadRewarded();
         };
     }
@@ -104,7 +105,7 @@ public class AdsManager : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("[Ads] Rewarded not ready.");
+            // Debug.LogWarning("[Ads] Rewarded not ready.");
             onUnavailable?.Invoke();
             PreloadRewarded();
         }
