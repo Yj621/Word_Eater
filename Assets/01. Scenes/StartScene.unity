@@ -610,6 +610,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   startText: {fileID: 474323657}
   btnSound: {fileID: 459748926}
+  promptCanvasGroup: {fileID: 0}
+  storySceneName: StoryScene
 --- !u!1 &1084291234
 GameObject:
   m_ObjectHideFlags: 0
@@ -955,7 +957,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
