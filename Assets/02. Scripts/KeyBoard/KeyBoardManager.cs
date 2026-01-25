@@ -4,6 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using DG.Tweening;
 using Random = UnityEngine.Random;
 
 public class KeyBoardManager : MonoBehaviour
@@ -106,12 +107,16 @@ public class KeyBoardManager : MonoBehaviour
         // [추가] FileManager에서 로드된 키 개수가 있으면 적용
         if (FileManager.Instance != null && FileManager.Instance.tempLoadedKeyCounts != null)
         {
-            // 저장된 최대 개수가 있으면 먼저 적용 (순서 중요! SetAllCounts 전에 해야 함)
-            if (FileManager.Instance.tempLoadedMaxKeyCount > 0)
+            // [수정] 저장된 최대 개수를 불러오되, Inspector에서 수정한 값과 비교해서 더 큰 값을 사용
+            // 이렇게 하면 저장 파일에는 5로 되어있더라도, 개발자가 10으로 늘렸으면 10이 적용됨
+            int loadedMax = FileManager.Instance.tempLoadedMaxKeyCount;
+            if (loadedMax > 0)
             {
-                KeyCount.SetMaxCount(FileManager.Instance.tempLoadedMaxKeyCount);
-                // 로컬 변수도 맞춤 (화면 갱신 등을 위함)
-                maxCount = FileManager.Instance.tempLoadedMaxKeyCount;
+                // 인스펙터 설정(maxCount)과 저장된 데이터(loadedMax) 중 큰 걸 선택
+                int finalMax = Mathf.Max(maxCount, loadedMax);
+                
+                KeyCount.SetMaxCount(finalMax);
+                maxCount = finalMax; // 로컬 변수도 동기화
             }
 
             var loaded = FileManager.Instance.tempLoadedKeyCounts.ToArray();
@@ -179,28 +184,87 @@ public class KeyBoardManager : MonoBehaviour
 
     public void PressDouble(int index, PointerEventData ev)
     {
-        if (!IsValidIndex(index, DoubleWordButtons, DSWords)) return;
+        // 1. 버튼 유효성 체크
+        if (!IsValidIndex(index, DoubleWordButtons, DSWords))
+        {
+            Debug.LogError($"[PressDouble] Invalid Button Index or DSWords missing: {index}");
+            return;
+        }
 
-        var btn = DoubleWordButtons[index];
-        var prefab = (!isShiftPressed)
+        // 2. 프리팹 찾기
+        GameObject prefab = (!isShiftPressed)
             ? (index < DSWords.Length ? DSWords[index] : null)
             : (index < DDWords.Length ? DDWords[index] : null);
 
-        if (prefab == null) return;
-
-        int cost = isShiftPressed ? 2 : 1;
-        if (!TryConsumeAndRefresh(index, cost))
+        if (prefab == null)
         {
-            NotEnoughFeedback(index);
+            Debug.LogWarning($"[PressDouble] Prefab Not Found. Index:{index}, Shift:{isShiftPressed}");
             return;
         }
-        BeginDragSpawn(btn, prefab, ev, index, cost, isLongPress: false);
+
+        // [롤백] 사용자 환경에 맞춰 Offset이나 FindWithout 없이 그대로 Index 사용
+        // SingleWords의 앞부분이 비어있고 DoubleWords가 그 자리를 쓰는 구조로 추정됨
+        int realIndex = index;
+
+        // 범위 체크
+        if (!InRange(realIndex))
+        {
+             Debug.LogError($"[PressDouble] Index Out of Range! Index:{index} Max:{longPressKeys?.Length}");
+             return;
+        }
+
+        int cost = isShiftPressed ? 2 : 1;
+        if (!TryConsumeAndRefresh(realIndex, cost))
+        {
+            Debug.Log($"[PressDouble] Not Enough Keys. Index:{realIndex}, Cost:{cost}, Current:{GetCount(realIndex)}");
+            NotEnoughFeedback(realIndex);
+            return;
+        }
+        
+        BeginDragSpawn(DoubleWordButtons[index], prefab, ev, realIndex, cost, isLongPress: false);
     }
 
     public void PressShift()
     {
         isShiftPressed = !isShiftPressed;
         UpdateDoubleLabels();
+    }
+
+    // ... (UpdateDoubleLabels 등 중략) ...
+
+    int FindSlotIndexByGlyph(string glyph)
+    {
+        if (longPressKeys == null) return -1;
+        glyph = glyph.Trim();
+
+        for (int i = 0; i < longPressKeys.Length; i++)
+        {
+            GameObject prefab = null;
+
+            // 1순위: SingleWords 쪽 확인
+            if (SingleWords != null && i < SingleWords.Length && SingleWords[i] != null)
+            {
+                prefab = SingleWords[i];
+            }
+            
+            // 2순위: SingleWords에 없으면(None이면) DSWords(더블키 기본값) 확인
+            // 이유: 인스펙터상 앞쪽 인덱스를 더블키들이 쓰고 있음
+            if (prefab == null)
+            {
+                if (DSWords != null && i < DSWords.Length && DSWords[i] != null)
+                {
+                    prefab = DSWords[i];
+                }
+            }
+
+            if (!prefab) continue;
+
+            var mag = prefab.GetComponent<JamoMagnet>();
+            if (mag != null && mag.glyph == glyph)
+                return i;
+        }
+
+        return -1;
     }
 
     void UpdateDoubleLabels()
@@ -213,12 +277,12 @@ public class KeyBoardManager : MonoBehaviour
 
             if (!isShiftPressed)
             {
-                if (i < DSWords.Length && DSWords[i] != null)
+                if (DSWords != null && i < DSWords.Length && DSWords[i] != null)
                     DoubleText[i].text = DSWords[i].name;
             }
             else
             {
-                if (i < DDWords.Length && DDWords[i] != null)
+                if (DDWords != null && i < DDWords.Length && DDWords[i] != null)
                     DoubleText[i].text = DDWords[i].name;
             }
         }
@@ -394,11 +458,15 @@ public class KeyBoardManager : MonoBehaviour
         if (!dragIsUI || !dragUIRect) return;
 
         var drag = dragUIRect.GetComponent<DraggableWordUI>();
+        
+        // [수정] 정확한 카메라 사용 (Overlay면 null)
+        var root = ResolveUISpawnRoot();
+        Camera camToUse = GetRefinedCamera(root);
 
         // 1) 쓰레기통 위 → 환불 + 삭제
         if (trashArea &&
             RectTransformUtility.RectangleContainsScreenPoint(
-                trashArea, lastPointerScreenPos, uiCamera))
+                trashArea, lastPointerScreenPos, camToUse))
         {
             if (drag != null) drag.RefundAndDestroy();
             else Destroy(dragUIRect.gameObject);
@@ -409,7 +477,7 @@ public class KeyBoardManager : MonoBehaviour
         // 2) 허용 영역 밖 → 환불 + 삭제
         if (allowedArea &&
             !RectTransformUtility.RectangleContainsScreenPoint(
-                allowedArea, lastPointerScreenPos, uiCamera))
+                allowedArea, lastPointerScreenPos, camToUse))
         {
             if (drag != null) drag.RefundAndDestroy();
             else Destroy(dragUIRect.gameObject);
@@ -427,19 +495,22 @@ public class KeyBoardManager : MonoBehaviour
     void BeginDragSpawn(Button button, GameObject prefab, PointerEventData ev, int invIndex, int amount, bool isLongPress)
     {
         var buttonRT = button.GetComponent<RectTransform>();
+        
+        // [수정] 좌표 계산 전에 먼저 Root와 Camera를 확정해야 함
+        var root = ResolveUISpawnRoot();
+        Camera camToUse = GetRefinedCamera(root);
 
+        // [수정] startScreen 계산 시에도 camToUse(Overlay면 null)를 사용해야 정확함
+        // 기존에는 무조건 uiCamera를 써서 Overlay 모드일 때 오차 발생 가능성 있었음
         Vector2 startScreen = ev != null
             ? ev.position
-            : RectTransformUtility.WorldToScreenPoint(uiCamera, buttonRT.position);
+            : RectTransformUtility.WorldToScreenPoint(camToUse, buttonRT.position);
 
         bool isUIPrefab = prefab.GetComponent<RectTransform>() && prefab.GetComponent<CanvasRenderer>();
 
         if (isUIPrefab)
         {
-            var root = ResolveUISpawnRoot();
-
-            // [수정] 헬퍼 메서드로 통합 (Canvas 모드에 따라 null 또는 Camera 반환)
-            Camera camToUse = GetRefinedCamera(root);
+            // root, camToUse는 위에서 이미 구함
 
             bool convertSuccess = RectTransformUtility.ScreenPointToLocalPointInRectangle(root, startScreen, camToUse, out var local);
             
@@ -571,41 +642,6 @@ public class KeyBoardManager : MonoBehaviour
         return KeyCount.Get(index) < KeyCount.MaxCount;
     }
 
-    // 🔹 prefab들에서 glyph를 보고 longPressKeys 인덱스 찾기
-    int FindSlotIndexByGlyph(string glyph)
-    {
-        if (longPressKeys == null) return -1;
-        glyph = glyph.Trim();
-
-        for (int i = 0; i < longPressKeys.Length; i++)
-        {
-            GameObject prefab = null;
-
-            // 이 인덱스가 싱글키면 SingleWords 쪽에서 찾고
-            if (i < SingleWords.Length && SingleWords[i] != null)
-            {
-                prefab = SingleWords[i];
-            }
-            // 아니면 더블키(자/모)에서 찾고
-            else if (i < DSWords.Length && DSWords[i] != null)
-            {
-                prefab = DSWords[i];   // 기본(Shift OFF) 자모 기준
-            }
-            else if (i < DDWords.Length && DDWords[i] != null)
-            {
-                prefab = DDWords[i];   // 필요하면 이쪽도 사용
-            }
-
-            if (!prefab) continue;
-
-            var mag = prefab.GetComponent<JamoMagnet>();
-            if (mag != null && mag.glyph == glyph)
-                return i;
-        }
-
-        return -1;
-    }
-
 
     public void AddRandomKeys(int amount)
     {
@@ -694,18 +730,33 @@ public class KeyBoardManager : MonoBehaviour
 
         var drags = uiSpawnRoot.GetComponentsInChildren<DraggableWordUI>(true);
         foreach (var d in drags)
-            if (d) Destroy(d.gameObject);
+            if (d)
+            {
+                // [중요] 드래그 중인 물체가 있다면 상태 해제 먼저
+                d.ForceStopDrag(); // 드래그 상태 강제 종료 메서드 호출 (DraggableWordUI에 있다고 가정)
+                // 만약 저 메서드가 없으면 최소한 DraggableWordUI 내부에서 OnDisable/OnDestroy 시 처리가 되어있어야 함
+                
+                // 여기서는 안전하게 DOKill 하고 파괴
+                d.transform.DOKill();
+                Destroy(d.gameObject);
+            }
 
         var magnets = uiSpawnRoot.GetComponentsInChildren<JamoMagnet>(true);
         foreach (var m in magnets)
             if (m) Destroy(m.gameObject);
 
-        EndDrag();
+        // 매니저 측 상태도 초기화
+        dragging = false;
+        activePointerId = int.MinValue;
+        dragUIRect = null;
+        dragWorldTr = null;
+        _dragOffset = Vector2.zero;
     }
 
     void NotEnoughFeedback(int index)
     {
         // 키 부족 시 이펙트/사운드 넣고 싶으면 여기서 처리
+        Debug.Log($"[KeyBoard] Not enough keys for index {index}. Current: {GetCount(index)}");
     }
 
     void RecordSpend(int index, int amount)
@@ -788,19 +839,9 @@ public class KeyBoardManager : MonoBehaviour
         return true;
     }
 
-    // KeyBoardManager 클래스 안 어딘가(public 메서드들 근처)에 추가
-    /// <summary>
-    /// 단어 제출 등으로 키 사용을 확정할 때 호출.
-    /// - 지금 세션에서 쓴 키(_sessionSpent)는 환불하지 않고 버린다.
-    /// - 화면 위에 놓인 조각들은 정리만 한다.
-    /// </summary>
     public void ConfirmUse()
     {
         _sessionSpent.Clear();   // 환불 기록 버리기 (다시는 돌려주지 않음)
-        ClearAllSpawnedPieces(); // 화면에 남은 자모/Syl 블럭 제거
-        
-        // 제출했으니 소비 확정 -> 저장
-        if (FileManager.Instance != null) FileManager.Instance.UpdateAndSaveKeyCounts();
+        ClearAllSpawnedPieces(); // 화면 청소
     }
-
 }

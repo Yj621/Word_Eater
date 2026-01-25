@@ -49,8 +49,15 @@ public class PairSlot : MonoBehaviour
     void OnClick()
     {
         if (_matched || _revealed) return;
-        Reveal();
-        _manager.OnSlotRevealed(this);
+        
+        // [수정] 직접 Reveal 하지 않고 매니저에게 요청
+        // Reveal(); 
+        // _manager.OnSlotRevealed(this);
+
+        if (_manager != null)
+        {
+            _manager.TrySelectSlot(this);
+        }
     }
 
     public void Reveal()

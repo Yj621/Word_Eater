@@ -144,4 +144,10 @@ public class DraggableWordUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         }
         Destroy(gameObject);
     }
+
+    /// <summary>외부에서 드래그 강제 종료 시(예: 정리) 호출</summary>
+    public void ForceStopDrag()
+    {
+        if (cg) cg.blocksRaycasts = true;
+    }
 }
