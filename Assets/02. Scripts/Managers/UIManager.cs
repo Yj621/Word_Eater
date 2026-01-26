@@ -403,6 +403,18 @@ public class UIManager : MonoBehaviour
     }
 
 
+    // [추가] 스토리 씬 이름
+    [SerializeField] private string _storySceneName = "StoryScene";
+
+    /// <summary>
+    /// 스토리 씬을 다시 재생함
+    /// </summary>
+    public void ReplayStory()
+    {
+        // 스토리 씬으로 바로 이동 (HasWatchStory 값과 무관하게 강제 이동)
+        UnityEngine.SceneManagement.SceneManager.LoadScene(_storySceneName);
+    }
+
     public void OnClickResetButton()
     {
         // 데이터 삭제
