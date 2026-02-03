@@ -37,6 +37,8 @@ public class StoryManager : MonoBehaviour
     [SerializeField] private Button screenButton;        // 전체 화면 클릭용 버튼
     [SerializeField] private Image bgImage;              // 배경 이미지 (페이드 아웃용)
     [SerializeField] private RawImage globalVideoDisplay; // [New] 전체 화면 비디오 출력용 RawImage
+    [SerializeField] private TextMeshProUGUI skipText;
+    [SerializeField] private Image skipImg;
 
     [Header("MiniGame References")]
     [SerializeField] private GameObject miniGameRoot;    // 미니게임 오브젝트 그룹
@@ -499,6 +501,8 @@ public class StoryManager : MonoBehaviour
 
         if (bgImage != null)
         {
+            skipText.DOColor(Color.black, 1f);
+            skipImg.DOColor(Color.black, 1f);
             // 부드럽게 사라짐
             yield return bgImage.DOFade(0f, 1.0f).WaitForCompletion();
             // 완전히 끔
@@ -507,6 +511,9 @@ public class StoryManager : MonoBehaviour
         
         isInputBlocked = false; // 차단 해제
     }
+
+
+
     private void CollectAllEffectImages()
     {
         _allEffectImages.Clear();
@@ -535,5 +542,10 @@ public class StoryManager : MonoBehaviour
                 _allEffectImages.Add(rt);
             }
         }
+    }
+
+
+    public void skipstroy() {
+        LoadingSceneManager.LoadScene("WordEater");
     }
 }
