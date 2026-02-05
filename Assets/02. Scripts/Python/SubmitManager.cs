@@ -39,11 +39,11 @@ public class SubmitManager : MonoBehaviour
                 {
                     if (result.Value == 1)
                     {
-                        NoticeManager.Instance.ShowSticky("정답!");
+                        NoticeManager.Instance.ShowTimed("정답!");
                     }
                     else
                     {
-                        NoticeManager.Instance.ShowSticky($"유사도 : {(result.Value * 100f).ToString("F0")}%");
+                        NoticeManager.Instance.ShowTimed($"유사도 : {(result.Value * 100f).ToString("F0")}%");
                         gamemanager.HistoryLIne += word2 + "," + (result.Value * 100f).ToString("F0") + "%" + "|";
                         gamemanager.UpdateHistoryLineInFile(gamemanager.HistoryLIne);
                     }
@@ -99,7 +99,7 @@ public class SubmitManager : MonoBehaviour
                     filemanager.SavaRelevantLine(newRRL);
                 }
 
-                NoticeManager.Instance.ShowSticky($"힌트 단어 : {result[randomIndex]}");
+                NoticeManager.Instance.ShowTimed($"힌트 단어 : {result[randomIndex]}");
             }
             else
             {
@@ -114,7 +114,7 @@ public class SubmitManager : MonoBehaviour
             filemanager.SavaRelevantLine(newRRL);
             gamemanager.RelevantLine = newRRL;
 
-            NoticeManager.Instance.ShowSticky($"힌트 단어 : {gamemanager.RelevantResult[randomIndex]}");
+            NoticeManager.Instance.ShowTimed($"힌트 단어 : {gamemanager.RelevantResult[randomIndex]}");
         }
     }
 }

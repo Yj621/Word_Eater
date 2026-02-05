@@ -317,7 +317,7 @@ namespace WordEater.Core
                       },
                       onDecline: () =>
                       {
-                          NoticeManager.Instance.ShowSticky("배터리가 부족합니다");
+                          NoticeManager.Instance.ShowTimed("배터리가 부족합니다");
                       }
                 );
             }
@@ -366,7 +366,7 @@ namespace WordEater.Core
                     },
                     onDecline: () =>
                     {
-                        NoticeManager.Instance.ShowSticky("배터리가 부족합니다");
+                        NoticeManager.Instance.ShowTimed("배터리가 부족합니다");
                     }
                 );
             }

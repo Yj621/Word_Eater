@@ -17,6 +17,7 @@ public class GameManager : MonoBehaviour
 
     [Header("전화 관련")]
     [SerializeField] private RectTransform CallPanel;
+    [SerializeField] private RectTransform CallPanel2;
     [SerializeField] private RectTransform CallBtn;
     // 전화 오는 연출을 제어할 코루틴 변수
     private Coroutine ringingCoroutine;
@@ -549,7 +550,7 @@ public class GameManager : MonoBehaviour
             // DOTween을 이용한 시각적 흔들림
             // duration: 0.5초 동안, strength: 30도 강도로, vibrato: 10만큼, randomness: 작을수록 덜 흔들림
             // mode: Rotate (회전하면서 흔들림 - 아이콘이 딸랑거리는 느낌)
-            CallPanel.DOShakeRotation(0.5f, 30f, 10, 10, true);
+            CallPanel2.DOShakeRotation(0.5f, 30f, 10, 10, true);
 
             // 다음 진동까지 대기 (진동 간격)
             // 1초 쉬고 다시 울림 (따르릉~ ... 따르릉~ 느낌)
@@ -651,17 +652,16 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void ShowPanel_Lock()
     {
-        if (!AlgoGuards.EnsureBattery(batterySystem, ActionType.OptimizeLock, null))
-        {
-            // 이미 있는 알림 시스템 호출
-            NoticeManager.Instance.ShowSticky("배터리가 부족합니다");
-            return;
-        }
-        // 패널 애니 (기존과 동일)
-        ShowPanelFromButton(LockPanel, LockBtn);
+        // 힌트 컨트롤러 실행 및 결과 받기
+        // OpenLockHint() 내부에서 중복 체크 -> 배터리 소모 -> 힌트 생성
+        bool isNewHintGenerated = lockController.OpenLockHint();
 
-        // 힌트 로직 실행(배터리 소모+힌트 갱신)
-        lockController.OpenLockHint();
+        // 새로운 힌트가 생성되었을 때만 패널을 열어줌
+        if (isNewHintGenerated)
+        {
+            ShowPanelFromButton(LockPanel, LockBtn);
+        }
+
     }
 
     public void HidePanel_Lock()
