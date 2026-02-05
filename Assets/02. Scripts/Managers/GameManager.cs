@@ -90,6 +90,11 @@ public class GameManager : MonoBehaviour
 
     public int MaxRelevant = 8;
 
+    [Header("Info 디버그용 변수")]
+    public Vector3 InfoDebug;
+    public GameObject temp;
+
+
     public static GameManager Instance;
 
     void Awake()
