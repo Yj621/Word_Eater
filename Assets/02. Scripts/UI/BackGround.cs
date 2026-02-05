@@ -5,6 +5,9 @@ using System.IO;
 public class BackGround : MonoBehaviour
 {
     public Image targetImage;
+
+    public Texture2D basic;
+
     private string filePath;
 
     private void Awake()
@@ -67,6 +70,18 @@ public class BackGround : MonoBehaviour
         );
 
         targetImage.sprite = sprite;
+    }
+
+    public void returnBasicImg() {
+        Sprite sprite = Sprite.Create(
+                    basic,
+                    new Rect(0, 0, basic.width, basic.height),
+                    new Vector2(0.5f, 0.5f)
+                    );
+
+        targetImage.sprite = sprite;
+
+        SaveTexture(basic);
     }
 
 }
