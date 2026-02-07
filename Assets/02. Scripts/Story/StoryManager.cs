@@ -47,6 +47,12 @@ public class StoryManager : MonoBehaviour
     [SerializeField] private GameObject hiddenObj;       // 100% 달성 시 켜질 오브젝트
     [SerializeField] private Color targetColor = Color.red; // 바뀔 목표 색상
 
+    [Header("MiniGame Effects")]
+    [SerializeField] private GameObject clickEffectPrefab;   // 클릭 시 나올 이펙트
+    [SerializeField] private Transform clickEffectSpawnPoint; // 이펙트 생성 위치 (오브젝트 참조)
+    [SerializeField] private float decayDelay = 2.0f;        // 2초 이상 클릭 없으면 감소
+    [SerializeField] private float decaySpeed = 0.2f;        // 1초 감소 속도 (0.2 = 20%)
+
     [Header("Story Data")]
     [SerializeField] private List<StoryStep> storyData;  // 대사 리스트
     [SerializeField] private float typingSpeed = 0.05f;  // 글자 나오는 속도
@@ -60,6 +66,7 @@ public class StoryManager : MonoBehaviour
     // 미니게임 상태
     private bool isMiniGameActive = false;
     private float currentFill = 0f;
+    private float lastClickTime = 0f; // 마지막 클릭 시간
     
     // [추가] 입력 차단 (페이드 아웃 등 연출 중일 때)
     private bool isInputBlocked = false;
@@ -443,6 +450,7 @@ public class StoryManager : MonoBehaviour
         // Debug.Log("미니게임 시작!");
         isMiniGameActive = true;
         currentFill = 0f;
+        lastClickTime = Time.time; // 시작 시간 기록
 
         if (miniGameRoot != null) miniGameRoot.SetActive(true);
         if (fillImage != null) fillImage.fillAmount = 0f;
@@ -450,6 +458,24 @@ public class StoryManager : MonoBehaviour
 
     private void HandleMiniGameClick()
     {
+        lastClickTime = Time.time; // 클릭 시간 갱신
+
+        // 이펙트 소환
+        if (clickEffectPrefab != null)
+        {
+            // [수정] 지정된 Transform 위치에 소환 (없으면 마우스 위치)
+            Vector3 spawnPos = (clickEffectSpawnPoint != null) 
+                ? clickEffectSpawnPoint.position 
+                : Input.mousePosition;
+            
+            Transform parent = miniGameRoot != null ? miniGameRoot.transform : transform;
+            
+            GameObject fx = Instantiate(clickEffectPrefab, parent);
+            fx.transform.position = spawnPos;
+            
+            Destroy(fx, 0.5f);
+        }
+
         // 채우기
         currentFill += 0.1f;
         if (currentFill > 1.0f) currentFill = 1.0f;
@@ -461,6 +487,22 @@ public class StoryManager : MonoBehaviour
         if (currentFill >= 1.0f)
         {
             StartCoroutine(RoutineMiniGameClear());
+        }
+    }
+
+    private void Update()
+    {
+        // 미니게임 중이고, 일정 시간(decayDelay) 이상 입력이 없으면 게이지 감소
+        if (isMiniGameActive && currentFill > 0f && currentFill < 1.0f)
+        {
+            if (Time.time - lastClickTime > decayDelay)
+            {
+                currentFill -= decaySpeed * Time.deltaTime;
+                if (currentFill < 0f) currentFill = 0f;
+
+                if (fillImage != null)
+                    fillImage.fillAmount = currentFill;
+            }
         }
     }
 

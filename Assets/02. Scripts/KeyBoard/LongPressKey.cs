@@ -47,6 +47,12 @@ public void OnPointerDown(PointerEventData eventData)
 
     public void OnPointerUp(PointerEventData eventData)
     {
+        // 꾹 누르지 않고(fired=false) 손을 뗐다면 -> 단순 클릭으로 간주하고 경고 표시
+        if (pressing && !fired)
+        {
+            if (manager) manager.ShowPushWarning();
+        }
+
         pressing = false;
         if (waitCo != null) StopCoroutine(waitCo);
     }
