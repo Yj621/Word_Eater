@@ -116,12 +116,14 @@ public class Puzzle2X2Game : MonoBehaviour
 
             p.Rect.anchoredPosition = pos;
 
-            // 초기 랜덤 회전(선택)
+            // 초기 랜덤 회전(선택) -> [수정] 회전 기능 삭제 요청으로 비활성화
+            /*
             if (randomizeRotation)
             {
                 int r = Random.Range(0, 4); // 0,1,2,3 → 0,90,180,270
                 p.SetRotationSteps(r);
             }
+            */
         }
     }
 

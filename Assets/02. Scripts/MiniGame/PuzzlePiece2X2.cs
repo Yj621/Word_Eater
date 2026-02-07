@@ -109,6 +109,10 @@ public class PuzzlePiece2X2 : MonoBehaviour, IBeginDragHandler, IDragHandler, IE
 
     public void OnPointerClick(PointerEventData eventData)
     {
+        // [수정] 회전 기능 삭제 요청으로 인하여 입력 무시
+        return;
+
+        /*
         // PC: 우클릭 → 회전
         if (eventData.button == PointerEventData.InputButton.Right)
         {
@@ -127,11 +131,13 @@ public class PuzzlePiece2X2 : MonoBehaviour, IBeginDragHandler, IDragHandler, IE
         {
             lastTapTime = now;
         }
+        */
     }
 
     void RotateCW()
     {
-        SetRotationSteps(rotationSteps + 1);
-        if (manager != null) manager.RecheckPieceState(this);
+        // [수정] 회전 기능 삭제
+        // SetRotationSteps(rotationSteps + 1);
+        // if (manager != null) manager.RecheckPieceState(this);
     }
 }
