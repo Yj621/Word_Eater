@@ -10,7 +10,6 @@ public class InfoPanelController : MonoBehaviour
     [Header("시스템 연결")]
     [SerializeField] private WordEater.Core.WordEater wordEater; // 상태(Stage) 확인용
     [SerializeField] private GameManager gameManager;   // 시도 횟수 확인용
-    [SerializeField] private GameObject galleryPanel;   // 도감 패널 (도감 바로가기용)
 
     [Header("UI 컴포넌트")]
     [SerializeField] private TextMeshProUGUI nameText;        // 워드이터 이름
@@ -26,12 +25,15 @@ public class InfoPanelController : MonoBehaviour
 
     [Header("버튼")]
     [SerializeField] private Button galleryShortcutBtn; // 도감 바로가기 버튼 (>)
+    [SerializeField] private Button settingBtn; // 설정 바로가기 버튼 (>)
 
     private void Awake()
     {
 
         if (galleryShortcutBtn != null)
             galleryShortcutBtn.onClick.AddListener(OnGoToGallery);
+        if (settingBtn != null)
+            settingBtn.onClick.AddListener(OnGoToSetting);
     }
 
     /// <summary>
@@ -117,5 +119,15 @@ public class InfoPanelController : MonoBehaviour
     {
         gameObject.SetActive(false);
         gameManager.ShowPanel_Gallery();
+    }
+
+
+    /// <summary>
+    /// 설정 바로가기 버튼 클릭 시
+    /// </summary>
+    private void OnGoToSetting()
+    {
+        gameObject.SetActive(false);
+        gameManager.ShowPanel_Setting();
     }
 }
