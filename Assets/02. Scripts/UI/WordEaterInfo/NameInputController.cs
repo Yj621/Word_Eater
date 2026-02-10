@@ -32,8 +32,12 @@ public class NameInputController : MonoBehaviour
         submitButton.onClick.AddListener(OnSubmitName);
         nameInputField.onValueChanged.AddListener(OnInputValueChanged);
 
-    nameInputField.onSubmit.AddListener(_ => OnSubmitName());
-    nameInputField.onEndEdit.AddListener(_ => OnSubmitName());
+        // onSubmit은 엔터를 쳤을 때만 실행됩니다.
+        nameInputField.onSubmit.AddListener(_ => OnSubmitName());
+
+        // onEndEdit은 키보드만 내려가도 호출되므로 
+        // 여기서 OnSubmitName을 직접 호출하면 안 됩니다.
+        // nameInputField.onEndEdit.AddListener(_ => OnSubmitName());
     }
     private void Start()
     {
