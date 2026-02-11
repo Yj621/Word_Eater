@@ -124,7 +124,8 @@ public class SlideManager : MonoBehaviour
                 }
             }
             else {
-                gamemanager.SlidePanelSetting(SettingPanel, originPos, 1);
+                if(isOK && !phoneswiper.isUsingTab)
+                    gamemanager.SlidePanelSetting(SettingPanel, originPos, 1);
             }
         }
         //아래에서 위로 슬라이드

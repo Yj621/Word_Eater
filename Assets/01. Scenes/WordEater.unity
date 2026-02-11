@@ -64177,6 +64177,7 @@ MonoBehaviour:
   wordEater: {fileID: 993040833}
   infoPanel: {fileID: 1379414363}
   submitManager: {fileID: 0}
+  phoneswiper: {fileID: 321487236}
 --- !u!1 &1848148507
 GameObject:
   m_ObjectHideFlags: 0

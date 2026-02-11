@@ -27,6 +27,8 @@ public class NameInputController : MonoBehaviour
     private Coroutine blinkCoroutine;
     private bool isCursorVisible = true;
 
+    public PhoneSwiper phoneswiper;
+
     private void Awake()
     {
         submitButton.onClick.AddListener(OnSubmitName);
@@ -52,6 +54,8 @@ public class NameInputController : MonoBehaviour
         // 1. 입력 필드 및 화면 텍스트 초기화
         if (nameInputField != null)
         {
+            phoneswiper.isUsingTab = true;
+
             nameInputField.text = "";
 
             // [추가 추천] 패널이 열리자마자 바로 입력 가능한 상태로 만듭니다.
@@ -164,6 +168,7 @@ public class NameInputController : MonoBehaviour
             }
 
             // 패널 닫기
+            phoneswiper.isUsingTab = false;
             gameObject.SetActive(false);
         }
     }
