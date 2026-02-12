@@ -123,6 +123,10 @@ public class SlideManager : MonoBehaviour
                     gamemanager.SlidePanelSetting(SettingPanel, originPos, 0);
                 }
             }
+            else {
+                if(isOK && !phoneswiper.isUsingTab)
+                    gamemanager.SlidePanelSetting(SettingPanel, originPos, 1);
+            }
         }
         //아래에서 위로 슬라이드
         if (endPos.y - startPos.y > swipeThreshold)
