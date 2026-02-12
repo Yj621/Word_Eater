@@ -54,6 +54,9 @@ public class KeyBoardManager : MonoBehaviour
     [Header("디버그/출력용")]
     public TextMeshProUGUI resultText;          // 제출 결과 표시용
 
+    [Header("안내 UI")]
+    public TextMeshProUGUI PushWarningText;    // 꾹 누르세요 안내 텍스트
+
     Dictionary<int, int> _sessionSpent = new(); // 세션 동안 소비한 키 수량 기록
     bool InRange(int i) => (longPressKeys != null && i >= 0 && i < longPressKeys.Length);
     public int GetCount(int index) => (KeyCount.isReady ? KeyCount.Get(index) : 0);
@@ -843,5 +846,26 @@ public class KeyBoardManager : MonoBehaviour
     {
         _sessionSpent.Clear();   // 환불 기록 버리기 (다시는 돌려주지 않음)
         ClearAllSpawnedPieces(); // 화면 청소
+    }
+    // -----------------------------
+    // 안내 UI 메서드
+    // -----------------------------
+
+    /// <summary>
+    /// 버튼을 짧게 눌렀을 때 "꾹 누르세요" 경고 표시 (TMP 버전)
+    /// </summary>
+    public void ShowPushWarning()
+    {
+        if (PushWarningText == null) return;
+
+        PushWarningText.gameObject.SetActive(true);
+        PushWarningText.DOKill();
+        PushWarningText.alpha = 1f;
+
+        // 0.5초 대기 후 0.5초 동안 페이드 아웃
+        PushWarningText.DOFade(0f, 0.5f).SetDelay(0.5f).OnComplete(() =>
+        {
+            PushWarningText.gameObject.SetActive(false);
+        });
     }
 }

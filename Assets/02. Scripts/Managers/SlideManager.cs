@@ -17,7 +17,7 @@ public class SlideManager : MonoBehaviour
     public bool isOK = true;
     public bool isSlide = false;
     public bool BlockJJS = false;
-
+    public bool isOn = false;
     void Awake()
     {
         originPos = SettingPanel.anchoredPosition;
@@ -98,6 +98,9 @@ public class SlideManager : MonoBehaviour
             }
         }
     }
+    public void offBtn() {
+        isOn = false;
+    }
 
     private void DetectSwipe()
     {
@@ -114,24 +117,31 @@ public class SlideManager : MonoBehaviour
                 {
 
                     BlockJJS = true;
+                    isOn = true;
 
                     SettingPanel.anchoredPosition = originPos + Vector2.up * Screen.height;
                     gamemanager.SlidePanelSetting(SettingPanel, originPos, 0);
                 }
             }
+            else {
+                if(isOK && !phoneswiper.isUsingTab)
+                    gamemanager.SlidePanelSetting(SettingPanel, originPos, 1);
+            }
         }
         //아래에서 위로 슬라이드
         if (endPos.y - startPos.y > swipeThreshold)
         {
-            if (SettingPanel.gameObject.activeSelf)
+            if (SettingPanel.gameObject.activeSelf && isOn)
             {
+                isOn = false;
                 gamemanager.SlidePanelSetting(SettingPanel, originPos, 1);
             }
         }
         else
         {
-            if (isOK && SettingPanel.gameObject.activeSelf)
+            if (isOK && SettingPanel.gameObject.activeSelf && isOn)
             {
+                isOn = false;
                 gamemanager.SlidePanelSetting(SettingPanel, originPos, 1);
             }
         }

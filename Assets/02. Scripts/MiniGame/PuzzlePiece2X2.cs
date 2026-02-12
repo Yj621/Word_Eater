@@ -79,11 +79,19 @@ public class PuzzlePiece2X2 : MonoBehaviour, IBeginDragHandler, IDragHandler, IE
 
         // 가까운 슬롯 찾기
         int slotIdx = manager.GetSnapSlotIndex(eventData.position);
+        
+        // [수정] 스냅할 슬롯이 없으면? -> 그냥 놓은 자리에 둠 (다시 돌아가지 않음)
         if (slotIdx == -1)
         {
-            // 스냅 불가 → 원위치
-            _rect.SetParent(startParent, false);
-            _rect.anchoredPosition = startLocalPos;
+            // 원래 있던 슬롯은 비워줌
+            manager.VacateSlot(this);
+            CurrentSlotIndex = -1;
+
+            // 부모를 트레이(SpawnArea)나 최상위로 변경해 유지
+            // (여기선 activeSelf 체크 없이 그냥 spawnArea로 보낸다고 가정)
+            if (manager.spawnArea != null)
+                _rect.SetParent(manager.spawnArea, true);
+
             manager.RecheckPieceState(this);
             return;
         }
@@ -91,14 +99,22 @@ public class PuzzlePiece2X2 : MonoBehaviour, IBeginDragHandler, IDragHandler, IE
         // 점유 시도
         if (!manager.TryOccupySlot(slotIdx, this))
         {
-            // 이미 차 있으면 복귀
-            _rect.SetParent(startParent, false);
-            _rect.anchoredPosition = startLocalPos;
+            // 이미 차 있으면? -> 여기서도 그냥 튕겨내거나 제자리에 둠.
+            // 기획 의도상 "다른데 두면 다시 붙지 않고 그 곳에 있게" 하려면
+            // 실패 시 원위치보다는 현재 위치 유지가 맞으나, 
+            // 슬롯 위에 겹쳐 보이면 곤란하므로 여기서는 "튕겨내기(트레이 근처)" 혹은 "제자리" 중 선택.
+            // 일단은 "슬롯 진입 실패 -> 그냥 그 근처에 둠" 처리 (위와 동일 로직)
+            
+            manager.VacateSlot(this);
+            CurrentSlotIndex = -1;
+            if (manager.spawnArea != null)
+                _rect.SetParent(manager.spawnArea, true);
+            
             manager.RecheckPieceState(this);
             return;
         }
 
-        // 슬롯에 스냅
+        // 슬롯에 스냅 성공
         var slot = manager.GetSlot(slotIdx);
         _rect.SetParent(slot, false);
         _rect.anchoredPosition = Vector2.zero;

@@ -8,9 +8,9 @@ public class AdsManager : MonoBehaviour
     public static AdsManager Instance { get; private set; }
 
 #if UNITY_ANDROID
-    [SerializeField] private string rewardedAdRevivalId = "ca-app-pub-3940256099942544/5354046379"; // 테스트용
+    [SerializeField] private string rewardedAdRevivalId = "ca-app-pub-3940256099942544/5224354917"; // 테스트용
 #elif UNITY_IOS
-    [SerializeField] private string rewardedAdUnitId = "cca-app-pub-3940256099942544/6978759866"; // 테스트용
+    [SerializeField] private string rewardedAdUnitId = 	"ca-app-pub-3940256099942544/1712485313"; // 테스트용
 #else
     [SerializeField] private string rewardedAdUnitId = "unused";
 #endif

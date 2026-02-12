@@ -22,10 +22,39 @@ public class Puzzle2X2Game : MonoBehaviour
     public Image answerDisplayImage; // [New] 정답지 이미지
 
     [Header("초기 랜덤 회전 허용 (0/90/180/270 중 하나)")]
-    public bool randomizeRotation = true;
+    public bool randomizeRotation = false; // [수정] 기본값 false
 
     [Header("슬롯 스냅 허용 반경(px)")]
     public float snapRadius = 80f;
+    
+    // ... (중략) ...
+
+    // 슬롯 점유 시도 (중복 방지). 성공 시 true
+    public bool TryOccupySlot(int slotIndex, PuzzlePiece2X2 piece)
+    {
+        if (slotIndex < 0 || slotIndex >= 4) return false;
+        if (_occupied[slotIndex] != null && _occupied[slotIndex] != piece) return false;
+
+        // 다른 슬롯에서 차지 중이었다면 해제
+        for (int i = 0; i < 4; i++)
+        {
+            if (_occupied[i] == piece) _occupied[i] = null;
+        }
+        _occupied[slotIndex] = piece;
+        return true;
+    }
+
+    // [추가] 특정 조각이 차지하던 슬롯을 비움 (드래그해서 떼어냈을 때)
+    public void VacateSlot(PuzzlePiece2X2 piece)
+    {
+        for (int i = 0; i < 4; i++)
+        {
+            if (_occupied[i] == piece)
+            {
+                _occupied[i] = null;
+            }
+        }
+    }
 
     [Header("스폰 제외 반경 (중앙으로부터)")]
     public float spawnExclusionRadius = 250f;
@@ -160,20 +189,7 @@ public class Puzzle2X2Game : MonoBehaviour
         return (best <= snapRadius) ? closest : -1;
     }
 
-    // 슬롯 점유 시도 (중복 방지). 성공 시 true
-    public bool TryOccupySlot(int slotIndex, PuzzlePiece2X2 piece)
-    {
-        if (slotIndex < 0 || slotIndex >= 4) return false;
-        if (_occupied[slotIndex] != null && _occupied[slotIndex] != piece) return false;
 
-        // 다른 슬롯에서 차지 중이었다면 해제
-        for (int i = 0; i < 4; i++)
-        {
-            if (_occupied[i] == piece) _occupied[i] = null;
-        }
-        _occupied[slotIndex] = piece;
-        return true;
-    }
 
     // 조각이 슬롯에 붙거나 회전이 바뀔 때마다 정답 여부 갱신
     public void RecheckPieceState(PuzzlePiece2X2 piece)

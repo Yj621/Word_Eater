@@ -12,6 +12,7 @@ public class NameInputController : MonoBehaviour
 
     [Header("UI 컴포넌트 (연출)")]
     [SerializeField] private TextMeshProUGUI displayOutput; // 유저 눈에 보이는 텍스트 (커서 포함)
+    [SerializeField] private TextMeshProUGUI ErrorText;
 
     [Header("연출 설정")]
     [SerializeField] private string cursorChar = "|";       // 커서 모양
@@ -26,13 +27,19 @@ public class NameInputController : MonoBehaviour
     private Coroutine blinkCoroutine;
     private bool isCursorVisible = true;
 
+    public PhoneSwiper phoneswiper;
+
     private void Awake()
     {
         submitButton.onClick.AddListener(OnSubmitName);
         nameInputField.onValueChanged.AddListener(OnInputValueChanged);
 
-    nameInputField.onSubmit.AddListener(_ => OnSubmitName());
-    nameInputField.onEndEdit.AddListener(_ => OnSubmitName());
+        // onSubmit은 엔터를 쳤을 때만 실행됩니다.
+        nameInputField.onSubmit.AddListener(_ => OnSubmitName());
+
+        // onEndEdit은 키보드만 내려가도 호출되므로 
+        // 여기서 OnSubmitName을 직접 호출하면 안 됩니다.
+        // nameInputField.onEndEdit.AddListener(_ => OnSubmitName());
     }
     private void Start()
     {
@@ -47,6 +54,8 @@ public class NameInputController : MonoBehaviour
         // 1. 입력 필드 및 화면 텍스트 초기화
         if (nameInputField != null)
         {
+            phoneswiper.isUsingTab = true;
+
             nameInputField.text = "";
 
             // [추가 추천] 패널이 열리자마자 바로 입력 가능한 상태로 만듭니다.
@@ -119,37 +128,48 @@ public class NameInputController : MonoBehaviour
     {
         string inputName = nameInputField.text;
 
-        if (string.IsNullOrWhiteSpace(inputName))
+        if (inputName.Length > 8)
         {
-            // Debug.LogWarning("이름을 입력해주세요.");
-            return; // 빈 이름은 진행 안 함
-        }
-
-        if (FileManager.Instance != null)
-        {
-            // FileManager 내부의 SetPlayerName 함수가 
-            // CurrentPlayerName 변수 업데이트 + JSON 저장을 모두 수행합니다.
-            FileManager.Instance.SetPlayerName(inputName);
-        }
-
-        // 정보창 갱신 요청
-        if (infoPanel != null)
-        {
-            infoPanel.UpdateInfoUI();
-        }
-
-        if (submitManager != null)
-        {
-            submitManager.OnRelevantButton();
+            //글자 수 제한
+            ErrorText.gameObject.SetActive(true);
+            return;
         }
         else
         {
-            // 혹시 인스펙터 연결을 깜빡했을 경우를 대비해 Find로 찾기 (안전장치)
-            var sm = FindAnyObjectByType<SubmitManager>();
-            if (sm != null) sm.OnRelevantButton();
-        }
+            ErrorText.gameObject.SetActive(false);
+            if (string.IsNullOrWhiteSpace(inputName))
+            {
+                // Debug.LogWarning("이름을 입력해주세요.");
+                return; // 빈 이름은 진행 안 함
+            }
 
-        // 패널 닫기
-        gameObject.SetActive(false);
+            if (FileManager.Instance != null)
+            {
+                // FileManager 내부의 SetPlayerName 함수가 
+                // CurrentPlayerName 변수 업데이트 + JSON 저장을 모두 수행합니다.
+                FileManager.Instance.SetPlayerName(inputName);
+            }
+
+            // 정보창 갱신 요청
+            if (infoPanel != null)
+            {
+                infoPanel.UpdateInfoUI();
+            }
+
+            if (submitManager != null)
+            {
+                submitManager.OnRelevantButton();
+            }
+            else
+            {
+                // 혹시 인스펙터 연결을 깜빡했을 경우를 대비해 Find로 찾기 (안전장치)
+                var sm = FindAnyObjectByType<SubmitManager>();
+                if (sm != null) sm.OnRelevantButton();
+            }
+
+            // 패널 닫기
+            phoneswiper.isUsingTab = false;
+            gameObject.SetActive(false);
+        }
     }
 }

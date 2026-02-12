@@ -10,43 +10,46 @@ public class LockHintAppController : MonoBehaviour
     [SerializeField] private GameManager gamemanager;
 
     [Range(0f, 1f)][SerializeField] private float chosungChance = 0.5f; // 초성 힌트 뜰 확률
-
+   
+    // 마지막으로 힌트를 확인한 단어를 저장
+    private string lastAnswer = "";
     /// <summary>
     /// GameManager나 버튼 이벤트에서 호출하는 진입점 함수
     /// </summary>
-    public void OpenLockHint()
+    public bool OpenLockHint()
     {
-        // 필수 컴포넌트 연결 안 돼 있으면 에러 로그 띄우고 중단함
-        if (battery == null || lockUI == null)
+        if (battery == null || lockUI == null) return false;
+
+        // 현재 정답 단어 가져오기
+        string currentAnswer = (wordEater != null) ? wordEater.Answer : "";
+
+        //  중복 확인 로직
+        // 이미 힌트를 본 단어와 현재 정답이 같다면 배터리 소모 없이 메시지만 띄움
+        if (!string.IsNullOrEmpty(lastAnswer) && lastAnswer == currentAnswer)
         {
-            // Debug.LogWarning("[LockHint] battery 또는 lockUI 미할당됨");
-            return;
+            UIManager.Instance.Show("힌트를 확인하셨습니다.\n히스토리에서 다시 볼 수 있습니다.");
+            return false; // 중복이므로 false 반환
         }
 
-        // 배터리 소모 시도함 (성공 시 true 반환)
-        // OptimizeLock 타입은 보통 배터리 10% 소모함
+        // 배터리 소모 체크
         if (!battery.TryConsume(ActionType.OptimizeLock))
         {
-            // 배터리 없으면 광고 팝업 띄우고 끝냄
             battery.ShowBatteryAdPopup();
-            return;
+            return false; // 배터리 없으므로 false
         }
 
-        // 워드이터한테서 정답 단어 가져옴. 없으면 "?" 처리함
-        string answer = (wordEater != null) ? wordEater.Answer : "";
-        if (string.IsNullOrEmpty(answer)) answer = "?";
+        // 힌트 생성 및 저장
+        LockHintMode mode = DecideMode(currentAnswer);
+        lockUI.ShowHint(currentAnswer, mode);
+        lastAnswer = currentAnswer;
 
-        // 이번에 어떤 힌트(길이만 vs 초성)를 줄지 결정함
-        LockHintMode mode = DecideMode(answer);
-
-        // UI에 최종적으로 힌트 표시 요청함
-        lockUI.ShowHint(answer, mode);
-
+        // 데이터 저장
         if (mode == LockHintMode.LengthOnly) gamemanager.saveLock(0);
         else if (mode == LockHintMode.FirstChosung) gamemanager.saveLock(1);
         else gamemanager.saveLock(2);
-
         gamemanager.saveCountInmanager(3);
+
+        return true; // 성공적으로 새 힌트를 만듦
     }
 
     /// <summary>

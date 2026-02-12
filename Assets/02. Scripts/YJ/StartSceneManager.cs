@@ -17,6 +17,10 @@ public class StartSceneManager : MonoBehaviour
 
     void Start()
     {
+        // [프레임 최적화] 60프레임 고정 및 VSync 해제
+        QualitySettings.vSyncCount = 0;
+        Application.targetFrameRate = 60;
+
         if (startText != null)
         {
             // anchoredPosition.y를 기준으로 위아래로 움직이게 함
