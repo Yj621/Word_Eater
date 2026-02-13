@@ -94,6 +94,7 @@ public class GameManager : MonoBehaviour
     [Header("Info 디버그용 변수")]
     public Vector3 InfoDebug;
     public GameObject temp;
+    public int messageCount = 0;
 
 
     public static GameManager Instance;

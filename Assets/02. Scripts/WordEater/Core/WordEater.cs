@@ -130,7 +130,7 @@ namespace WordEater.Core
             SaveCheckpoint();
 
             // 현재 상태를 파일에 저장함
-            filemanager.SaveWordEaterInfo((int)stage, currentAnswer, gamemanager.HistoryLIne, gamemanager.RelevantResult, wordImgString, gamemanager.RelevantLine,gamemanager.isLength,gamemanager.isFirst,gamemanager.isLast,gamemanager.isChoseongItem);
+            filemanager.SaveWordEaterInfo((int)stage, currentAnswer, gamemanager.HistoryLIne, gamemanager.RelevantResult, wordImgString, gamemanager.RelevantLine,gamemanager.isLength,gamemanager.isFirst,gamemanager.isLast,gamemanager.isChoseongItem,gamemanager.messageCount);
             NotifyNewWordAssigned();
         }
 

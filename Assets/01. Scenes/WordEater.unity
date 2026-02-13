@@ -55360,6 +55360,7 @@ MonoBehaviour:
   wordEater: {fileID: 993040833}
   batterySystem: {fileID: 1922716698}
   loading: {fileID: 0}
+  filemanager: {fileID: 476206674}
   countText: {fileID: 618569125}
   scrollRect: {fileID: 1564626880}
   chatContent: {fileID: 1516843192}
@@ -72545,6 +72546,7 @@ MonoBehaviour:
   MaxRelevant: 8
   InfoDebug: {x: 0, y: 0, z: 0}
   temp: {fileID: 0}
+  messageCount: 0
 --- !u!224 &1253854187952671841
 RectTransform:
   m_ObjectHideFlags: 0

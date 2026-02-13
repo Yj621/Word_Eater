@@ -17,12 +17,13 @@ public class AlgorithmMessage : MonoBehaviour
     [SerializeField] private BatterySystem batterySystem;
     [SerializeField] private UILoadingText loading;
 
+    [SerializeField] private FileManager filemanager;
+
     [Header("상태 변수")]
     private string lastDateKey = "";
 
     [Header("횟수 표시")]
     [SerializeField] private TextMeshProUGUI countText;
-    private int currentTryCount = 0;
     private const int MaxTryCount = 10;
 
     [Header("스크롤 뷰 관련")]
@@ -99,7 +100,7 @@ void Awake()
     {
         if (countText != null)
         {
-            countText.text = $"{currentTryCount}/{MaxTryCount}";
+            countText.text = $"{gamemanager.messageCount}/{MaxTryCount}";
         }
     }
 
@@ -133,7 +134,7 @@ void Awake()
         }
 
         //횟수 초기화 (새로운 단계니까 0부터 다시 시작)
-        currentTryCount = 0;
+        gamemanager.messageCount = 0;
         UpdateCountText();
 
         // 날짜 구분선은 다시 띄워주기
@@ -193,8 +194,8 @@ void Awake()
         string userInput = inputField ? inputField.text : string.Empty;
         if (string.IsNullOrEmpty(userInput)) return;
 
-        // 배터리 체크 (0회차일 때만)
-        if (currentTryCount == 0)
+        // 배터리 체크 (0회차일 때 혹은 최대 회차일 때)
+        if (gamemanager.messageCount == 0 || gamemanager.messageCount == MaxTryCount)
         {
             if (!AlgoGuards.EnsureBattery(batterySystem, ActionType.OptimizeAlgoMessage, null))
             {
@@ -202,9 +203,19 @@ void Awake()
                 NoticeManager.Instance.ShowTimed("배터리가 부족합니다");
                 return; // 함수 종료 (메시지 전송 안 함)
             }
+
+            // 최대 회차라면 베터리 소모하고 회수 초기화
+            if (gamemanager.messageCount == MaxTryCount)
+            {
+                gamemanager.messageCount = 0;
+                filemanager.saveMsgCount(gamemanager.messageCount);
+                UpdateCountText();
+            }
         }
 
-        currentTryCount++;
+        gamemanager.messageCount++;
+        filemanager.saveMsgCount(gamemanager.messageCount);
+
         UpdateCountText();
 
         SpawnMessage(inputPanelPrefab, userInput, false);
@@ -243,13 +254,6 @@ void Awake()
 
         SpawnMessage(resultPanelPrefab, finalResultText, true);
 
-        // 10회 다 썼으면 초기화
-        if (currentTryCount >= MaxTryCount)
-        {
-            currentTryCount = 0;
-            UpdateCountText();
-        }
-        
         SoundManager.Instance.SFXStart(SoundManager.SFXType.msgPopup);
     }
 }
