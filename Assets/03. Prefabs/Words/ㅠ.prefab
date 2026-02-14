@@ -178,4 +178,4 @@ MonoBehaviour:
   role: 1
   glyph: "\u3160"
   vowelAttach: 1
-  snapRadius: 30
+  snapRadius: 100

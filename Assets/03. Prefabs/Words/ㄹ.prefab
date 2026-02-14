@@ -250,16 +250,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   role: 0
   glyph: "\u3139"
-  rightAnchor: {fileID: 2068457111064982943}
-  bottomAnchor: {fileID: 7027070240870563525}
-  bottomFinalAnchor: {fileID: 3836478001371676894}
   vowelAttach: 0
-  snapRadius: 30
-  attachOffset: {x: 0, y: 0}
-  attachedVowel: {fileID: 0}
-  attachedFinal: {fileID: 0}
-  attachedVowelSide: {fileID: 0}
-  attachedVowelBelow: {fileID: 0}
+  snapRadius: 100
 --- !u!1 &8400494306026675775
 GameObject:
   m_ObjectHideFlags: 0
