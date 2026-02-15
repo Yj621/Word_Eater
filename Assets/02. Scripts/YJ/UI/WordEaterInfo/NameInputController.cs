@@ -29,37 +29,53 @@ public class NameInputController : MonoBehaviour
 
     public PhoneSwiper phoneswiper;
 
-    private void Awake()
-    {
-        submitButton.onClick.AddListener(OnSubmitName);
-        nameInputField.onValueChanged.AddListener(OnInputValueChanged);
+private void Awake()
+{
+    // 리스너 초기화
+    submitButton.onClick.RemoveAllListeners();
+    submitButton.onClick.AddListener(OnSubmitName);
+    
+    nameInputField.onValueChanged.RemoveAllListeners();
+    nameInputField.onValueChanged.AddListener(OnInputValueChanged);
 
-        // onSubmit은 엔터를 쳤을 때만 실행됩니다.
-        nameInputField.onSubmit.AddListener(_ => OnSubmitName());
-
-        // onEndEdit은 키보드만 내려가도 호출되므로 
-        // 여기서 OnSubmitName을 직접 호출하면 안 됩니다.
-        // nameInputField.onEndEdit.AddListener(_ => OnSubmitName());
-    }
-    private void Start()
-    {
-    }
+    // [중요] 기존 onSubmit이나 onEndEdit이 자동으로 제출을 호출하지 않도록 비웁니다.
+    nameInputField.onSubmit.RemoveAllListeners();
+    nameInputField.onEndEdit.RemoveAllListeners();
+}
     private void OnEnable()
     {
         ResetUI();
     }
 
+
+private void Update()
+{
+    // 1. 안드로이드 뒤로가기 (키보드만 닫기)
+    if (Input.GetKeyDown(KeyCode.Escape))
+    {
+        if (nameInputField.isFocused)
+        {
+            // 포커스를 해제하여 키보드를 내리되, OnSubmitName은 절대 호출하지 않음
+            nameInputField.DeactivateInputField();
+            UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(null);
+            return; // 뒤로가기 시에는 아래 엔터 체크를 하지 않음
+        }
+    }
+
+    // 2. [수정] 키보드 엔터/패드 완료 버튼 감지 (진짜 제출 시에만)
+    if (nameInputField.isFocused && (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter)))
+    {
+        OnSubmitName();
+    }
+}
     private void ResetUI()
     {
-        // 1. 입력 필드 및 화면 텍스트 초기화
+        // 입력 필드 및 화면 텍스트 초기화
         if (nameInputField != null)
         {
             phoneswiper.isUsingTab = true;
 
             nameInputField.text = "";
-
-            // [추가 추천] 패널이 열리자마자 바로 입력 가능한 상태로 만듭니다.
-            // 모바일에서는 키보드가 자동으로 올라오고, PC에서는 커서가 바로 잡힙니다.
             nameInputField.ActivateInputField();
             nameInputField.Select();
         }

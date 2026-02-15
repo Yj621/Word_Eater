@@ -12,12 +12,14 @@ public class Item : MonoBehaviour
 
     private ItemType _myType;
     private ItemEffectController _controller;
+    private BatterySystem _batterySystem;
 
     // 초기화 함수
-    public void Setup(ItemType type, Sprite sprite, int count, ItemEffectController controller)
+    public void Setup(ItemType type, Sprite sprite, int count, ItemEffectController controller, BatterySystem batterySystem)
     {
         _myType = type;
         _controller = controller;
+        _batterySystem = batterySystem;
 
         // 이미지 설정
         if (iconImage != null) iconImage.sprite = sprite;
@@ -48,7 +50,14 @@ public class Item : MonoBehaviour
         // 부활권은 인벤토리에서 직접 사용할 수 없으므로 클릭 무시
         if (_myType == ItemType.ReviveTicket)
         {
-            NoticeManager.Instance.ShowSticky("부활권은 사망 시\n사용 가능합니다.");
+            UIManager.Instance.Show("부활권은 사망 시\n사용 가능합니다.");
+            GameManager.Instance.HidePanel_Item(false);
+
+            return;
+        }
+        if (_myType == ItemType.BatteryRefill && _batterySystem.currentBattery >= 100)
+        {
+            UIManager.Instance.Show("배터리가 이미 가득 찼습니다.");
             GameManager.Instance.HidePanel_Item(false);
 
             return;

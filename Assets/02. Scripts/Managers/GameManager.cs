@@ -69,7 +69,7 @@ public class GameManager : MonoBehaviour
 
 
     [Header("UI 연결")]
-    [SerializeField] private ADPopup sharedAdPopup;
+    [SerializeField] public ADPopup sharedAdPopup;
 
     public string HistoryLIne = "";
     public string RelevantLine = "";
@@ -178,8 +178,9 @@ public class GameManager : MonoBehaviour
             },
             onDecline: () =>
             {
-                // 거절(No) 시 실행될 로직
-                // Debug.Log("아이템 획득 거절");
+                smanager.isOK = true;
+                smanager.BlockJJS = false;
+                if (phoneSwiper != null) phoneSwiper.isUsingTab = false;
             }
         );
     }
@@ -643,38 +644,37 @@ public class GameManager : MonoBehaviour
     public void HidePanel_Folder() => HideBlurPanelToButton(FolderPanel, FolderBtn, folderCanvasGroup);
 
     public void ShowPanel_Item() => ShowBlurPanelFromButton(ItemFolderPanel, ItemFolderBtn, itemFolderCanvasGroup);
-    public void HidePanel_Item(bool playSound = true) 
+    public void HidePanel_Item(bool playSound = true)
     {
         // 소리를 재생하라고 했을 때만 재생
         if (playSound)
         {
             SoundManager.Instance.SFXStart(SoundManager.SFXType.button2);
         }
-        
+
         HideBlurPanelToButton(ItemFolderPanel, ItemFolderBtn, itemFolderCanvasGroup);
     }
     /// <summary>
-    /// 잠금 패널 열기
+    /// 잠금 패널 열기 버튼 (홈 화면 아이콘) 클릭 시
     /// </summary>
     public void ShowPanel_Lock()
     {
-        // 힌트 컨트롤러 실행 및 결과 받기
-        // OpenLockHint() 내부에서 중복 체크 -> 배터리 소모 -> 힌트 생성
-        bool isNewHintGenerated = lockController.OpenLockHint();
+        // 컨트롤러에게 위임 (팝업을 띄울지, 바로 열지 컨트롤러가 판단)
+        lockController.OpenLockHint();
+    }
 
-        // 새로운 힌트가 생성되었을 때만 패널을 열어줌
-        if (isNewHintGenerated)
-        {
-            ShowPanelFromButton(LockPanel, LockBtn);
-        }
-
+    /// <summary>
+    /// 힌트 생성이 확정되었을 때 실제로 UI 패널을 여는 함수
+    /// </summary>
+    public void OpenLockPanelUI()
+    {
+        ShowPanelFromButton(LockPanel, LockBtn);
     }
 
     public void HidePanel_Lock()
     {
         HidePanelToButton(LockPanel, LockBtn);
     }
-
     // -----------------------------------------------------------------------
     // [핵심 변경 2] 블러 패널 전용 Show/Hide 함수 추가
     // 기존 ShowPanelFromButton과 비슷하지만 SetActive 대신 Alpha를 조절함

@@ -14,7 +14,7 @@ namespace WordEater.Systems
         #region [설정 및 연결]
         [Header("테스트/실사용 겸용: 0~100%")]
         [SerializeField, Range(0, 100)]
-        private int currentBattery = 100; // 현재 배터리 퍼센트 (0~100)
+        public int currentBattery = 100; // 현재 배터리 퍼센트 (0~100)
 
         [Header("총 배터리 칸 수")]
         [SerializeField] private int maxCells = 5; // UI에 표시될 최대 배터리 칸 개수

@@ -15,6 +15,7 @@ public class ItemSlot : MonoBehaviour
     [SerializeField] private Item slotPrefab; // 슬롯 프리팹
     [SerializeField] private Transform slotParent;  // 슬롯이 생성될 부모 (Grid/Horizontal Layout)
     [SerializeField] private ItemEffectController effectController; // 효과 발동기 연결
+    [SerializeField] private BatterySystem batterySystem; // 배터리 시스템 참조 (배터리 리필 아이템 사용 시 필요)
 
     [Header("아이템 데이터 등록")]
     public List<ItemInfo> itemIcons; // 인스펙터에서 각 타입별 이미지 등록
@@ -31,7 +32,7 @@ public class ItemSlot : MonoBehaviour
             // 초기 개수 가져오기
             int count = ItemManager.Instance.GetCount(info.type);
 
-            newSlot.Setup(info.type, info.icon, count, effectController);
+            newSlot.Setup(info.type, info.icon, count, effectController, batterySystem);
             _spawnedSlots.Add(info.type, newSlot);
         }
 

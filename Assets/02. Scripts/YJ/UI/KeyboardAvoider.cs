@@ -38,28 +38,34 @@ public class KeyboardAvoider : MonoBehaviour
         currentKeyboardHeight = 0f;
     }
 
-    void Update()
+void Update()
     {
 #if UNITY_ANDROID || UNITY_IOS
         if (targets == null || targets.Length == 0) return;
 
+        // 매 프레임 네이티브 키보드 영역 체크
         float keyboardHeight = GetNativeKeyboardHeight();
 
+        // 키보드가 완전히 닫혔을 때 처리
         if (keyboardHeight <= 0f)
         {
             if (!Mathf.Approximately(currentKeyboardHeight, 0f))
             {
                 currentKeyboardHeight = 0f;
                 ResetAllTargets();
-
-                // [선택 사항] 키보드가 닫히면 모든 입력 필드 포커스 해제
-                // UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(null);
             }
             return;
         }
+
+        //  키보드 높이가 바뀌었을 때 UI 위치 재계산 및 적용 로직 추가
+        if (!Mathf.Approximately(currentKeyboardHeight, keyboardHeight))
+        {
+            currentKeyboardHeight = keyboardHeight;
+            // 타겟 UI들을 키보드 위로 올리는 함수 호출
+            ApplyPositionToAllTargets(keyboardHeight);
+        }
 #endif
     }
-
     /// <summary>
     /// 저장된 초기 좌표(originalPositions)를 기반으로 모든 UI를 원복
     /// </summary>

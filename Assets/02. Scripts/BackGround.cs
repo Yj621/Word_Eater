@@ -19,22 +19,40 @@ public class BackGround : MonoBehaviour
     //갤러리에서 이미지 선택
     public void PickAndSaveBGImage()
     {
-        // NativeGallery 최신 버전 및 유니티 6 대응: MediaType 인자 추가
+        // 1. 현재 권한 상태 확인
         bool hasPermission = NativeGallery.CheckPermission(NativeGallery.PermissionType.Read, NativeGallery.MediaType.Image);
 
         if (!hasPermission)
         {
-            // 권한이 없다면 네이티브 팝업 호출 (설정창 유도)
-            ShowNativeDialog();
+            // 2. [수정] 권한이 없다면 시스템 팝업을 띄워달라고 '요청'한다.
+            NativeGallery.RequestPermissionAsync((permission) =>
+            {
+                if (permission == NativeGallery.Permission.Granted)
+                {
+                // 유저가 시스템 팝업에서 '허용'을 누른 경우 -> 갤러리 열기
+                    OpenGallery();
+                }
+                else
+                {
+                // 유저가 시스템 팝업에서 '거절'을 누른 경우 -> 그때 설정창 유도 팝업 띄우기
+                    ShowNativeDialog();
+                }
+            }, NativeGallery.PermissionType.Read, NativeGallery.MediaType.Image);
+
             return;
         }
 
-        // 2. 이미지 선택 실행 (이 버전의 GetImageFromGallery는 void를 반환함)
+        // 이미 권한이 있다면 바로 열기
+        OpenGallery();
+    }
+
+    // 중복 코드를 줄이기 위해 분리한 갤러리 호출 함수
+    private void OpenGallery()
+    {
         NativeGallery.GetImageFromGallery((path) =>
         {
             if (string.IsNullOrEmpty(path)) return;
 
-            // NativeGallery 전용 로드 함수 사용 (성능 및 메모리에 더 좋음)
             Texture2D tex = NativeGallery.LoadImageAtPath(path, 1024, false);
             if (tex == null) return;
 
@@ -130,7 +148,8 @@ public class BackGround : MonoBehaviour
         targetImage.sprite = sprite;
     }
 
-    public void returnBasicImg() {
+    public void returnBasicImg()
+    {
         Sprite sprite = Sprite.Create(
                     basic,
                     new Rect(0, 0, basic.width, basic.height),

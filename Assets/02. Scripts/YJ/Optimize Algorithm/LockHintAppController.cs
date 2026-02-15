@@ -10,67 +10,84 @@ public class LockHintAppController : MonoBehaviour
     [SerializeField] private GameManager gamemanager;
 
     [Range(0f, 1f)][SerializeField] private float chosungChance = 0.5f; // 초성 힌트 뜰 확률
-   
+
     // 마지막으로 힌트를 확인한 단어를 저장
     private string lastAnswer = "";
     /// <summary>
     /// GameManager나 버튼 이벤트에서 호출하는 진입점 함수
     /// </summary>
-    public bool OpenLockHint()
+    public void OpenLockHint()
     {
-        if (battery == null || lockUI == null) return false;
+        if (battery == null || lockUI == null) return;
 
-        // 현재 정답 단어 가져오기
         string currentAnswer = (wordEater != null) ? wordEater.Answer : "";
 
-        //  중복 확인 로직
-        // 이미 힌트를 본 단어와 현재 정답이 같다면 배터리 소모 없이 메시지만 띄움
+        // 중복 확인 로직
         if (!string.IsNullOrEmpty(lastAnswer) && lastAnswer == currentAnswer)
         {
-            UIManager.Instance.Show("힌트를 확인하셨습니다.\n히스토리에서 다시 볼 수 있습니다.");
-            return false; // 중복이므로 false 반환
+            UIManager.Instance.Show("힌트를 확인했습니다.\n히스토리에서 다시 볼 수 있습니다.");
+            return;
         }
 
+        if (GameManager.Instance.sharedAdPopup != null)
+        {
+            // [핵심 추가] 광고 모드를 끕니다. (그래야 광고 없이 바로 ExecuteLockHint가 실행됨)
+            GameManager.Instance.sharedAdPopup.SetAdMode(false);
+
+            GameManager.Instance.sharedAdPopup.Configure(
+                title: "배터리가 10% 소모됩니다.\n글자 수 힌트를 보시겠습니까?",
+                watchAdText: "힌트 보기",
+                noThanksText: "취소"
+            );
+
+            GameManager.Instance.sharedAdPopup.YesNoPanelShow(
+                onAccept: () =>
+                {
+                    ExecuteLockHint(currentAnswer);
+                },
+                onDecline: () =>
+                {
+                    Debug.Log("취소됨");
+                }
+            );
+        }
+    }
+
+    private void ExecuteLockHint(string currentAnswer)
+    {
         // 배터리 소모 체크
         if (!battery.TryConsume(ActionType.OptimizeLock))
         {
-            battery.ShowBatteryAdPopup();
-            return false; // 배터리 없으므로 false
+            battery.ShowBatteryAdPopup(); // 배터리 부족 시 광고 유도 팝업
+            return;
         }
 
-        // 힌트 생성 및 저장
+        // 힌트 데이터 생성
         LockHintMode mode = DecideMode(currentAnswer);
         lockUI.ShowHint(currentAnswer, mode);
         lastAnswer = currentAnswer;
 
-        // 데이터 저장
+        // 세이브 데이터 기록
         if (mode == LockHintMode.LengthOnly) gamemanager.saveLock(0);
         else if (mode == LockHintMode.FirstChosung) gamemanager.saveLock(1);
         else gamemanager.saveLock(2);
+
         gamemanager.saveCountInmanager(3);
 
-        return true; // 성공적으로 새 힌트를 만듦
+        // 힌트 생성이 완료되었으므로 GameManager에게 패널 오픈 명령
+        GameManager.Instance.OpenLockPanelUI();
     }
 
-    /// <summary>
-    /// 힌트 모드를 확률적으로 결정하는 함수
-    /// </summary>
     private LockHintMode DecideMode(string answer)
     {
-        // 정답 없거나 1글자면 무조건 길이만 보여줌 (1글자 초성은 너무 쉬움)
         if (string.IsNullOrEmpty(answer) || answer.Length <= 1)
             return LockHintMode.LengthOnly;
 
-        // 설정한 확률(chosungChance)에 따라 초성 보여줄지 결정함
         bool giveCho = Random.value < chosungChance;
-
-        // 꽝이면 길이만 보여줌
         if (!giveCho) return LockHintMode.LengthOnly;
 
-        // 초성 보여주기로 했으면 앞/뒤 중 하나 50:50으로 고름
         var mode = (Random.value < 0.5f) ? LockHintMode.FirstChosung : LockHintMode.LastChosung;
 
-        // 예외 처리: 2글자 단어인데 뒤 초성 알려주면 추론이 너무 쉬울 수 있어서 앞 초성으로 강제함(취향 차이임)
         if (answer.Length == 2 && mode == LockHintMode.LastChosung)
             mode = LockHintMode.FirstChosung;
 
