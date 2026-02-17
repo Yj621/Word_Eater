@@ -22,15 +22,18 @@ public class GalleryDetailView : MonoBehaviour
     {
         gameObject.SetActive(true);
 
-        if (nameBitText != null) nameBitText.text = item.displayNameBit;
-        if (nameByteText != null) nameByteText.text = item.displayNameByte;
-        if (nameWordText != null) nameWordText.text = item.displayNameWord;
-        
+        if (nameBitText != null)
+            nameBitText.text = string.IsNullOrEmpty(item.displayNameBit) ? "?" : item.displayNameBit;
+        if (nameByteText != null)
+            nameByteText.text = string.IsNullOrEmpty(item.displayNameByte) ? "?" : item.displayNameByte;
+        if (nameWordText != null)
+            nameWordText.text = string.IsNullOrEmpty(item.displayNameWord) ? "?" : item.displayNameWord;
         if (callCountText != null) callCountText.text = $"전화 : {item.callCount}회";
         if (msgCountText != null) msgCountText.text = $"메시지 : {item.msgCount}회";
         if (lockCountText != null) lockCountText.text = $"잠금 : {item.lockCount}회";
         if (submitCountText != null) submitCountText.text = $"제출 : {item.submitCount}회";
-        
+
+
         dateText.text = item.dateCaught;
 
         string baseDir = Application.persistentDataPath;

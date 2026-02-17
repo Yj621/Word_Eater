@@ -37,7 +37,7 @@ namespace WordEater.Core
         [SerializeField] private GrowthStage stage = GrowthStage.Bit; // 현재 성장 단계
         [SerializeField] private string currentAnswer;                // 현재 정답 단어
         private WordEntry currentEntry;                               // 현재 단어 데이터 (연관어 포함)
-        private string pendingEvoId;                                  // 진화 전까지 사용할 임시 ID
+        public string pendingEvoId;                                  // 진화 전까지 사용할 임시 ID
 
         /// <summary>
         /// 현재 사망 상태인지 확인하는 프로퍼티임
@@ -80,12 +80,15 @@ namespace WordEater.Core
             currentEntry = wordService.PickWordFromFile(level, savedAnswer);
             currentAnswer = currentEntry.word;
 
-            if (stage == GrowthStage.Bit) nameByte = currentAnswer;
+            if (stage == GrowthStage.Bit) nameBit = currentAnswer;
 
             // 외형 업데이트하고 이벤트 알림
             UpdateVisuals(1);
             NotifyNewWordAssigned();
             SaveCheckpoint();
+
+            if (stage == GrowthStage.Bit)
+                StartCoroutine(CaptureAfterRender());
         }
 
         /// <summary>
@@ -127,11 +130,29 @@ namespace WordEater.Core
             }
 
             UpdateVisuals();
+            //캡쳐
+            StartCoroutine(CaptureAfterRender());
+
             SaveCheckpoint();
 
             // 현재 상태를 파일에 저장함
-            filemanager.SaveWordEaterInfo((int)stage, currentAnswer, gamemanager.HistoryLIne, gamemanager.RelevantResult, wordImgString, gamemanager.RelevantLine,gamemanager.isLength,gamemanager.isFirst,gamemanager.isLast,gamemanager.isChoseongItem,gamemanager.messageCount);
+            filemanager.SaveWordEaterInfo((int)stage, currentAnswer, gamemanager.HistoryLIne, gamemanager.RelevantResult, wordImgString, gamemanager.RelevantLine, gamemanager.isLength, gamemanager.isFirst, gamemanager.isLast, gamemanager.isChoseongItem, gamemanager.messageCount, pendingEvoId);
             NotifyNewWordAssigned();
+        }
+
+        private IEnumerator CaptureAfterRender()
+        {
+            yield return new WaitForEndOfFrame();
+
+            string suffix = stage == GrowthStage.Bit ? "s0"
+                          : stage == GrowthStage.Byte ? "s1" : "s2";
+            string fileName = $"thumb_{pendingEvoId}_{suffix}"; // ✅ 변수 선언
+
+            Debug.Log($"[Capture] 저장 시도: {fileName}, sprite: {TargetImage?.sprite?.name ?? "NULL"}");
+            CaptureThumbnail(fileName); // ✅ 한 번만 호출
+
+            string fullPath = System.IO.Path.Combine(Application.persistentDataPath, fileName + ".png");
+            Debug.Log($"[Capture] 파일 존재 여부: {System.IO.File.Exists(fullPath)} → {fullPath}");
         }
 
         /// <summary>
@@ -153,7 +174,7 @@ namespace WordEater.Core
             pendingEvoId = $"evo_{System.DateTime.UtcNow.Ticks}";
 
             // 초기 썸네일 캡처함
-            CaptureThumbnail($"thumb_{pendingEvoId}_s0");
+            // CaptureThumbnail($"thumb_{pendingEvoId}_s0");
             /*
                         // 튜토리얼 씬이 아니면 관련 단어 버튼 활성화함
                         if (SceneManager.GetActiveScene().name != "TutoScene")
@@ -239,12 +260,6 @@ namespace WordEater.Core
                         }
                     }
 
-                    // 살아있을 때만 썸네일 저장함
-                    if (!isDead)
-                    {
-                        string suffix = stage == GrowthStage.Bit ? "s0" : (stage == GrowthStage.Byte ? "s1" : "s2");
-                        CaptureThumbnail($"thumb_{pendingEvoId}_{suffix}");
-                    }
                 }
                 else // type == 1 (로드 시)
                 {
@@ -440,6 +455,10 @@ namespace WordEater.Core
 
             // 단계 상승시키고 배터리 채워줌
             stage++;
+            if (stage == GrowthStage.Byte)
+            {
+                nameByte = currentAnswer;
+            }
             battery.RefillToMax();
 
             // 보상 아이템 지급함
@@ -638,12 +657,12 @@ namespace WordEater.Core
                 displayNameBit = nameBit,
                 displayNameByte = nameByte,
                 displayNameWord = currentAnswer, // 현재(Word단계) 단어                desc = GetDisplayTopic(currentEntry),
-                
+
                 callCount = GameManager.Instance.callCount,
                 msgCount = GameManager.Instance.msgCount,
                 submitCount = GameManager.Instance.submitCount,
                 lockCount = GameManager.Instance.lockCount,
-                
+
                 thumbPath = finalS2Path,
                 dateCaught = System.DateTime.Now.ToString("yyyy-MM-dd"),
                 spriteid = wordImgString
@@ -660,15 +679,22 @@ namespace WordEater.Core
         {
             string src = Path.Combine(dir, srcName);
             string dst = Path.Combine(dir, dstName);
+            Debug.Log($"[Move] {srcName} 존재: {File.Exists(src)} → {dstName}");
+
             try
             {
                 if (File.Exists(src))
                 {
                     if (File.Exists(dst)) File.Delete(dst);
                     File.Move(src, dst);
+                    Debug.Log($"[Move] 성공: {dstName}");
+                }
+                else
+                {
+                    Debug.LogWarning($"[Move] 원본 없음: {src}");
                 }
             }
-            catch { }
+            catch (Exception e) { Debug.LogError($"[Move] 실패: {e.Message}"); }
         }
 
         // 도감에 표시할 카테고리 주제를 가져옴

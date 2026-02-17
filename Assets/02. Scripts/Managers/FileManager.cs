@@ -59,6 +59,8 @@ public class FileManager : MonoBehaviour
         public bool LockLast;
         public bool LockItem;
         public int msgCount;
+
+        public string PendingEvoId;
     }
 
     [System.Serializable]
@@ -132,7 +134,7 @@ public class FileManager : MonoBehaviour
     // ========================================================================
     // [Part 1] 워드이터 게임 데이터 (레벨, 정답, 히스토리)
     // ========================================================================
-    public void SaveWordEaterInfo(int le, string an, string hi, List<string> RR , string id , string RRL,bool LLen,bool LF, bool LLast , bool LI,int mc)
+    public void SaveWordEaterInfo(int le, string an, string hi, List<string> RR , string id , string RRL,bool LLen,bool LF, bool LLast , bool LI,int mc, string pendingEvoId)
     {
         WordEaterData data = new WordEaterData
         {
@@ -151,7 +153,8 @@ public class FileManager : MonoBehaviour
             LockFirst = LF,
             LockLast = LLast,
             LockItem = LI,
-            msgCount = mc
+            msgCount = mc,
+            PendingEvoId = pendingEvoId
         };
 
         string json = JsonUtility.ToJson(data, true);
@@ -226,7 +229,14 @@ public class FileManager : MonoBehaviour
         else
             CurrentPlayerName = "워드이터";
 
-        if (wordeater != null) { 
+        if (wordeater != null)
+        {
+            //  pendingEvoId를 LoadFromSaveData 호출 전에 먼저 복구
+            if (!string.IsNullOrEmpty(data.PendingEvoId))
+                wordeater.pendingEvoId = data.PendingEvoId;
+            else
+                wordeater.pendingEvoId = $"evo_{System.DateTime.UtcNow.Ticks}"; // 구버전 호환
+
             wordeater.LoadFromSaveData(data.Level, data.Answer);
             wordeater.wordImgString = data.ImgId;
         }
@@ -630,7 +640,7 @@ public class FileManager : MonoBehaviour
         {
             wordeater.BeginStage(WordEater.Core.GrowthStage.Bit, initial: true);
         }
-
+        ClearGalleryData();
         // [배터리] - 배터리 시스템은 FileManager에 직접 연결이 안되어 있으므로
         // 보통은 여기서 씬을 재로딩(SceneManager.LoadScene)하는 것이 가장 깔끔합니다.
         // 만약 즉시 반영하려면 BatterySystem.Instance.RefillToMax() 같은 걸 호출해야 합니다.

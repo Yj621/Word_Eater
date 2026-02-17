@@ -419,7 +419,7 @@ public class UIManager : MonoBehaviour
     {
         // 데이터 삭제
         FileManager.Instance.ClearAllData();
-
+        
         // 씬 재시작 (이때 GameManager.Start가 다시 실행되면서 패널을 켤지 말지 결정함)
         UnityEngine.SceneManagement.SceneManager.LoadScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene().name);
     }
