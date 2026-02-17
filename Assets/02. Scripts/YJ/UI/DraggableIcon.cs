@@ -29,18 +29,29 @@ public class DraggableIcon : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     {
         _originalParent = _rt.parent;
 
-        // 자리표시자(Placeholder) 생성
-        // 원래 내 위치에 투명한 객체를 남겨둬서 레이아웃이 찌그러지지 않게 함
-        CreatePlaceholder();
-
-        // 아이콘을 Grid에서 분리하여 Canvas 직속으로 옮김 (다른 UI 위에 그리기 위함)
+        int originalIndex = _rt.GetSiblingIndex(); // 원래 인덱스 미리 기억
+         // ✅ 아이콘을 먼저 Canvas로 옮김 (Grid에서 제거)
         _rt.SetParent(canvas.transform);
-
-        // 레이캐스트 차단 해제 (드래그 중에 뒤의 Grid를 감지해야 하므로)
         _canvasGroup.blocksRaycasts = false;
         _canvasGroup.alpha = 0.6f;
-    }
 
+        // ✅ 아이콘이 빠진 자리에 Placeholder 생성
+        CreatePlaceholder(originalIndex);
+    }
+    private void CreatePlaceholder(int siblingIndex)
+    {
+        _placeholder = new GameObject("Placeholder");
+        _placeholder.transform.SetParent(_originalParent);
+
+        var le = _placeholder.AddComponent<LayoutElement>();
+        le.preferredWidth = _rt.rect.width;
+        le.preferredHeight = _rt.rect.height;
+        le.flexibleWidth = 0;
+        le.flexibleHeight = 0;
+
+        // ✅ 아이콘이 있던 정확한 자리에 배치 (이미 아이콘은 빠진 상태)
+        _placeholder.transform.SetSiblingIndex(siblingIndex);
+    }
     public void OnDrag(PointerEventData eventData)
     {
         slidemanager.isOK = false;

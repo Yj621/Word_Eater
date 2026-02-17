@@ -148,11 +148,9 @@ namespace WordEater.Core
                           : stage == GrowthStage.Byte ? "s1" : "s2";
             string fileName = $"thumb_{pendingEvoId}_{suffix}"; // ✅ 변수 선언
 
-            Debug.Log($"[Capture] 저장 시도: {fileName}, sprite: {TargetImage?.sprite?.name ?? "NULL"}");
             CaptureThumbnail(fileName); // ✅ 한 번만 호출
 
             string fullPath = System.IO.Path.Combine(Application.persistentDataPath, fileName + ".png");
-            Debug.Log($"[Capture] 파일 존재 여부: {System.IO.File.Exists(fullPath)} → {fullPath}");
         }
 
         /// <summary>
