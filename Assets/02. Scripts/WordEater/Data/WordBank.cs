@@ -26,6 +26,13 @@ namespace WordEater.Data
             new WordEntry { word="김치", stage=0, related=new[]{"민속","음식","에너지"} },
             new WordEntry { word="개미", stage=0, related=new[]{"동물","생명"} },
             new WordEntry { word="독서", stage=0, related=new[]{"성장","정보","논리"} },
+            new WordEntry { word="토끼", stage=0, related=new[]{"동물","생명","상징"} },
+            new WordEntry { word="딸기", stage=0, related=new[]{"성장","음식","야채"} },
+            new WordEntry { word="빵", stage=0, related=new[]{"야채","음식","에너지"} },
+            new WordEntry { word="까치", stage=0, related=new[]{"민속","상징","동물"} },
+            new WordEntry { word="쌀밥", stage=0, related=new[]{"야채","에너지"} },
+            new WordEntry { word="유령", stage=0, related=new[]{"운명","생명","순환"} },
+            new WordEntry { word="토마토", stage=0, related=new[]{"음식","야채","대칭"} },
 
             // Byte
             new WordEntry { word="확률", stage=1, related=new[]{"수학","통계"} },
@@ -36,7 +43,7 @@ namespace WordEater.Data
             new WordEntry { word="광선", stage=1, related=new[]{"광학","물리","천문"} },
             new WordEntry { word="파동", stage=1, related=new[]{"물리","소리","공학"} },
             new WordEntry { word="에너지", stage=1, related=new[]{"물리","공학","생물"} },
-            new WordEntry { word="동물", stage=1, related=new[]{"생물","자연","생태"} },
+            new WordEntry { word="동물", stage=1, related=new[]{"생물","자연","생태","요리"} },
             new WordEntry { word="상징", stage=1, related=new[]{"문화","예술","철학"} },
             new WordEntry { word="민속", stage=1, related=new[]{"문화","역사","예술"} },
             new WordEntry { word="중력", stage=1, related=new[]{"물리","천문","지구"} },
@@ -54,7 +61,8 @@ namespace WordEater.Data
             new WordEntry { word="구조", stage=1, related=new[]{"언어","사회","문화"} },
             new WordEntry { word="조각", stage=1, related=new[]{"예술","철학","역사"} },
             new WordEntry { word="운동", stage=1, related=new[]{"문화","생물","예술"} },
-            new WordEntry { word="음식", stage=1, related=new[]{"문화","생물","역사"} },
+            new WordEntry { word="음식", stage=1, related=new[]{"문화","생물","역사","요리"} },
+            new WordEntry { word="야채", stage=1, related=new[]{"생태","요리","지구"} },
 
             // Word
             new WordEntry { word="수학", stage=2, related=new string[]{ } },
@@ -77,6 +85,7 @@ namespace WordEater.Data
             new WordEntry { word="언어", stage=2, related=new string[]{ } },
             new WordEntry { word="사회", stage=2, related=new string[]{ } },
             new WordEntry { word="예술", stage=2, related=new string[]{ } },
+            new WordEntry { word="요리", stage=2, related=new string[]{ } },
         };
     }
 }

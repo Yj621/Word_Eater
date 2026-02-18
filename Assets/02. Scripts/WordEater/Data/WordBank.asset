@@ -114,6 +114,47 @@ MonoBehaviour:
     - "\uC131\uC7A5"
     - "\uC815\uBCF4"
     - "\uB17C\uB9AC"
+  - word: "\uD1A0\uB07C"
+    stage: 0
+    related:
+    - "\uB3D9\uBB3C"
+    - "\uC0DD\uBA85"
+    - "\uC0C1\uC9D5"
+  - word: "\uB538\uAE30"
+    stage: 0
+    related:
+    - "\uC131\uC7A5"
+    - "\uC74C\uC2DD"
+    - "\uC57C\uCC44"
+  - word: "\uBE75"
+    stage: 0
+    related:
+    - "\uC57C\uCC44"
+    - "\uC74C\uC2DD"
+    - "\uC5D0\uB108\uC9C0"
+  - word: "\uAE4C\uCE58"
+    stage: 0
+    related:
+    - "\uBBFC\uC18D"
+    - "\uC0C1\uC9D5"
+    - "\uB3D9\uBB3C"
+  - word: "\uC300\uBC25"
+    stage: 0
+    related:
+    - "\uC57C\uCC44"
+    - "\uC5D0\uB108\uC9C0"
+  - word: "\uC720\uB839"
+    stage: 0
+    related:
+    - "\uC6B4\uBA85"
+    - "\uC0DD\uBA85"
+    - "\uC21C\uD658"
+  - word: "\uD1A0\uB9C8\uD1A0"
+    stage: 0
+    related:
+    - "\uC74C\uC2DD"
+    - "\uC57C\uCC44"
+    - "\uB300\uCE6D"
   - word: "\uD655\uB960"
     stage: 1
     related:
@@ -166,6 +207,7 @@ MonoBehaviour:
     - "\uC0DD\uBB3C"
     - "\uC790\uC5F0"
     - "\uC0DD\uD0DC"
+    - "\uC694\uB9AC"
   - word: "\uC0C1\uC9D5"
     stage: 1
     related:
@@ -274,6 +316,13 @@ MonoBehaviour:
     - "\uBB38\uD654"
     - "\uC0DD\uBB3C"
     - "\uC5ED\uC0AC"
+    - "\uC694\uB9AC"
+  - word: "\uC57C\uCC44"
+    stage: 1
+    related:
+    - "\uC0DD\uD0DC"
+    - "\uC694\uB9AC"
+    - "\uC9C0\uAD6C"
   - word: "\uC218\uD559"
     stage: 2
     related: []
@@ -332,5 +381,8 @@ MonoBehaviour:
     stage: 2
     related: []
   - word: "\uC608\uC220"
+    stage: 2
+    related: []
+  - word: "\uC694\uB9AC"
     stage: 2
     related: []

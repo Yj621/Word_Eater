@@ -29983,7 +29983,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd7d563b9a6d494489b3a444e383d178, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  wordBank: {fileID: 11400000, guid: f10fa18386bec4f47a0c45b8a60f27cd, type: 2}
+  wordBank: {fileID: 11400000, guid: cc99f939d5383294997945ce772feec1, type: 2}
 --- !u!4 &739059912
 Transform:
   m_ObjectHideFlags: 0
@@ -37541,7 +37541,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1000577136
 RectTransform:
   m_ObjectHideFlags: 0
@@ -55166,7 +55166,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1585313995
 RectTransform:
   m_ObjectHideFlags: 0
@@ -72837,7 +72837,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a82eea42e722eb44b90dd0c5132ceaf1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AdsManager
-  rewardedAdRevivalId: ca-app-pub-3940256099942544/5224354917
+  rewardedAdUnitId: unused
 --- !u!224 &4387353267101508220
 RectTransform:
   m_ObjectHideFlags: 0
