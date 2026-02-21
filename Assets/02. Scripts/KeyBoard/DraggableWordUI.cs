@@ -3,13 +3,13 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 /// <summary>
-/// 자모/블럭 UI를 마우스로 드래그하고, 허용 영역/쓰레기통/스냅을 처리하는 컴포넌트
+/// 자모/블럭 UI를 마우스로 드래그하고, 허용 영역/쓰레기통/스냅을 처리하는 컴포넌트입니다.
 /// </summary>
 public class DraggableWordUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
     RectTransform rt;           // 내 RectTransform
     RectTransform dragRoot;     // 드래그 기준이 되는 루트(보통 uiSpawnRoot)
-    RectTransform allowedArea;  // 허용 구역(이 안에 있으면 살아남음)
+    RectTransform allowedArea;  // 허용 구역(이 안에 있어야 제출)
     RectTransform trashArea;    // 쓰레기통(여기 들어가면 삭제)
     Camera uiCamera;            // UI 카메라(Overlay면 null 가능)
 
@@ -19,13 +19,12 @@ public class DraggableWordUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     int sourceInventoryIndex = -1;  // 어떤 키 슬롯에서 소비되었는지
     int consumedAmount = 1;         // 소비된 개수(삭제 시 환불용)
 
-    // 외부에서 읽을 일이 있을 수 있으니 프로퍼티로만 공개
     public RectTransform DragRoot => dragRoot;
     public RectTransform AllowedArea => allowedArea;
     public RectTransform TrashArea => trashArea;
     public Camera UiCamera => uiCamera;
 
-    /// <summary>드래그 루트/영역/카메라 초기 세팅</summary>
+    /// <summary>드래그 루트/영역/카메라 초기 설정</summary>
     public void Init(RectTransform dragRoot, RectTransform allowedArea, RectTransform trashArea, Camera uiCamera)
     {
         this.dragRoot = dragRoot;
@@ -59,10 +58,10 @@ public class DraggableWordUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     {
         if (!rt || !dragRoot) return;
 
-        // 드래그 중에는 다른 UI가 이 오브젝트를 Raycast로 못 잡게 막기
+        // 드래그 중에는 다른 UI가 이 오브젝트를 Raycast로 잡지 못하게 설정
         cg.blocksRaycasts = false;
 
-        // 최상단으로 올려서 다른 것보다 위에 보이게
+        // 최상단으로 올려서 다른 UI보다 위에 보이게 함
         rt.SetAsLastSibling();
     }
 
@@ -95,7 +94,7 @@ public class DraggableWordUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
             {
                 if (magnet != null)
                 {
-                    // 두트윈 애니 후 환불+삭제
+                    // 애니메이션 후 환불 및 삭제
                     magnet.PlayTrashAnim(trashArea, RefundAndDestroy);
                 }
                 else
@@ -119,12 +118,11 @@ public class DraggableWordUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
                 return;
             }
 
-            // 3) 허용구역 안이면 스냅/조립 로직
+            // 3) 허용구역 안이면 스냅/조립 로직 수행
             if (magnet)
             {
                 bool snapped = magnet.TrySnap(dragRoot, uiCamera);
-                // TrySnap 내부에서 Syl 조립 / 삭제까지 처리하니까
-                // true면 여기서 끝, false면 그냥 지금 자리 유지
+                // TrySnap 내부에서 조립/삭제까지 처리하므로 true면 여기서 종료
                 if (snapped) return;
             }
         }
@@ -135,7 +133,7 @@ public class DraggableWordUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     }
 
 
-    /// <summary>이 조각을 제거하면서, 소비했던 키 개수를 되돌려준다.</summary>
+    /// <summary>이 조각을 제거하면서, 소비했던 키 개수를 되돌려줌</summary>
     public void RefundAndDestroy()
     {
         if (owner && sourceInventoryIndex >= 0)
@@ -145,7 +143,7 @@ public class DraggableWordUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         Destroy(gameObject);
     }
 
-    /// <summary>외부에서 드래그 강제 종료 시(예: 정리) 호출</summary>
+    /// <summary>외부에서 드래그 강제 종료 시(예: 정리) 호출됨</summary>
     public void ForceStopDrag()
     {
         if (cg) cg.blocksRaycasts = true;

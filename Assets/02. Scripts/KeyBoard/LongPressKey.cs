@@ -16,10 +16,9 @@ public class LongPressKey : MonoBehaviour, IPointerDownHandler, IPointerUpHandle
     public int index = 0;
     public float longPressThreshold = 0.35f;
   
-[SerializeField] private Image gaugeFill;   // Type: Filled 인 이미지
-//[SerializeField] private bool showUsedRatio = true; // true=쓴 비율, false=남은 비율
+    [SerializeField] private Image gaugeFill;  
 
-bool pressing;
+    bool pressing;
     bool fired;
     Coroutine waitCo;
     Vector2 lastDownPos;
@@ -36,7 +35,8 @@ bool pressing;
     
         gaugeFill.fillAmount = remain01;
     }
-public void OnPointerDown(PointerEventData eventData)
+
+    public void OnPointerDown(PointerEventData eventData)
     {
         lastDownPos = eventData.position;
         lastPointerId = eventData.pointerId;
@@ -77,7 +77,7 @@ public void OnPointerDown(PointerEventData eventData)
             fired = true;
             if (manager)
             {
-                // [Fix] create new PointerEventData with saved values
+                // 포인터 이벤트를 복제하여 매니저에 전달
                 PointerEventData fakeEvent = new PointerEventData(EventSystem.current)
                 {
                     position = lastDownPos,
@@ -86,8 +86,6 @@ public void OnPointerDown(PointerEventData eventData)
 
                 if (keyType == KeyType.Single) manager.PressSingle(index, fakeEvent);
                 else manager.PressDouble(index, fakeEvent);
-
-                //SoundManager.Instance.SFXStart(SoundManager.SFXType.jaMoDrag);
             }
         }
     }

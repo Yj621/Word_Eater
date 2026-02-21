@@ -1,5 +1,4 @@
 using System;
-using DG.Tweening.Plugins;
 using UnityEngine;
 
 public static class KeyCount
@@ -99,9 +98,7 @@ public static class KeyCount
         }
     }
 
-    // -----------------------------------------------------
-    // Save & Load Helper
-    // -----------------------------------------------------
+   
     public static int[] GetAllCounts()
     {
         if (!isReady) return new int[0];
@@ -120,7 +117,7 @@ public static class KeyCount
             }
             else
             {
-                // 로드된 데이터가 더 짧으면? 유지하거나 0? 유지하는게 안전.
+                // 로드된 데이터가 인벤토리보다 짧을 경우 기존 값을 유지
             }
             OnChanged?.Invoke(i, counts[i]);
         }
