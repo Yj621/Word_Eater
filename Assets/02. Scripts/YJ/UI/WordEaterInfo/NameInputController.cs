@@ -186,6 +186,12 @@ private void Update()
             // 패널 닫기
             phoneswiper.isUsingTab = false;
             gameObject.SetActive(false);
+
+            // [추가] 닉네임 설정이 끝난 직후 튜토리얼 시작 유무 판별
+            if (TutorialUIManager.Instance != null)
+            {
+                TutorialUIManager.Instance.StartTutorialFlow();
+            }
         }
     }
 }

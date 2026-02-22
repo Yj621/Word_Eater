@@ -201,6 +201,18 @@ public class WordEaterPet : MonoBehaviour, IBeginDragHandler, IDragHandler, IEnd
     }
     // ----------------------------
 
+    // [변경] 부모를 교체하는 구조가 아닌, 배회 영역(roamingArea)만 새 페이지로 지정하여 펫이 그쪽으로 이동하게 함
+    public void ChangeRoamingPage(RectTransform newPage)
+    {
+        if (newPage == null || roamingArea == newPage) return;
+        
+        roamingArea = newPage;
+        
+        // 이동 루틴을 재시작하여 즉각적으로 새로운 페이지 범위 내의 랜덤 위치로 이동하게 함
+        StopBehavior();
+        StartBehavior();
+    }
+
     public void StartBehavior()
     {
         if (behaviorRoutine != null) StopCoroutine(behaviorRoutine);

@@ -36,6 +36,9 @@ public class PhoneSwiper : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
     Vector2 dragStartContentPos;
     bool dragging;
     Coroutine snapCo;
+    
+    // [추가] 펫을 따라가게 하기 위한 참조
+    private WordEaterPet wordEaterPet;
 
     void Awake()
     {
@@ -52,6 +55,12 @@ public class PhoneSwiper : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
         pageCount = pages.Length;
         startPage = Mathf.Clamp(startPage, 0, Mathf.Max(0, pageCount - 1));
         current = startPage;
+
+#if UNITY_2023_1_OR_NEWER
+        wordEaterPet = FindFirstObjectByType<WordEaterPet>();
+#else
+        wordEaterPet = FindObjectOfType<WordEaterPet>();
+#endif
 
         EnsureViewportMask();
         Relayout();
@@ -202,6 +211,12 @@ public class PhoneSwiper : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
         current = index;
         SnapTo(current);
         UpdateDots();
+
+        // [변경] 펫이 새 페이지의 영역을 배회 타겟으로 잡도록 호출
+        if (wordEaterPet != null && pageCount > 0)
+        {
+            wordEaterPet.ChangeRoamingPage(pages[current]);
+        }
     }
 
     void JumpTo(int index)

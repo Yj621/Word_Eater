@@ -351,6 +351,12 @@ public class SyllableBlock : MonoBehaviour
 
         SoundManager.Instance.SFXStart(SoundManager.SFXType.zamoCombine);
 
+        // [추가] 튜토리얼용 단어 합성 감지
+        if (ok && TutorialUIManager.Instance != null)
+        {
+            TutorialUIManager.Instance.NotifyWordSuccess();
+        }
+
         return ok;
     }
 

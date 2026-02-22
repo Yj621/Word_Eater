@@ -151,6 +151,12 @@ public class JamoMagnet : MonoBehaviour
 
         SoundManager.Instance.SFXStart(SoundManager.SFXType.zamoCombine);
 
+        // [추가] 튜토리얼용 단어 합성 감지
+        if (TutorialUIManager.Instance != null)
+        {
+            TutorialUIManager.Instance.NotifyWordSuccess();
+        }
+
         return true;
     }
 

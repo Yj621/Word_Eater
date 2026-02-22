@@ -377,6 +377,12 @@ public class UIManager : MonoBehaviour
         _keyboardRect
             .DOAnchorPos(_showPosition, _animationDuration)
             .SetEase(Ease.OutCirc);
+
+        // [추가] 첫 시작 튜토리얼용 키보드 오픈 알림
+        if (TutorialUIManager.Instance != null)
+        {
+            TutorialUIManager.Instance.NotifyKeyboardOpened();
+        }
     }
 
     /// <summary>
@@ -384,6 +390,12 @@ public class UIManager : MonoBehaviour
     /// </summary>
     public void CloseKeyboard()
     {
+        // [추가] 튜토리얼 중에는 키보드를 닫지 못하게 막음
+        if (TutorialUIManager.Instance != null && TutorialUIManager.Instance.isTutorialRunning)
+        {
+            return;
+        }
+
         slidemanager.isOK = true;
 
         SoundManager.Instance.SFXStart(SoundManager.SFXType.keyboardClose);

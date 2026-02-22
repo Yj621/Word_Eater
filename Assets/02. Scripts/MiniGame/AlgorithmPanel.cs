@@ -82,6 +82,12 @@ public class AlgorithmPanel : MonoBehaviour
 
     public IEnumerator OpenPageTab()
     {
+        // 먼저 3번 페이지(인덱스 2)로 스와이프 이동
+        phoneSwiper.GoToPage(2);
+        
+        // 페이지 이동 애니메이션 시간을 위해 대기
+        yield return new WaitForSecondsRealtime(0.4f);
+
         phoneSwiper.isUsingTab = true;
         ani.SetTrigger("Open");
         yield return new WaitForSecondsRealtime(0.5f);
