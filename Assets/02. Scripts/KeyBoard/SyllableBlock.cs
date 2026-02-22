@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using DG.Tweening;
-using NUnit.Framework.Internal;
 using TMPro;
 using UnityEngine;
 
@@ -71,10 +70,7 @@ public class SyllableBlock : MonoBehaviour
         All.Remove(this);
     }
 
-    // -------------------------
-    // 글자 렌더링
-    // -------------------------
-
+   
     public void SetSyllable(string cho, string jung, string jong)
     {
         choseong = cho;
@@ -86,7 +82,7 @@ public class SyllableBlock : MonoBehaviour
         label.enableAutoSizing = false;
         label.fontSize = _baseFontSize;
 
-        // 초성/중성 없으면 조각 그대로
+        // 초성/중성 없으면 조각 그대로 표시
         if (string.IsNullOrEmpty(choseong) || string.IsNullOrEmpty(jungseong))
         {
             label.text = (choseong ?? "") + (jungseong ?? "") + (jongseong ?? "");
@@ -98,9 +94,9 @@ public class SyllableBlock : MonoBehaviour
             char syllable = HangulCompose.ComposeCompat(choseong, jungseong, jongseong);
             label.text = syllable.ToString();
         }
-        catch (System.Exception e)
+        catch
         {
-            // Debug.LogWarning($"[SyllableBlock] compose fail L='{choseong}' V='{jungseong}' T='{jongseong}': {e.Message}");
+            // 조합 실패 시 개별 자모 나열
             label.text = (choseong ?? "") + (jungseong ?? "") + (jongseong ?? "");
         }
     }
@@ -283,7 +279,6 @@ public class SyllableBlock : MonoBehaviour
             if (!createIfNone) return false;
             if (!Prefab)
             {
-                // Debug.LogWarning("[SyllableBlock] Prefab not assigned");
                 return false;
             }
 
@@ -367,7 +362,6 @@ public class SyllableBlock : MonoBehaviour
     {
         if (!Prefab)
         {
-            // Debug.LogError("[SyllableBlock] Prefab 이 등록되어 있지 않음");
             return null;
         }
 
@@ -400,7 +394,6 @@ public class SyllableBlock : MonoBehaviour
         seq.Append(rt.DOScale(1f, 0.08f));
     }
 
-    /// <summary>모든 자모(초/중/종)가 붙을 때 공통으로 살짝 튀는 느낌</summary>
     public void PlayReceiveJamoAnim()
     {
         if (!label) return;
@@ -411,7 +404,6 @@ public class SyllableBlock : MonoBehaviour
         rt.DOPunchScale(Vector3.one * 0.2f, 0.12f, 10, 0.9f);
     }
 
-    /// <summary>받침이 새로 생겼을 때 아래로 살짝 눌렸다 올라오는 느낌</summary>
     public void PlayFinalAttachAnim()
     {
         var rt = GetComponent<RectTransform>();

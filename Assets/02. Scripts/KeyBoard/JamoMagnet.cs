@@ -41,7 +41,7 @@ public class JamoMagnet : MonoBehaviour
 
     void OnDestroy()
     {
-        // [수정] 파괴될 때 트윈이 돌고 있으면 에러 나므로 강제 종료
+        // 파괴될 때 트윈이 실행 중이면 에러가 발생할 수 있으므로 강제 종료
         transform.DOKill();
     }
 
@@ -76,8 +76,8 @@ public class JamoMagnet : MonoBehaviour
 
 
     /// <summary>
-    /// a 주변에서 반경 radius 내의 다른 자모를 찾아
-    /// 초성+중성 조합이면 새 SyllableBlock을 만들고 둘 다 없앤다.
+    /// a 주변에서 반경 radius 내의 다른 자모를 탐색
+    /// 초성+중성 조합이면 새 SyllableBlock을 만들고 둘 다 없애기
     /// </summary>
     public static bool TryFuseWithNearbyJamo(JamoMagnet a, Camera uiCam, RectTransform parent, float radius)
     {
@@ -156,7 +156,7 @@ public class JamoMagnet : MonoBehaviour
 
     #region DOTween Animations
 
-    /// <summary>키에서 뽑아졌을 때 “툭” 튀어나오는 느낌</summary>
+    /// <summary>키에서 뽑아졌을 때 튀어나오는 효과</summary>
     public void PlaySpawnAnim()
     {
         var rt = GetComponent<RectTransform>();
@@ -173,8 +173,8 @@ public class JamoMagnet : MonoBehaviour
         SoundManager.Instance.SFXStart(SoundManager.SFXType.jaMoDrag);
     }
 
-    /// <summary>삭제될 때 (쓰레기통 or 범위 밖) 쑥 빨려들어가듯 사라짐</summary>
-    /// <param name="trash">쓰레기통 RectTransform (null이면 제자리에서 축소)</param>
+    /// <summary>삭제될 때 효과</summary>
+    /// <param name="trash">쓰레기통 RectTransform</param>
     public void PlayTrashAnim(RectTransform trash, System.Action onComplete)
     {
         var rt = GetComponent<RectTransform>();

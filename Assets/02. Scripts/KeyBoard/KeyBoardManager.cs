@@ -23,7 +23,7 @@ public class KeyBoardManager : MonoBehaviour
 
     [Header("입력 상태 / 인벤토리")]
     public bool isShiftPressed = false;
-    public LongPressKey[] longPressKeys;        // 키 한 칸 정보 (개수, 쿨 같은 거)
+    public LongPressKey[] longPressKeys;        // 키 한 칸 정보 (개수, 쿨타임 등)
     public int DefaultCount = 2;
     public int maxCount = 5;
 
@@ -65,7 +65,7 @@ public class KeyBoardManager : MonoBehaviour
     Vector2 _dragOffset;
    
     /// <summary>
-    /// Canvas 모드에 따라 적절한 카메라(Overlay면 null, 아니면 worldCamera/uiCamera)를 반환
+    /// Canvas 모드에 따라 적절한 카메라 반환
     /// </summary>
     Camera GetRefinedCamera(RectTransform root)
     {
@@ -79,9 +79,6 @@ public class KeyBoardManager : MonoBehaviour
         return canvas.worldCamera ? canvas.worldCamera : uiCamera;
     }
 
-    // -----------------------------
-    // 초기화
-    // -----------------------------
 
     void Awake()
     {
@@ -107,15 +104,13 @@ public class KeyBoardManager : MonoBehaviour
     {
         _sessionSpent.Clear();
 
-        // [추가] FileManager에서 로드된 키 개수가 있으면 적용
+        // FileManager에서 로드된 키 개수가 있으면 적용
         if (FileManager.Instance != null && FileManager.Instance.tempLoadedKeyCounts != null)
         {
-            // [수정] 저장된 최대 개수를 불러오되, Inspector에서 수정한 값과 비교해서 더 큰 값을 사용
-            // 이렇게 하면 저장 파일에는 5로 되어있더라도, 개발자가 10으로 늘렸으면 10이 적용됨
+            // 저장된 최대 개수를 불러오되, Inspector에서 수정한 값과 비교해서 더 큰 값을 사용
             int loadedMax = FileManager.Instance.tempLoadedMaxKeyCount;
             if (loadedMax > 0)
             {
-                // 인스펙터 설정(maxCount)과 저장된 데이터(loadedMax) 중 큰 걸 선택
                 int finalMax = Mathf.Max(maxCount, loadedMax);
                 
                 KeyCount.SetMaxCount(finalMax);
@@ -152,10 +147,7 @@ public class KeyBoardManager : MonoBehaviour
         }
     }
 
-    // -----------------------------
-    // 키 인벤토리 UI 갱신
-    // -----------------------------
-
+ 
     void OnKeyCountChanged(int index, int newCount)
     {
         RefreshKeyUI(index);
@@ -170,10 +162,7 @@ public class KeyBoardManager : MonoBehaviour
         k.RefreshVisuals(KeyCount.Get(index), KeyCount.MaxCount);
     }
 
-    // -----------------------------
-    // 단일/더블 키 입력
-    // -----------------------------
-
+   
     public void PressSingle(int index) => PressSingle(index, null);
     public void PressDouble(int index) => PressDouble(index, null);
 
@@ -190,7 +179,6 @@ public class KeyBoardManager : MonoBehaviour
         // 1. 버튼 유효성 체크
         if (!IsValidIndex(index, DoubleWordButtons, DSWords))
         {
-            Debug.LogError($"[PressDouble] Invalid Button Index or DSWords missing: {index}");
             return;
         }
 
@@ -201,25 +189,21 @@ public class KeyBoardManager : MonoBehaviour
 
         if (prefab == null)
         {
-            Debug.LogWarning($"[PressDouble] Prefab Not Found. Index:{index}, Shift:{isShiftPressed}");
             return;
         }
 
-        // [롤백] 사용자 환경에 맞춰 Offset이나 FindWithout 없이 그대로 Index 사용
-        // SingleWords의 앞부분이 비어있고 DoubleWords가 그 자리를 쓰는 구조로 추정됨
+        // SingleWords의 앞부분이 비어있고 DoubleWords가 그 자리를 쓰는 구조로 인해 그대로 Index 사용
         int realIndex = index;
 
         // 범위 체크
         if (!InRange(realIndex))
         {
-             Debug.LogError($"[PressDouble] Index Out of Range! Index:{index} Max:{longPressKeys?.Length}");
              return;
         }
 
         int cost = isShiftPressed ? 2 : 1;
         if (!TryConsumeAndRefresh(realIndex, cost))
         {
-            Debug.Log($"[PressDouble] Not Enough Keys. Index:{realIndex}, Cost:{cost}, Current:{GetCount(realIndex)}");
             NotEnoughFeedback(realIndex);
             return;
         }
@@ -232,8 +216,6 @@ public class KeyBoardManager : MonoBehaviour
         isShiftPressed = !isShiftPressed;
         UpdateDoubleLabels();
     }
-
-    // ... (UpdateDoubleLabels 등 중략) ...
 
     int FindSlotIndexByGlyph(string glyph)
     {
@@ -251,7 +233,6 @@ public class KeyBoardManager : MonoBehaviour
             }
             
             // 2순위: SingleWords에 없으면(None이면) DSWords(더블키 기본값) 확인
-            // 이유: 인스펙터상 앞쪽 인덱스를 더블키들이 쓰고 있음
             if (prefab == null)
             {
                 if (DSWords != null && i < DSWords.Length && DSWords[i] != null)
@@ -291,17 +272,14 @@ public class KeyBoardManager : MonoBehaviour
         }
     }
 
-    // -----------------------------
-    // 단어 빌드 & 제출
-    // -----------------------------
-
+  
     public void onClickSubmit()
     {
         if (!TryBuildWord(out var word)) return;
         if (resultText) resultText.text = word;
     }
 
-    /// <summary>현재 allowedArea 안의 SyllableBlock을 읽어 단어 문자열로 만든다.</summary>
+    /// <summary>현재 allowedArea 안의 SyllableBlock을 읽어 단어 문자열로 만듬</summary>
     public bool TryBuildWord(out string word)
     {
         word = null;
@@ -315,7 +293,7 @@ public class KeyBoardManager : MonoBehaviour
         return TryBuildFromBlocks(blocks, out word);
     }
 
-    /// <summary>allowedArea 안의 SyllableBlock 목록을 찾는다.</summary>
+    /// <summary>allowedArea 안의 SyllableBlock 목록 찾음</summary>
     List<SyllableBlock> GetBlocksInAllowedArea()
     {
         var result = new List<SyllableBlock>();
@@ -328,7 +306,6 @@ public class KeyBoardManager : MonoBehaviour
             var rt = b.GetComponent<RectTransform>();
             if (!rt) continue;
 
-            // [수정] 헬퍼 사용
             Camera camToUse = GetRefinedCamera(uiSpawnRoot);
             var sp = RectTransformUtility.WorldToScreenPoint(camToUse, rt.position);
             if (RectTransformUtility.RectangleContainsScreenPoint(allowedArea, sp, camToUse))
@@ -338,7 +315,7 @@ public class KeyBoardManager : MonoBehaviour
         return result;
     }
 
-    /// <summary>SyllableBlock 리스트를 X좌표 정렬 후 HangulCompose로 문자열로 합친다.</summary>
+    /// <summary>SyllableBlock 리스트를 X좌표 정렬 후 HangulCompose로 문자열로 합침</summary>
     bool TryBuildFromBlocks(List<SyllableBlock> blocks, out string word)
     {
         word = null;
@@ -346,7 +323,6 @@ public class KeyBoardManager : MonoBehaviour
 
         Camera camToUse = GetRefinedCamera(uiSpawnRoot);
 
-        // 1) 고아 JamoMagnet이 있는지 검사 (블럭에 안 붙어 있는 자모가 있으면 실패)
         var magnets = uiSpawnRoot.GetComponentsInChildren<JamoMagnet>(includeInactive: false);
         foreach (var m in magnets)
         {
@@ -362,7 +338,6 @@ public class KeyBoardManager : MonoBehaviour
             var parentBlock = m.GetComponentInParent<SyllableBlock>();
             if (parentBlock == null)
             {
-                // Debug.Log("[TryBuildWord] orphan jamo found → invalid word");
                 return false;
             }
         }
@@ -373,7 +348,6 @@ public class KeyBoardManager : MonoBehaviour
         {
             if (string.IsNullOrEmpty(b.choseong) || string.IsNullOrEmpty(b.jungseong))
             {
-                // Debug.Log($"[TryBuildWord] invalid block(need L+V): L='{b.choseong}' V='{b.jungseong}'");
                 return false;
             }
 
@@ -398,9 +372,8 @@ public class KeyBoardManager : MonoBehaviour
                 char syllable = HangulCompose.ComposeCompat(L, V, T);
                 chars.Add(syllable);
             }
-            catch (Exception e)
+            catch
             {
-                // Debug.LogWarning($"[Submit] compose fail from block L='{L}' V='{V}' T='{T}': {e.Message}");
                 return false;
             }
         }
@@ -409,10 +382,7 @@ public class KeyBoardManager : MonoBehaviour
         return true;
     }
 
-    // -----------------------------
-    // 드래그 업데이트
-    // -----------------------------
-
+   
     void Update()
     {
         if (!dragging) return;
@@ -429,7 +399,7 @@ public class KeyBoardManager : MonoBehaviour
         {
             var root = ResolveUISpawnRoot();
 
-            // [수정] Update에서도 동일하게 카메라 보정
+            // Update에서도 동일하게 카메라 보정
             Camera camToUse = uiCamera;
             if (root != null)
             {
@@ -462,7 +432,7 @@ public class KeyBoardManager : MonoBehaviour
 
         var drag = dragUIRect.GetComponent<DraggableWordUI>();
         
-        // [수정] 정확한 카메라 사용 (Overlay면 null)
+        // 정확한 카메라 사용 (Overlay면 null)
         var root = ResolveUISpawnRoot();
         Camera camToUse = GetRefinedCamera(root);
 
@@ -487,24 +457,18 @@ public class KeyBoardManager : MonoBehaviour
             return;
         }
 
-        // 3) 허용 영역 안이라면 그냥 그 자리에 남겨둠
+        // 3) 허용 영역 안이라면 위치 유지
     }
 
-
-    // -----------------------------
-    // 프리팹 스폰 & 드래그 시작
-    // -----------------------------
 
     void BeginDragSpawn(Button button, GameObject prefab, PointerEventData ev, int invIndex, int amount, bool isLongPress)
     {
         var buttonRT = button.GetComponent<RectTransform>();
         
-        // [수정] 좌표 계산 전에 먼저 Root와 Camera를 확정해야 함
         var root = ResolveUISpawnRoot();
         Camera camToUse = GetRefinedCamera(root);
 
-        // [수정] startScreen 계산 시에도 camToUse(Overlay면 null)를 사용해야 정확함
-        // 기존에는 무조건 uiCamera를 써서 Overlay 모드일 때 오차 발생 가능성 있었음
+        // startScreen 계산 시에도 camToUse(Overlay면 null)를 사용해야 정확함
         Vector2 startScreen = ev != null
             ? ev.position
             : RectTransformUtility.WorldToScreenPoint(camToUse, buttonRT.position);
@@ -517,14 +481,6 @@ public class KeyBoardManager : MonoBehaviour
 
             bool convertSuccess = RectTransformUtility.ScreenPointToLocalPointInRectangle(root, startScreen, camToUse, out var local);
             
-            // [디버그] 좌표 변환 실패 시 원인 파악용 로그
-            if (!convertSuccess || local == Vector2.zero) 
-            {
-                 // Debug.LogWarning($"[KeyBoard] Spawn Check - Success:{convertSuccess}, Local:{local}");
-                 // Debug.LogWarning($"[KeyBoard] Root: {root.name} / Active: {root.gameObject.activeInHierarchy}");
-                 // // Debug.LogWarning($"[KeyBoard] Cam Used: {(camToUse != null ? camToUse.name : "Null")}");
-            }
-
             _dragOffset = longPressSpawnOffset;
 
             var go = Instantiate(prefab, root);
@@ -614,7 +570,6 @@ public class KeyBoardManager : MonoBehaviour
         activePointerId = int.MinValue;
         dragUIRect = null;
         dragWorldTr = null;
-        // _dragOffset은 여기서 0으로 꺼도 됨
         _dragOffset = Vector2.zero;
     }
 
@@ -627,12 +582,11 @@ public class KeyBoardManager : MonoBehaviour
         int index = FindSlotIndexByGlyph(glyph);
         if (index < 0)
         {
-            // Debug.LogWarning($"[KeyBoardManager] '{glyph}' 에 해당하는 슬롯을 찾지 못했어.");
             return false;
         }
 
         KeyCount.AddAt(index, amount);
-        // 아이템으로 준 거라서 _sessionSpent 에는 기록 안 함
+        // 아이템으로 지급된 경우 _sessionSpent에는 기록하지 않음
         return true;
     }
 
@@ -735,11 +689,10 @@ public class KeyBoardManager : MonoBehaviour
         foreach (var d in drags)
             if (d)
             {
-                // [중요] 드래그 중인 물체가 있다면 상태 해제 먼저
-                d.ForceStopDrag(); // 드래그 상태 강제 종료 메서드 호출 (DraggableWordUI에 있다고 가정)
-                // 만약 저 메서드가 없으면 최소한 DraggableWordUI 내부에서 OnDisable/OnDestroy 시 처리가 되어있어야 함
+                // 드래그 중인 물체가 있다면 상태 해제 먼저
+                d.ForceStopDrag();
                 
-                // 여기서는 안전하게 DOKill 하고 파괴
+                // DOTween 정리 후 파괴
                 d.transform.DOKill();
                 Destroy(d.gameObject);
             }
@@ -758,8 +711,7 @@ public class KeyBoardManager : MonoBehaviour
 
     void NotEnoughFeedback(int index)
     {
-        // 키 부족 시 이펙트/사운드 넣고 싶으면 여기서 처리
-        Debug.Log($"[KeyBoard] Not enough keys for index {index}. Current: {GetCount(index)}");
+        // 키 부족 시 이펙트/사운드 처리 가능
     }
 
     void RecordSpend(int index, int amount)
@@ -775,9 +727,6 @@ public class KeyBoardManager : MonoBehaviour
         if (_sessionSpent[index] == 0) _sessionSpent.Remove(index);
     }
 
-    // -----------------------------
-    // 입력 시스템 래핑 (마우스/터치 공통 처리)
-    // -----------------------------
 
     bool TryGetPointerScreenPos(int pointerId, out Vector2 pos)
     {
@@ -829,10 +778,7 @@ public class KeyBoardManager : MonoBehaviour
 #endif
     }
 
-    // -----------------------------
-    // 유틸
-    // -----------------------------
-
+  
     bool IsValidIndex(int index, Button[] buttons, GameObject[] prefabs)
     {
         if (buttons == null || prefabs == null) return false;
@@ -844,15 +790,14 @@ public class KeyBoardManager : MonoBehaviour
 
     public void ConfirmUse()
     {
-        _sessionSpent.Clear();   // 환불 기록 버리기 (다시는 돌려주지 않음)
-        ClearAllSpawnedPieces(); // 화면 청소
+        _sessionSpent.Clear();   // 환불 기록 초기화
+        ClearAllSpawnedPieces(); // 화면 정리
     }
-    // -----------------------------
-    // 안내 UI 메서드
-    // -----------------------------
+
+   
 
     /// <summary>
-    /// 버튼을 짧게 눌렀을 때 "꾹 누르세요" 경고 표시 (TMP 버전)
+    /// 버튼을 짧게 눌렀을 때 경고 표시
     /// </summary>
     public void ShowPushWarning()
     {
