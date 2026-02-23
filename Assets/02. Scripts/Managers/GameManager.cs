@@ -67,6 +67,9 @@ public class GameManager : MonoBehaviour
     [SerializeField] private RectTransform LockBtn; // 홈화면 아이콘 버튼의 RectTransform
     [SerializeField] private LockHintAppController lockController;
 
+    [Header("파일 관련")]
+    [SerializeField] private TutoFlag tutoflag;
+
 
     [Header("UI 연결")]
     [SerializeField] public ADPopup sharedAdPopup;
@@ -95,7 +98,6 @@ public class GameManager : MonoBehaviour
     public Vector3 InfoDebug;
     public GameObject temp;
     public int messageCount = 0;
-
 
     public static GameManager Instance;
 
@@ -444,9 +446,10 @@ public class GameManager : MonoBehaviour
 
 
     // ---- 공용 유틸 애니메이션 ----
-    private void ShowPanelFromButton(RectTransform panel, RectTransform btn)
+    private Tween ShowPanelFromButton(RectTransform panel, RectTransform btn)
     {
-        if (panel == null || btn == null) return;
+        if (panel == null || btn == null) return null;
+
         SoundManager.Instance.SFXStart(SoundManager.SFXType.button1);
         smanager.isOK = false;
         panel.gameObject.SetActive(true);
@@ -464,9 +467,14 @@ public class GameManager : MonoBehaviour
         Vector2 targetLocal = Vector2.zero;
 
         // 애니메이션
-        panel.DOAnchorPos(targetLocal, 0.3f).SetEase(Ease.OutBack);
-        panel.DOScale(Vector3.one, 0.3f).SetEase(Ease.OutBack);
+        Sequence seq = DOTween.Sequence();
+
+        seq.Join(panel.DOAnchorPos(targetLocal, 0.3f).SetEase(Ease.OutBack));
+        seq.Join(panel.DOScale(Vector3.one, 0.3f).SetEase(Ease.OutBack));
+
         phoneSwiper.isUsingTab = true;
+
+        return seq;
     }
 
     private void HidePanelToButton(RectTransform panel, RectTransform btn)
@@ -517,7 +525,10 @@ public class GameManager : MonoBehaviour
     public void ShowPanel_Call()
     {
         // 패널 등장 (기존 함수)
-        ShowPanelFromButton(CallPanel, CallBtn);
+        ShowPanelFromButton(CallPanel, CallBtn)?.OnComplete(() =>
+        {
+            tutoflag.CheckTuto(0);
+        });
 
         // 전화 오는 연출 시작 (이미 울리고 있다면 중복 방지)
         if (ringingCoroutine != null) StopCoroutine(ringingCoroutine);
@@ -625,7 +636,13 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void ShowPanel_Message() => ShowPanelFromButton(MessagePanel, MessageBtn);
+    public void ShowPanel_Message() {
+        ShowPanelFromButton(MessagePanel, MessageBtn)
+            ?.OnComplete(() =>
+            {
+                tutoflag.CheckTuto(1);
+            });
+    }
     public void HidePanel_Message() => HidePanelToButton(MessagePanel, MessageBtn);
 
     public void ShowPanel_Gallery() => ShowPanelFromButton(GalleryPanel, GalleryBtn);
@@ -668,7 +685,10 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void OpenLockPanelUI()
     {
-        ShowPanelFromButton(LockPanel, LockBtn);
+        ShowPanelFromButton(LockPanel, LockBtn)?.OnComplete(() =>
+        {
+            tutoflag.CheckTuto(2);
+        });
     }
 
     public void HidePanel_Lock()
