@@ -56,6 +56,7 @@ public class UIManager : MonoBehaviour
     private Vector2 _hidePosition = new Vector2(0, -450);      // 키보드 숨김 위치
 
     [SerializeField] private SlideManager slidemanager;
+    [SerializeField] private GameObject WordEaterName_Panel;
 
     public static UIManager Instance;
 
@@ -204,7 +205,9 @@ public class UIManager : MonoBehaviour
 
                 _onConfirmCallback?.Invoke();
                 _onConfirmCallback = null;
-                phoneSwiper.isUsingTab = false;
+
+                if(!WordEaterName_Panel.activeSelf)
+                    phoneSwiper.isUsingTab = false;
             });
     }
 

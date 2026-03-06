@@ -28,7 +28,6 @@ public class NameInputController : MonoBehaviour
     private bool isCursorVisible = true;
 
     public PhoneSwiper phoneswiper;
-
 private void Awake()
 {
     // 리스너 초기화
