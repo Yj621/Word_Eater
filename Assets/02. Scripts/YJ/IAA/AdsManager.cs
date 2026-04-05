@@ -8,13 +8,12 @@ public class AdsManager : MonoBehaviour
     public static AdsManager Instance { get; private set; }
 
 #if UNITY_ANDROID
-    [SerializeField] private string rewardedAdRevivalId = "ca-app-pub-3940256099942544/5224354917"; // 테스트용
+    [SerializeField] private string rewardedAdUnitId = "ca-app-pub-1881501262849586/8087726894";
 #elif UNITY_IOS
-    [SerializeField] private string rewardedAdUnitId = 	"ca-app-pub-3940256099942544/1712485313"; // 테스트용
+    [SerializeField] private string rewardedAdUnitId = "ca-app-pub-1881501262849586/8087726894"; // 동일 ID
 #else
     [SerializeField] private string rewardedAdUnitId = "unused";
 #endif
-
     private RewardedAd _rewardedAd;
     private bool _initializing;
 
@@ -45,8 +44,6 @@ public class AdsManager : MonoBehaviour
     // 미리 로드
     public void PreloadRewarded()
     {
-        //if (string.IsNullOrEmpty(rewardedAdRevivalId)) return;
-
         if (_rewardedAd != null)
         {
             _rewardedAd.Destroy();
@@ -54,22 +51,19 @@ public class AdsManager : MonoBehaviour
         }
 
         var request = new AdRequest();
-        
-        /*
-        RewardedAd.Load(rewardedAdRevivalId, request, (RewardedAd ad, LoadAdError error) =>
+
+        RewardedAd.Load(rewardedAdUnitId, request, (RewardedAd ad, LoadAdError error) =>
         {
             if (error != null)
             {
-                // Debug.LogWarning($"[Ads] Rewarded load failed: {error.GetMessage()}");
+                Debug.LogWarning($"[Ads] Rewarded load failed: {error.GetMessage()}");
                 return;
             }
 
             _rewardedAd = ad;
             HookRewardedEvents(_rewardedAd);
-            // Debug.Log("[Ads] Rewarded loaded.");
+            Debug.Log("[Ads] Rewarded loaded.");
         });
-        */
-        
     }
 
     private void HookRewardedEvents(RewardedAd ad)
