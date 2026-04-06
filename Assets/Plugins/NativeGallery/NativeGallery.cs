@@ -409,7 +409,7 @@ public static class NativeGallery
 			throw new ArgumentException( "Parameter 'filename' is null or empty!" );
 
 		if( string.IsNullOrEmpty( Path.GetExtension( filename ) ) )
-			// Debug.LogWarning( "'filename' doesn't have an extension, this might result in unexpected behaviour!" );
+			Debug.LogWarning( "'filename' doesn't have an extension, this might result in unexpected behaviour!" );
 
 		RequestPermissionAsync( ( permission ) =>
 		{
@@ -421,7 +421,7 @@ public static class NativeGallery
 
 			string path = GetTemporarySavePath( filename );
 #if UNITY_EDITOR
-			// Debug.Log( "SaveToGallery called successfully in the Editor" );
+			Debug.Log( "SaveToGallery called successfully in the Editor" );
 #else
 			File.WriteAllBytes( path, mediaBytes );
 #endif
@@ -481,7 +481,7 @@ public static class NativeGallery
 #elif !UNITY_EDITOR && UNITY_IOS
 		if( mediaType == MediaType.Audio )
 		{
-			// Debug.LogError( "Saving audio files is not supported on iOS" );
+			Debug.LogError( "Saving audio files is not supported on iOS" );
 
 			if( callback != null )
 				callback( false, null );
@@ -489,7 +489,7 @@ public static class NativeGallery
 			return;
 		}
 
-		// Debug.Log( "Saving to Pictures: " + Path.GetFileName( path ) );
+		Debug.Log( "Saving to Pictures: " + Path.GetFileName( path ) );
 
 		NGMediaSaveCallbackiOS.Initialize( callback );
 		if( mediaType == MediaType.Image )
@@ -575,7 +575,7 @@ public static class NativeGallery
 #elif UNITY_IOS
 			if( mediaType == MediaType.Audio )
 			{
-				// Debug.LogError( "Picking audio files is not supported on iOS" );
+				Debug.LogError( "Picking audio files is not supported on iOS" );
 
 				if( callback != null ) // Selecting audio files is not supported on iOS
 					callback( null );
@@ -609,7 +609,7 @@ public static class NativeGallery
 #elif !UNITY_EDITOR && UNITY_IOS
 				if( mediaType == MediaType.Audio )
 				{
-					// Debug.LogError( "Picking audio files is not supported on iOS" );
+					Debug.LogError( "Picking audio files is not supported on iOS" );
 
 					if( callback != null ) // Selecting audio files is not supported on iOS
 						callback( null );
@@ -643,16 +643,16 @@ public static class NativeGallery
 		{
 			return GetTextureBytesFromCopy( texture, isJpeg );
 		}
-
-#pragma warning disable 0162
-		return null;
-#pragma warning restore 0162
+        catch
+        {
+            return null;
+        }
 	}
 
 	private static byte[] GetTextureBytesFromCopy( Texture2D texture, bool isJpeg )
 	{
 		// Texture is marked as non-readable, create a readable copy and save it instead
-		// Debug.LogWarning( "Saving non-readable textures is slower than saving readable textures" );
+		Debug.LogWarning( "Saving non-readable textures is slower than saving readable textures" );
 
 		Texture2D sourceTexReadable = null;
 		RenderTexture rt = RenderTexture.GetTemporary( texture.width, texture.height );
@@ -669,7 +669,7 @@ public static class NativeGallery
 		}
 		catch( Exception e )
 		{
-			// Debug.LogException( e );
+			Debug.LogException( e );
 
 			Object.DestroyImmediate( sourceTexReadable );
 			return null;
@@ -686,7 +686,7 @@ public static class NativeGallery
 		}
 		catch( Exception e )
 		{
-			// Debug.LogException( e );
+			Debug.LogException( e );
 			return null;
 		}
 		finally
@@ -704,7 +704,7 @@ public static class NativeGallery
 		await Task.Run( () =>
 		{
 			if( AndroidJNI.AttachCurrentThread() != 0 )
-				 Debug.LogWarning( "Couldn't attach JNI thread, calling native function on the main thread" );
+				Debug.LogWarning( "Couldn't attach JNI thread, calling native function on the main thread" );
 			else
 			{
 				try
@@ -753,7 +753,7 @@ public static class NativeGallery
 		{
 			if( !result.LoadImage( File.ReadAllBytes( loadPath ), markTextureNonReadable ) )
 			{
-				// Debug.LogWarning( "Couldn't load image at path: " + loadPath );
+				Debug.LogWarning( "Couldn't load image at path: " + loadPath );
 
 				Object.DestroyImmediate( result );
 				return null;
@@ -761,7 +761,7 @@ public static class NativeGallery
 		}
 		catch( Exception e )
 		{
-			// Debug.LogException( e );
+			Debug.LogException( e );
 
 			Object.DestroyImmediate( result );
 			return null;
