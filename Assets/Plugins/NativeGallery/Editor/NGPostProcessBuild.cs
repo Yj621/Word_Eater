@@ -34,7 +34,7 @@ namespace NativeGalleryNamespace
 					}
 					catch( System.Exception e )
 					{
-						// Debug.LogException( e );
+						Debug.LogException( e );
 						m_instance = new Settings();
 					}
 				}
