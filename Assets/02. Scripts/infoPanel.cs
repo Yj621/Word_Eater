@@ -17,6 +17,9 @@ public class infoPanel : MonoBehaviour
 
     public Image ExImg;
     public TextMeshProUGUI ExText;
+    public Sprite CallIcon;
+    public Sprite MessageIcon;
+    public Sprite LockIcon;
 
 
     public void showExplainPanel() {
@@ -138,20 +141,30 @@ public class infoPanel : MonoBehaviour
     // 기능들 만큼 만들어서 따로 지정해 주는게 편할듯? 게임 메니저의 아이콘 패널 띄우는 것 처럼ㅇㅇ
     // 아이콘의 button에 이 함수 넣으면 작동 할 거임
     public void SetContent(int type) {
-        //ExImg.sprite = selfimge; // << 여긴 고민을 좀 해봐야 할 듯?
+        if (ExImg != null)
+        {
+            ExImg.gameObject.SetActive(false);
+        }
+
+        if (ExText != null)
+        {
+            ExText.textWrappingMode = TextWrappingModes.Normal;
+            ExText.overflowMode = TextOverflowModes.Overflow;
+            ExText.fontSize = type == 2 ? 30f : 35f;
+        }
 
         switch (type) {
 
             case 0: // 전화
-                ExText.text = "응답 버튼을 눌러 베터리를 소모하여 관련 단어의 힌트를 받을 수 있습니다.\n최대 7개의 단어를 받을 수 있고 남은 단어는 중앙에 표시됩니다.";
+                ExText.text = "응답 버튼을 누르면\n배터리를 소모하여\n관련 단어 힌트를\n받을 수 있습니다.\n\n최대 7개의 단어를\n받을 수 있고\n남은 단어는 중앙에\n표시됩니다.";
                 break;
 
             case 1:
-                ExText.text = "메세지 기능을 사용하면 베터리를 소모하여 최대 10회 만큼 단어를 입력해 유사도를 확인할 수 있습니다.";
+                ExText.text = "메세지 기능을\n사용하면 배터리를\n소모하여 최대 10회\n단어를 입력해\n유사도를 확인할 수\n있습니다.";
                 break; // 메세지
 
             case 2: // 자물쇠
-                ExText.text = "자물쇠 기능을 사용하면 베터리를 소모하여 글자 수, 첫 번째 글자 초성, 마지막 글자 초성 중에 하나를 확인할 수 있습니다.\n단, 마지막 글자 초성은 정답 단어가 4 글자 이상일 때만 등장하며 모든 종류의 힌트를 확인하면 다시 접속 할 수 없습니다.";
+                ExText.text = "잠금해제 기능을\n사용하면 배터리를\n소모하여 글자 수,\n첫 글자 초성,\n마지막 글자 초성 중\n하나를 확인할 수\n있습니다.\n\n단, 마지막 초성은\n정답 단어가 4글자\n이상일 때만 등장하며\n모든 힌트를 확인하면\n다시 접속할 수\n없습니다.";
                 break;
 
             case 3: // 제출

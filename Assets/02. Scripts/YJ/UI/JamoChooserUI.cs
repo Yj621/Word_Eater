@@ -155,8 +155,8 @@ public class JamoChooserUI : MonoBehaviour
                     // Debug.LogWarning("가득 차서 받을 수 없습니다.");
 
                     jamoConfirmPanel.SetActive(false);
-                    this.gameObject.SetActive(false);
                     OnRequestClose?.Invoke(false);
+                    Close();
 
                     if (GameManager.Instance != null)
                         GameManager.Instance.CloseBlurPanelsImmediate();
@@ -177,6 +177,7 @@ public class JamoChooserUI : MonoBehaviour
 
                         jamoConfirmPanel.SetActive(false);
                         OnRequestClose?.Invoke(false);
+                        Close();
                         return;
                     }
                 }

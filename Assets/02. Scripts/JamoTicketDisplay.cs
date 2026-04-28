@@ -25,23 +25,41 @@ public class JamoTicketDisplay : MonoBehaviour
 
     private readonly List<GameObject> _spawnedTickets = new();
     private readonly List<RectTransform> _pages = new();
+    private bool _subscribed;
 
     private const int ITEMS_PER_PAGE = 9;
+    private void Awake()
+    {
+        TrySubscribe();
+    }
+
     private void Start()
     {
-        if (ItemManager.Instance != null)
-        {
-            ItemManager.Instance.OnInventoryChanged += RefreshUI;
-            RefreshUI();
-        }
+        TrySubscribe();
+        RefreshUI();
+    }
+
+    private void OnEnable()
+    {
+        TrySubscribe();
+        RefreshUI();
     }
 
     private void OnDestroy()
     {
-        if (ItemManager.Instance != null)
+        if (ItemManager.Instance != null && _subscribed)
         {
             ItemManager.Instance.OnInventoryChanged -= RefreshUI;
+            _subscribed = false;
         }
+    }
+
+    private void TrySubscribe()
+    {
+        if (_subscribed || ItemManager.Instance == null) return;
+
+        ItemManager.Instance.OnInventoryChanged += RefreshUI;
+        _subscribed = true;
     }
 
     public void RefreshUI()

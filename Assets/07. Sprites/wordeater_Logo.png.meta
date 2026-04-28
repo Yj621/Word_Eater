@@ -1,0 +1,611 @@
+fileFormatVersion: 2
+guid: 8e5c91b5327f9644080342fdcd123f7c
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 7214420729044776788
+    second: wordeater_Logo_0
+  - first:
+      213: 8278715188305918956
+    second: wordeater_Logo_1
+  - first:
+      213: 9155972961461549031
+    second: wordeater_Logo_2
+  - first:
+      213: -916916951485224394
+    second: wordeater_Logo_3
+  - first:
+      213: 8855587100021195634
+    second: wordeater_Logo_4
+  - first:
+      213: 8051367189802323207
+    second: wordeater_Logo_5
+  - first:
+      213: -932657032845094106
+    second: wordeater_Logo_6
+  - first:
+      213: 446469322247920108
+    second: wordeater_Logo_7
+  - first:
+      213: -4797937043944827751
+    second: wordeater_Logo_8
+  - first:
+      213: -436137493036325465
+    second: wordeater_Logo_9
+  - first:
+      213: 826978369419823939
+    second: wordeater_Logo_10
+  - first:
+      213: -840024918532647296
+    second: wordeater_Logo_11
+  - first:
+      213: 1785190258824144918
+    second: wordeater_Logo_12
+  - first:
+      213: 3215633762767834295
+    second: wordeater_Logo_13
+  - first:
+      213: 6965802946106013947
+    second: wordeater_Logo_14
+  - first:
+      213: 8471216363811970392
+    second: wordeater_Logo_15
+  - first:
+      213: 5618954811863826409
+    second: wordeater_Logo_16
+  - first:
+      213: -5309370006692219989
+    second: wordeater_Logo_17
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 357, z: 0, w: 148}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 1
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: wordeater_Logo_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 333
+        width: 1024
+        height: 1061
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 457bdeeed65ce1460800000000000000
+      internalID: 7214420729044776788
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: wordeater_Logo_1
+      rect:
+        serializedVersion: 2
+        x: 3
+        y: 951
+        width: 189
+        height: 120
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cebfa9be997e3e270800000000000000
+      internalID: 8278715188305918956
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: wordeater_Logo_2
+      rect:
+        serializedVersion: 2
+        x: 197
+        y: 839
+        width: 633
+        height: 338
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7e73ff4e5ec801f70800000000000000
+      internalID: 9155972961461549031
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: wordeater_Logo_3
+      rect:
+        serializedVersion: 2
+        x: 310
+        y: 1191
+        width: 107
+        height: 82
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 63a603204e47643f0800000000000000
+      internalID: -916916951485224394
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: wordeater_Logo_4
+      rect:
+        serializedVersion: 2
+        x: 341
+        y: 949
+        width: 683
+        height: 529
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2738b4e6c8d55ea70800000000000000
+      internalID: 8855587100021195634
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: wordeater_Logo_5
+      rect:
+        serializedVersion: 2
+        x: 605
+        y: 1189
+        width: 108
+        height: 93
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 70d07681dc33cbf60800000000000000
+      internalID: 8051367189802323207
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: wordeater_Logo_6
+      rect:
+        serializedVersion: 2
+        x: 741
+        y: 1086
+        width: 116
+        height: 110
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6239ffbbe598e03f0800000000000000
+      internalID: -932657032845094106
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: wordeater_Logo_7
+      rect:
+        serializedVersion: 2
+        x: 831
+        y: 934
+        width: 113
+        height: 131
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ce952bbab7d223600800000000000000
+      internalID: 446469322247920108
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: wordeater_Logo_8
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 343
+        width: 1024
+        height: 1037
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9941bf8ddad4a6db0800000000000000
+      internalID: -4797937043944827751
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: wordeater_Logo_9
+      rect:
+        serializedVersion: 2
+        x: 47
+        y: 799
+        width: 110
+        height: 109
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7a52756c24782f9f0800000000000000
+      internalID: -436137493036325465
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: wordeater_Logo_10
+      rect:
+        serializedVersion: 2
+        x: 863
+        y: 799
+        width: 114
+        height: 124
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 34b433a02740a7b00800000000000000
+      internalID: 826978369419823939
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: wordeater_Logo_11
+      rect:
+        serializedVersion: 2
+        x: 5
+        y: 397
+        width: 146
+        height: 346
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 086926889c1a754f0800000000000000
+      internalID: -840024918532647296
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: wordeater_Logo_12
+      rect:
+        serializedVersion: 2
+        x: 871
+        y: 647
+        width: 74
+        height: 98
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 61863b1051546c810800000000000000
+      internalID: 1785190258824144918
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: wordeater_Logo_13
+      rect:
+        serializedVersion: 2
+        x: 170
+        y: 501
+        width: 127
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7bc878dbed930ac20800000000000000
+      internalID: 3215633762767834295
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: wordeater_Logo_14
+      rect:
+        serializedVersion: 2
+        x: 310
+        y: 420
+        width: 107
+        height: 109
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bf8b4028fd08ba060800000000000000
+      internalID: 6965802946106013947
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: wordeater_Logo_15
+      rect:
+        serializedVersion: 2
+        x: 607
+        y: 415
+        width: 118
+        height: 114
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 85d1d74866ecf8570800000000000000
+      internalID: 8471216363811970392
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: wordeater_Logo_16
+      rect:
+        serializedVersion: 2
+        x: 727
+        y: 503
+        width: 128
+        height: 130
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9ef7d1281a98afd40800000000000000
+      internalID: 5618954811863826409
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: wordeater_Logo_17
+      rect:
+        serializedVersion: 2
+        x: 447
+        y: 399
+        width: 129
+        height: 98
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ba33ff1fb145156b0800000000000000
+      internalID: -5309370006692219989
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 1537655665
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      wordeater_Logo_0: 7214420729044776788
+      wordeater_Logo_1: 8278715188305918956
+      wordeater_Logo_10: 826978369419823939
+      wordeater_Logo_11: -840024918532647296
+      wordeater_Logo_12: 1785190258824144918
+      wordeater_Logo_13: 3215633762767834295
+      wordeater_Logo_14: 6965802946106013947
+      wordeater_Logo_15: 8471216363811970392
+      wordeater_Logo_16: 5618954811863826409
+      wordeater_Logo_17: -5309370006692219989
+      wordeater_Logo_2: 9155972961461549031
+      wordeater_Logo_3: -916916951485224394
+      wordeater_Logo_4: 8855587100021195634
+      wordeater_Logo_5: 8051367189802323207
+      wordeater_Logo_6: -932657032845094106
+      wordeater_Logo_7: 446469322247920108
+      wordeater_Logo_8: -4797937043944827751
+      wordeater_Logo_9: -436137493036325465
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
