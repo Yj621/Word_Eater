@@ -51,6 +51,7 @@ public class PhoneCrack : MonoBehaviour, IPointerClickHandler
 
     private void HandleTap()
     {
+        if (SoundManager.Instance != null) SoundManager.Instance.SFXStart(SoundManager.SFXType.crackSound);
         _tapCount++;
      
         // 단계 계산 (2탭 = 1단계 진전)

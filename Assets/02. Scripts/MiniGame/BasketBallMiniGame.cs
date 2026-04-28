@@ -284,6 +284,7 @@ public class BasketBallMiniGame : MonoBehaviour, IBeginDragHandler, IDragHandler
 
     private void OnGoal()
     {
+        if (SoundManager.Instance != null) SoundManager.Instance.SFXStart(SoundManager.SFXType.goalSound);
         // Debug.Log("GOAL!");
         _currentGoals--;
         UpdateUI();

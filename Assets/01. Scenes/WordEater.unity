@@ -7644,6 +7644,9 @@ MonoBehaviour:
   - {fileID: 8300000, guid: b33572567126d564f9fb9171b3c10e5b, type: 3}
   - {fileID: 8300000, guid: a5d4c1bbf490b469db49426c698eb635, type: 3}
   - {fileID: 8300000, guid: a29afedcfab5a4b0dbbeb67cd3eb8c13, type: 3}
+  - {fileID: 8300000, guid: a29afedcfab5a4b0dbbeb67cd3eb8c13, type: 3}
+  - {fileID: 8300000, guid: a29afedcfab5a4b0dbbeb67cd3eb8c13, type: 3}
+  - {fileID: 8300000, guid: a29afedcfab5a4b0dbbeb67cd3eb8c13, type: 3}
 --- !u!1 &244407811
 GameObject:
   m_ObjectHideFlags: 0
@@ -11672,7 +11675,7 @@ MonoBehaviour:
   hoopMoveSpeed: 1
   hoopMoveRange: 150
   minDragDistance: 50
-  throwPower: 0.8
+  throwPower: 0.4
   throwDropY: -200
   gravity: -4500
   bounciness: 0.7
@@ -32226,7 +32229,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -6.5000916}
+  m_AnchoredPosition: {x: 0, y: -6.500122}
   m_SizeDelta: {x: 0, y: -13}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &786972461
@@ -39191,7 +39194,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -6.5000916}
+  m_AnchoredPosition: {x: 0, y: -6.500122}
   m_SizeDelta: {x: 0, y: -13}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1000577137
@@ -56513,7 +56516,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -17.38974}
+  m_AnchoredPosition: {x: 0, y: -17.38977}
   m_SizeDelta: {x: 0, y: -245.23}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1564626880

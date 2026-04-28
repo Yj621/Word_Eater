@@ -48,6 +48,7 @@ public class PairSlot : MonoBehaviour
 
     void OnClick()
     {
+        if (SoundManager.Instance != null) SoundManager.Instance.SFXStart(SoundManager.SFXType.minigameButton);
         if (_matched || _revealed) return;
         
         // [수정] 직접 Reveal 하지 않고 매니저에게 요청

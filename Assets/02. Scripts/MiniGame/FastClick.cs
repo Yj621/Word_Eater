@@ -74,6 +74,7 @@ public class FastClick : MonoBehaviour
 
     private void OnButtonClicked()
     {
+        if (SoundManager.Instance != null) SoundManager.Instance.SFXStart(SoundManager.SFXType.minigameButton);
         _count++;
 
         if (_count >= clicksToClear)

@@ -67,7 +67,10 @@ public class SoundManager : MonoBehaviour
         minigameWin,
         minigameLose,
         button1,
-        button2
+        button2,
+        minigameButton,
+        crackSound,
+        goalSound
     }
 
     private void Awake()
