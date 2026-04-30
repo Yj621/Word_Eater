@@ -6,19 +6,34 @@ public class BGMChange : MonoBehaviour
     public Button SecondBtn;
     public Button ThridBtn;
 
-    public int CurBGM;
+    public int CurBGM = 1;
 
     public SoundManager soundmanager;
 
+    public void SetUI(int inputCurBGM){
+       switch (inputCurBGM)  
+       {
+           case 1:
+               FirstBtn.interactable = false;
+               SecondBtn.interactable = true;
+               ThridBtn.interactable = true;
+               break;
+           case 2:
+               FirstBtn.interactable = true;
+               SecondBtn.interactable = false;
+               ThridBtn.interactable = true;
+               break;
+           case 3:
+               FirstBtn.interactable = true;
+               SecondBtn.interactable = true;
+               ThridBtn.interactable = false;
+               break;
+       }
 
-    public void Start()
-    {
-        CurBGM = 1;
 
-        FirstBtn.interactable = false;
-        SecondBtn.interactable = true;
-        ThridBtn.interactable = true;
+        soundmanager.BGMStart(inputCurBGM);
     }
+
 
 
     public void BGMChanger(int type) {
@@ -29,6 +44,7 @@ public class BGMChange : MonoBehaviour
             ThridBtn.interactable = true;
 
             CurBGM = 1;
+            soundmanager.CurBGM = 1;
             soundmanager.BGMStart(CurBGM);
 
         }
@@ -39,6 +55,7 @@ public class BGMChange : MonoBehaviour
             ThridBtn.interactable = true;
 
             CurBGM = 2;
+            soundmanager.CurBGM = 2;
             soundmanager.BGMStart(CurBGM);
         }
         else {// 세 번째 버튼
@@ -47,7 +64,11 @@ public class BGMChange : MonoBehaviour
             ThridBtn.interactable = false;
 
             CurBGM = 3;
+            soundmanager.CurBGM = 3;
             soundmanager.BGMStart(CurBGM);
         }
+
+        //파일에 저장
+        soundmanager.SaveCurBgm();
     }
 }

@@ -70,6 +70,9 @@ public class SoundManager : MonoBehaviour
         button2
     }
 
+    //현재 브금을 관리하기 위한 변수 
+    public int CurBGM;
+
     private void Awake()
     {
         // 씬에 이미 Instance가 있으면 자신을 파괴
@@ -113,7 +116,7 @@ public class SoundManager : MonoBehaviour
             
         Bvalue = volume;
 
-        filemanager.SaveSoundInfo(volume, Svalue);
+        filemanager.SaveSoundInfo(volume, Svalue, CurBGM);
 
     }
 
@@ -142,7 +145,7 @@ public class SoundManager : MonoBehaviour
 
         Svalue = volume;
 
-        filemanager.SaveSoundInfo(Svalue, volume);
+        filemanager.SaveSoundInfo(Svalue, volume, CurBGM);
     }
 
 
@@ -216,5 +219,11 @@ public class SoundManager : MonoBehaviour
     // 버튼에 붙이고 싶어서 만든 함수
     public void SFXHistory() {
         SFXSource.PlayOneShot(sfxList[20]);
+    }
+
+
+
+    public void SaveCurBgm(){
+        filemanager.SaveSoundInfo(Bvalue, Svalue, CurBGM);
     }
 }

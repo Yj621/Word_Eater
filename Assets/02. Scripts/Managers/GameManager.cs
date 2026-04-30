@@ -38,6 +38,7 @@ public class GameManager : MonoBehaviour
     [Header("설정 관련")]
     [SerializeField] private RectTransform SettingPanel;
     [SerializeField] private RectTransform SettingBtn;
+    [SerializeField] private BGMChange bgmchange;
 
     [Header("아이템 관련")]
     [SerializeField] private RectTransform ItemFolderPanel;
@@ -125,7 +126,11 @@ public class GameManager : MonoBehaviour
         }
 
         // 시작 브금 출력
-        SoundManager.Instance.BGMStart(1);
+        if (SoundManager.Instance.CurBGM == 0) {
+            SoundManager.Instance.CurBGM = 1;
+            SoundManager.Instance.SaveCurBgm();
+        }
+        bgmchange.SetUI(SoundManager.Instance.CurBGM);
 
         // 게임오버 패널 초기화
         if (gameOverCanvasGroup != null)

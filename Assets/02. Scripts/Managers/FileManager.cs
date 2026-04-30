@@ -66,6 +66,7 @@ public class FileManager : MonoBehaviour
     {
         public float BGM;
         public float SE;
+        public int CurBGM;
     }
 
     [System.Serializable]
@@ -345,9 +346,9 @@ public class FileManager : MonoBehaviour
     // [Part 2] 사운드 데이터
     // ========================================================================
 
-    public void SaveSoundInfo(float bgmVolume, float seVolume)
+    public void SaveSoundInfo(float bgmVolume, float seVolume, int curBGM)
     {
-        SoundData data = new SoundData { BGM = bgmVolume, SE = seVolume };
+        SoundData data = new SoundData { BGM = bgmVolume, SE = seVolume, CurBGM = curBGM };
         File.WriteAllText(SoundPath, JsonUtility.ToJson(data, true));
     }
 
@@ -360,6 +361,7 @@ public class FileManager : MonoBehaviour
             // 파일이 없으면 초기화
             soundmanager.SetBGMVolume(1f);
             soundmanager.SetSFXVolume(1f);
+            soundmanager.CurBGM = 1;
             return;
         }
 
@@ -371,6 +373,7 @@ public class FileManager : MonoBehaviour
             // Debug.LogWarning("저장된 사운드 데이터가 비어있습니다. 기본값으로 초기화합니다.");
             soundmanager.SetBGMVolume(1f);
             soundmanager.SetSFXVolume(1f);
+            soundmanager.CurBGM = 1;
             return; // 여기서 함수 종료
         }
 
@@ -379,9 +382,12 @@ public class FileManager : MonoBehaviour
         {
             SoundData data = JsonUtility.FromJson<SoundData>(json);
 
+            Debug.Log("불러온 데이터 CurBGM은" + data.CurBGM);
+
             // 데이터 적용
             soundmanager.SetBGMVolume(data.BGM);
             soundmanager.SetSFXVolume(data.SE);
+            soundmanager.CurBGM = data.CurBGM;
 
             if (soundmanager.bgmSlider != null) soundmanager.bgmSlider.value = data.BGM;
             if (soundmanager.seSlider != null) soundmanager.seSlider.value = data.SE;
@@ -392,6 +398,7 @@ public class FileManager : MonoBehaviour
             // Debug.LogError("사운드 데이터 파싱 오류: " + e.Message);
             soundmanager.SetBGMVolume(1f);
             soundmanager.SetSFXVolume(1f);
+            soundmanager.CurBGM = 1;
         }
     }
 
