@@ -74,6 +74,7 @@ public class MathQuizMiniGame : MonoBehaviour
 
     void OnPick(int btnIndex)
     {
+        if (SoundManager.Instance != null) SoundManager.Instance.SFXStart(SoundManager.SFXType.minigameButton);
         if (btnIndex < 0 || btnIndex >= answerTexts.Length) return;
 
         if (!int.TryParse(answerTexts[btnIndex].text, out int picked))

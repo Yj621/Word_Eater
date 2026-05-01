@@ -7644,6 +7644,9 @@ MonoBehaviour:
   - {fileID: 8300000, guid: b33572567126d564f9fb9171b3c10e5b, type: 3}
   - {fileID: 8300000, guid: a5d4c1bbf490b469db49426c698eb635, type: 3}
   - {fileID: 8300000, guid: a29afedcfab5a4b0dbbeb67cd3eb8c13, type: 3}
+  - {fileID: 8300000, guid: a5d4c1bbf490b469db49426c698eb635, type: 3}
+  - {fileID: 8300000, guid: a29afedcfab5a4b0dbbeb67cd3eb8c13, type: 3}
+  - {fileID: 8300000, guid: a29afedcfab5a4b0dbbeb67cd3eb8c13, type: 3}
   CurBGM: 1
 --- !u!1 &244407811
 GameObject:
@@ -11673,7 +11676,7 @@ MonoBehaviour:
   hoopMoveSpeed: 1
   hoopMoveRange: 150
   minDragDistance: 50
-  throwPower: 0.8
+  throwPower: 0.4
   throwDropY: -200
   gravity: -4500
   bounciness: 0.7
@@ -62924,7 +62927,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -0.0009765625, y: -231.98035}
+  m_AnchoredPosition: {x: -0.0009765625, y: -231.98036}
   m_SizeDelta: {x: -0.77, y: -472.71}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1756442347
