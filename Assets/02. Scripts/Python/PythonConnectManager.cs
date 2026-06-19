@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using System.Collections.Generic;
 using System;
 using Cysharp.Threading.Tasks;
+using System.IO;
 
 [System.Serializable]
 public class ResultData
@@ -18,8 +19,27 @@ public class ResultData2
     public float? result;
 }
 
+[Serializable]
+public class ServerConfig
+{
+    public string baseUrl;
+}
+
 public class PythonConnectManager : MonoBehaviour
 {
+
+    private ServerConfig config;
+    string configPath;  
+
+    private void Awake()
+    {
+        configPath =
+            Path.Combine(Application.streamingAssetsPath, "ServerConfig.json");
+
+        config = JsonConvert.DeserializeObject<ServerConfig>(
+            File.ReadAllText(configPath));
+    }
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -55,7 +75,12 @@ public class PythonConnectManager : MonoBehaviour
     //단어와 몇개의 유사한 단어를 가져올 것인지 입력
     public async UniTask<List<string>> MostSimilarty(string inputWord, int num)
     {
-        string url = "http://yj.nine9.kr/most_similarty";
+
+        ServerConfig config =
+        JsonConvert.DeserializeObject<ServerConfig>(
+        File.ReadAllText(configPath));
+
+        string url = $"{config.baseUrl}/most_similarty";
 
         var data = new { word = inputWord, num = num };
         string jsonData = JsonConvert.SerializeObject(data);
@@ -95,7 +120,11 @@ public class PythonConnectManager : MonoBehaviour
     //두 단어 사이의 유사도
     public async UniTask<float?> SimilartyTwoWord(string inputWord, string inputWord2)
     {
-        string url = "http://yj.nine9.kr/similarity";
+        ServerConfig config =
+        JsonConvert.DeserializeObject<ServerConfig>(
+        File.ReadAllText(configPath));
+
+        string url = $"{config.baseUrl}/similarity";
 
         var data = new { word1 = inputWord, word2 = inputWord2 };
         string jsonData = JsonConvert.SerializeObject(data);
